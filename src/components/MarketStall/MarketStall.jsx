@@ -1,8 +1,9 @@
 import stallCart from '../../assets/stall-cart.png';
-import { STALL_IMAGE, OVERLAY, overlayStyle } from './stallImageLayout.js';
+import { STALL_IMAGE, OVERLAY, overlayStyle, productHitStyle } from './stallImageLayout.js';
 import ProductSlot from './ProductSlot.jsx';
 import StallInfoPanel from './StallInfoPanel.jsx';
-import PitchSign from './PitchSign.jsx';
+import AmbitionPanel from './AmbitionPanel.jsx';
+import { PitchNumber, PitchLocation, PitchCount } from './PitchBoxes.jsx';
 import SelfieSlot from './SelfieSlot.jsx';
 import styles from './MarketStall.module.css';
 
@@ -47,20 +48,25 @@ export default function MarketStall({
           </div>
         )}
 
-        {slots.map((slot, index) => (
-          <ProductSlot
-            key={slot.id}
-            index={index}
-            title={slot.title}
-            image={slot.image}
-            name={slot.name}
-            label={slot.label}
-            price={slot.price}
-            selected={selectedProductIndex === index}
-            onClick={onProductClick ? () => onProductClick(index, products[index]) : undefined}
-            style={overlayStyle(OVERLAY.products[index])}
-          />
-        ))}
+        {slots.map((slot, index) => {
+          const zone = OVERLAY.products[index];
+          return (
+            <ProductSlot
+              key={slot.id}
+              index={index}
+              title={slot.title}
+              image={slot.image}
+              name={slot.name}
+              label={slot.label}
+              price={slot.price}
+              selected={selectedProductIndex === index}
+              onClick={onProductClick ? () => onProductClick(index, products[index]) : undefined}
+              panelStyle={overlayStyle(zone.panel)}
+              boardStyle={overlayStyle(zone.board)}
+              hitStyle={productHitStyle(zone)}
+            />
+          );
+        })}
 
         <SelfieSlot
           src={selfieUrl}
@@ -70,14 +76,12 @@ export default function MarketStall({
 
         <StallInfoPanel seller={seller} style={overlayStyle(OVERLAY.infoPanel)} />
 
-        <PitchSign pitch={pitch} style={overlayStyle(OVERLAY.pitchSign)} />
-      </div>
+        <AmbitionPanel ambition={seller?.ambition} style={overlayStyle(OVERLAY.ambition)} />
 
-      {selectedProductIndex != null && (
-        <p className={styles.selectionHint} aria-live="polite">
-          Selected: Product {selectedProductIndex + 1}
-        </p>
-      )}
+        <PitchNumber number={pitch?.number} style={overlayStyle(OVERLAY.pitchNumber)} />
+        <PitchLocation location={pitch?.location} style={overlayStyle(OVERLAY.pitchLocation)} />
+        <PitchCount count={pitch?.product_count} style={overlayStyle(OVERLAY.pitchCount)} />
+      </div>
     </div>
   );
 }

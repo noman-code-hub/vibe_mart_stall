@@ -1,0 +1,42 @@
+/* Separate pitch text boxes — transparent; icons/title from artwork */
+.box {
+  position: absolute;
+  margin: 0;
+  padding: 0 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: transparent;
+  border: none;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-width: 0;
+  min-height: 0;
+}
+
+.number {
+  margin: 0;
+  width: 100%;
+  font-size: clamp(0.48rem, 1.05vw, 0.72rem);
+  font-weight: 800;
+  font-family: Georgia, 'Times New Roman', serif;
+  color: var(--outline);
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.line {
+  margin: 0;
+  width: 100%;
+  font-size: clamp(0.38rem, 0.85vw, 1.55rem);
+  font-weight: bold;
+  color: var(--outline);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

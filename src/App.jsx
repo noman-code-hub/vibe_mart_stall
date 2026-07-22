@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import StallEditorForm from './components/StallEditorForm';
 import MarketStall from './components/MarketStall';
-import BackgroundRemovalTool from './components/BackgroundRemovalTool';
-import { mockStallData, createEmptyStallData } from './data/mockStallData';
-import { sellerPlaceholder } from './data/placeholderImages';
-import { sampleProductPhoto } from './data/sampleProductPhotos';
+import { createEmptyStallData } from './data/stallData';
 import './App.css';
 
 // ---------------------------------------------------------------------------
@@ -41,32 +38,18 @@ function toFormData(stall) {
   };
 }
 
-function sampleProductSlots() {
-  return mockStallData.products.map((p, i) => ({
-    name: p.name,
-    description: p.description,
-    price: p.price,
-    file: sampleProductPhoto(i),
-  }));
-}
-
 function App() {
   const [step, setStep] = useState('edit'); // 'edit' | 'finished'
-  const [data, setData] = useState(() => toFormData(mockStallData));
-  const [selfieFile, setSelfieFile] = useState(() => sellerPlaceholder());
-  const [productSlots, setProductSlots] = useState(sampleProductSlots);
+  const [data, setData] = useState(() => toFormData(createEmptyStallData()));
+  const [selfieFile, setSelfieFile] = useState(null);
+  const [productSlots, setProductSlots] = useState([]);
   const [selectedProductIndex, setSelectedProductIndex] = useState(null);
-
-  const handleLoadSample = () => {
-    setData(toFormData(mockStallData));
-    setSelfieFile(sellerPlaceholder());
-    setProductSlots(sampleProductSlots());
-  };
 
   const handleClearAll = () => {
     setData(toFormData(createEmptyStallData()));
     setSelfieFile(null);
     setProductSlots([]);
+    setSelectedProductIndex(null);
   };
 
   const selfieUrl = useStableFileUrl(selfieFile);
@@ -123,11 +106,7 @@ function App() {
     <div className="app">
       <header className="app__header">
         <h1>Vibe Mart — Stall Editor</h1>
-        <p>
-          Phase 1: local build against mock/sample data for client review. Nothing here talks to
-          WordPress yet — the "Generate" REST call and PHP/Imagick render land in Phase 2, after
-          sign-off on this layout.
-        </p>
+        <p>Fill in your stall details, upload photos, then generate your market stall.</p>
       </header>
 
       <div className="app__form-wrap">
@@ -139,10 +118,8 @@ function App() {
           onSelfieClear={() => setSelfieFile(null)}
           productSlots={productSlots}
           onProductSlotsChange={setProductSlots}
-          onLoadSample={handleLoadSample}
           onClearAll={handleClearAll}
         />
-        <BackgroundRemovalTool onApplyToSelfie={setSelfieFile} />
         <div className="app__generate-row">
           <button type="button" className="app__generate-btn" onClick={() => setStep('finished')}>
             Generate Stall →

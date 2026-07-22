@@ -47,21 +47,6 @@
   white-space: nowrap;
 }
 
-.selectionHint {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 6;
-  margin: 0;
-  padding: 6px 16px;
-  font-size: 0.8rem;
-  color: var(--outline);
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 999px;
-  box-shadow: 0 2px 8px var(--shadow-soft);
-}
-
 @media (max-width: 768px) {
   .stall {
     max-width: 100%;

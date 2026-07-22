@@ -1,14 +1,6 @@
 import styles from './ProductSlot.module.css';
 
-const HEADER_COLORS = ['var(--teal)', 'var(--red)', 'var(--teal)', 'var(--red)'];
-
-function truncate(text, max = 34) {
-  if (!text) return '';
-  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
-}
-
 export default function ProductSlot({
-  index,
   title,
   image,
   name,
@@ -16,40 +8,36 @@ export default function ProductSlot({
   price,
   selected = false,
   onClick,
-  style,
+  panelStyle,
+  boardStyle,
+  hitStyle,
 }) {
-  const detail = truncate([name, label].filter(Boolean).join(' - '));
-  const headerColor = HEADER_COLORS[index % HEADER_COLORS.length];
+  const detail = [name, label].filter(Boolean).join(' - ');
 
   return (
-    <article
-      className={`${styles.card}${selected ? ` ${styles.selected}` : ''}`}
-      style={style}
-      aria-label={name || title}
-    >
+    <div className={`${styles.group}${selected ? ` ${styles.selected}` : ''}`} aria-label={name || title}>
       <button
         type="button"
         className={styles.hitArea}
+        style={hitStyle}
         onClick={onClick}
         aria-label={name || title}
       />
 
-      <div className={styles.header} style={{ backgroundColor: headerColor }}>
-        <span>{title.toUpperCase()}</span>
+      <div className={styles.panel} style={panelStyle}>
+        <div className={styles.body}>
+          {image ? (
+            <img src={image} alt={name || title} className={styles.image} />
+          ) : (
+            <span className={styles.placeholder}>Add photo</span>
+          )}
+        </div>
       </div>
 
-      <div className={styles.body}>
-        {image ? (
-          <img src={image} alt={name || title} className={styles.image} />
-        ) : (
-          <span className={styles.placeholder}>Add photo</span>
-        )}
-      </div>
-
-      <div className={styles.tag}>
+      <div className={styles.tag} style={boardStyle}>
         {detail && <span className={styles.detail}>{detail}</span>}
         {price && <span className={styles.price}>{price}</span>}
       </div>
-    </article>
+    </div>
   );
 }

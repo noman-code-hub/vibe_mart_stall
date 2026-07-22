@@ -1,7 +1,16 @@
+import { useState } from 'react';
 import ImageUploadField from './ImageUploadField';
 import './StallEditorForm.css';
 
 const MAX_PRODUCTS = 4;
+/** Matches sample copy that fits the stall panels */
+const MAX_ABOUT_WORDS = 27;
+const MAX_AMBITION_WORDS = 26;
+
+function countWords(text) {
+  const trimmed = text.trim();
+  return trimmed ? trimmed.split(/\s+/).length : 0;
+}
 
 export default function StallEditorForm({
   data,
@@ -11,9 +20,11 @@ export default function StallEditorForm({
   onSelfieClear,
   productSlots,
   onProductSlotsChange,
-  onLoadSample,
   onClearAll,
 }) {
+  const [aboutError, setAboutError] = useState('');
+  const [ambitionError, setAmbitionError] = useState('');
+
   const setBusinessName = (value) => onDataChange((prev) => ({ ...prev, business_name: value }));
 
   const setSellerField = (field, value) =>
@@ -21,6 +32,15 @@ export default function StallEditorForm({
 
   const setPitchField = (field, value) =>
     onDataChange((prev) => ({ ...prev, pitch: { ...prev.pitch, [field]: value } }));
+
+  const handleLimitedSellerText = (field, value, maxWords, setError) => {
+    if (countWords(value) > maxWords) {
+      setError(`Maximum ${maxWords} words — this text must fit on the stall.`);
+      return;
+    }
+    setError('');
+    setSellerField(field, value);
+  };
 
   const updateProduct = (index, field, value) =>
     onProductSlotsChange((prev) => prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)));
@@ -32,14 +52,21 @@ export default function StallEditorForm({
 
   const removeProduct = (index) => onProductSlotsChange((prev) => prev.filter((_, i) => i !== index));
 
+  const aboutWords = countWords(data.seller.about);
+  const ambitionWords = countWords(data.seller.ambition);
+
   return (
     <form className="stall-form" onSubmit={(e) => e.preventDefault()}>
       <div className="stall-form__toolbar">
-        <button type="button" onClick={onLoadSample}>
-          Load sample data
-        </button>
-        <button type="button" onClick={onClearAll}>
-          Clear all (test empty state)
+        <button
+          type="button"
+          onClick={() => {
+            setAboutError('');
+            setAmbitionError('');
+            onClearAll();
+          }}
+        >
+          Clear all
         </button>
       </div>
 
@@ -51,7 +78,7 @@ export default function StallEditorForm({
             type="text"
             value={data.business_name}
             onChange={(e) => setBusinessName(e.target.value)}
-            placeholder="e.g. Marigold & Vine Preserves"
+            placeholder="Your business name"
           />
         </label>
       </fieldset>
@@ -76,22 +103,44 @@ export default function StallEditorForm({
           removeBg
         />
 
-        <label className="stall-form__field">
-          <span>About you (~2-3 sentences)</span>
+        <label className={`stall-form__field${aboutError ? ' stall-form__field--error' : ''}`}>
+          <span>
+            About you ({aboutWords}/{MAX_ABOUT_WORDS} words)
+          </span>
           <textarea
             rows={3}
             value={data.seller.about}
-            onChange={(e) => setSellerField('about', e.target.value)}
+            onChange={(e) =>
+              handleLimitedSellerText('about', e.target.value, MAX_ABOUT_WORDS, setAboutError)
+            }
+            aria-invalid={Boolean(aboutError)}
+            aria-describedby={aboutError ? 'about-limit-error' : undefined}
           />
+          {aboutError && (
+            <span id="about-limit-error" className="stall-form__error" role="alert">
+              {aboutError}
+            </span>
+          )}
         </label>
 
-        <label className="stall-form__field">
-          <span>Ambition (~2-3 sentences)</span>
+        <label className={`stall-form__field${ambitionError ? ' stall-form__field--error' : ''}`}>
+          <span>
+            Ambition ({ambitionWords}/{MAX_AMBITION_WORDS} words)
+          </span>
           <textarea
             rows={3}
             value={data.seller.ambition}
-            onChange={(e) => setSellerField('ambition', e.target.value)}
+            onChange={(e) =>
+              handleLimitedSellerText('ambition', e.target.value, MAX_AMBITION_WORDS, setAmbitionError)
+            }
+            aria-invalid={Boolean(ambitionError)}
+            aria-describedby={ambitionError ? 'ambition-limit-error' : undefined}
           />
+          {ambitionError && (
+            <span id="ambition-limit-error" className="stall-form__error" role="alert">
+              {ambitionError}
+            </span>
+          )}
         </label>
       </fieldset>
 

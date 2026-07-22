@@ -66,6 +66,16 @@
   outline-offset: 1px;
 }
 
+.stall-form__field--error textarea {
+  border-color: #a1372c;
+}
+
+.stall-form__error {
+  color: #a1372c;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .stall-form__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));

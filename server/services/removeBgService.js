@@ -23,8 +23,9 @@ export async function removeBackgroundFromFile(filePath) {
     filename: path.basename(filePath),
   });
 
+  let response;
   try {
-    const response = await axios.post('https://api.remove.bg/v1.0/removebg', form, {
+    response = await axios.post('https://api.remove.bg/v1.0/removebg', form, {
       responseType: 'arraybuffer',
       headers: {
         ...form.getHeaders(),
@@ -36,31 +37,7 @@ export async function removeBackgroundFromFile(filePath) {
       maxBodyLength: 50 * 1024 * 1024,
       validateStatus: () => true,
     });
-
-    if (response.status === 200) {
-      return Buffer.from(response.data);
-    }
-
-    // remove.bg returns JSON errors even when we asked for an image body
-    let message = 'Background removal failed.';
-    let code = 'REMOVE_BG_ERROR';
-    try {
-      const parsed = JSON.parse(Buffer.from(response.data).toString('utf8'));
-      message = parsed?.errors?.[0]?.title || parsed?.errors?.[0]?.detail || message;
-      code = parsed?.errors?.[0]?.code || code;
-    } catch {
-      // keep defaults
-    }
-
-    const err = new Error(message);
-    err.status = response.status >= 400 && response.status < 600 ? response.status : 502;
-    err.code = code;
-    throw err;
   } catch (error) {
-    if (error.code === 'REMOVE_BG_ERROR' || error.code === 'MISSING_API_KEY') {
-      throw error;
-    }
-
     if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
       const err = new Error('The remove.bg request timed out. Please try again.');
       err.status = 504;
@@ -75,9 +52,35 @@ export async function removeBackgroundFromFile(filePath) {
       throw err;
     }
 
-    const err = new Error('Could not reach the remove.bg API. Check your network connection.');
+    const detail = error.code ? ` (${error.code})` : '';
+    const err = new Error(`Could not reach the remove.bg API${detail}. Check your network connection.`);
     err.status = 503;
     err.code = 'NETWORK_ERROR';
     throw err;
   }
+
+  if (response.status === 200) {
+    return Buffer.from(response.data);
+  }
+
+  // remove.bg returns JSON errors even when we asked for an image body
+  let message = 'Background removal failed.';
+  let code = 'REMOVE_BG_ERROR';
+  try {
+    const parsed = JSON.parse(Buffer.from(response.data).toString('utf8'));
+    message = parsed?.errors?.[0]?.title || parsed?.errors?.[0]?.detail || message;
+    code = parsed?.errors?.[0]?.code || code;
+  } catch {
+    // keep defaults
+  }
+
+  if (code === 'insufficient_credits') {
+    message =
+      'remove.bg has no credits left on this API key. Add credits at remove.bg, then try again.';
+  }
+
+  const err = new Error(message);
+  err.status = response.status >= 400 && response.status < 600 ? response.status : 502;
+  err.code = code;
+  throw err;
 }
