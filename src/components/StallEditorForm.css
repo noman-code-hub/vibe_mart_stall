@@ -1,0 +1,119 @@
+.stall-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stall-form__toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stall-form__toolbar button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--stall-border);
+  background: var(--stall-panel);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--stall-ink);
+}
+
+.stall-form__toolbar button:hover {
+  border-color: var(--stall-accent);
+}
+
+.stall-form__section {
+  border: 1px solid var(--stall-border);
+  border-radius: 12px;
+  padding: 16px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #fff;
+}
+
+.stall-form__section legend {
+  font-weight: 700;
+  padding: 0 6px;
+  color: var(--stall-banner);
+}
+
+.stall-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--stall-ink-soft);
+}
+
+.stall-form__field input,
+.stall-form__field textarea {
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--stall-border);
+  color: var(--stall-ink);
+  background: #fffdf8;
+  resize: vertical;
+}
+
+.stall-form__field input:focus,
+.stall-form__field textarea:focus {
+  outline: 2px solid var(--stall-accent);
+  outline-offset: 1px;
+}
+
+.stall-form__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.stall-form__product {
+  border: 1px dashed var(--stall-border);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stall-form__product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--stall-ink);
+}
+
+.stall-form__product-header button {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--stall-border);
+  background: #fff;
+  color: #a1372c;
+  cursor: pointer;
+}
+
+.stall-form__add-btn {
+  align-self: flex-start;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px dashed var(--stall-accent);
+  background: var(--stall-accent-bg);
+  color: var(--stall-banner);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.stall-form__empty-note {
+  font-size: 13px;
+  color: var(--stall-ink-soft);
+  margin: 0;
+}

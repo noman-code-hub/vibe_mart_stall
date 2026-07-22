@@ -1,0 +1,70 @@
+/* Cart background + coded overlay boxes */
+.stall {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px var(--shadow);
+  background: #9a9088;
+}
+
+.stallImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+.overlayLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* Business name in top arch */
+.arch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.archText {
+  font-family: 'Brush Script MT', 'Segoe Script', cursive;
+  font-size: clamp(0.9rem, 3vw, 1.75rem);
+  font-weight: 700;
+  color: var(--outline);
+  text-align: center;
+  line-height: 1;
+  padding: 0 6%;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selectionHint {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  margin: 0;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  color: var(--outline);
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px var(--shadow-soft);
+}
+
+@media (max-width: 768px) {
+  .stall {
+    max-width: 100%;
+    border-radius: 0;
+  }
+}

@@ -1,0 +1,52 @@
+/* Wheel pair beneath cart */
+.wheels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 780px;
+  margin: -18px auto 0;
+  padding: 0 40px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.wheel {
+  filter: drop-shadow(0 5px 8px var(--shadow));
+}
+
+.animate .wheel {
+  animation: wheelSpin 24s linear infinite;
+}
+
+@keyframes wheelSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .wheels {
+    max-width: 520px;
+    padding: 0 20px;
+  }
+
+  .wheel {
+    width: 80px !important;
+    height: 80px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .wheels {
+    max-width: 300px;
+    margin-top: 8px;
+  }
+
+  .wheel {
+    width: 64px !important;
+    height: 64px !important;
+  }
+}

@@ -1,0 +1,61 @@
+/* Left standing sign — cream board, green border, metal pole */
+.sign {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  filter: drop-shadow(0 4px 8px var(--shadow-soft));
+  animation: signSway 6s ease-in-out infinite;
+}
+
+@keyframes signSway {
+  0%,
+  100% {
+    transform: rotate(-1deg);
+  }
+  50% {
+    transform: rotate(1deg);
+  }
+}
+
+.board {
+  width: 148px;
+  transform: rotate(-2deg);
+}
+
+.border {
+  background: var(--cream);
+  border: 3px solid var(--green-border);
+  border-radius: 10px;
+  padding: 14px 12px;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--outline);
+  box-shadow: 0 4px 10px var(--shadow-soft);
+}
+
+.pole {
+  margin-top: -2px;
+}
+
+.base {
+  width: 36px;
+  height: 8px;
+  background: var(--metal);
+  border: 2px solid var(--outline);
+  border-radius: 3px;
+  margin-top: -2px;
+}
+
+@media (max-width: 768px) {
+  .board {
+    width: 130px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sign {
+    margin: 0 auto;
+  }
+}

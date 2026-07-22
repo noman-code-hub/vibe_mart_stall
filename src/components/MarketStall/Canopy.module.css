@@ -1,0 +1,90 @@
+/* Canopy — alternating stripes with scalloped hem and float animation */
+.canopy {
+  position: relative;
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+  animation: canopyFloat 5s ease-in-out infinite;
+  filter: drop-shadow(0 4px 6px var(--shadow-soft));
+  z-index: 15;
+}
+
+@keyframes canopyFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.stripes {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  height: 52px;
+  border: 3px solid var(--outline);
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  overflow: hidden;
+}
+
+.stripe {
+  height: 100%;
+  border-right: 1.5px solid rgba(0, 0, 0, 0.08);
+}
+
+.stripe:last-child {
+  border-right: none;
+}
+
+.banner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 72%;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--yellow);
+  border: 3px solid var(--red);
+  border-radius: 8px;
+  box-shadow: 0 3px 8px var(--shadow-soft);
+  padding: 4px 28px;
+  z-index: 2;
+}
+
+.scallops {
+  display: flex;
+  justify-content: center;
+  margin-top: -1px;
+  line-height: 0;
+}
+
+.scallop {
+  flex-shrink: 0;
+}
+
+.canopy:hover {
+  animation-play-state: paused;
+}
+
+@media (max-width: 768px) {
+  .stripes {
+    height: 42px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stripes {
+    height: 36px;
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .scallops {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

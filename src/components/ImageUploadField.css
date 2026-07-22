@@ -1,0 +1,122 @@
+.image-upload-field {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--stall-border);
+  border-radius: 10px;
+  background: var(--stall-panel);
+}
+
+.image-upload-field__thumb {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #eee2c9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-upload-field__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-upload-field__placeholder {
+  font-size: 11px;
+  color: #a3906f;
+  text-align: center;
+  padding: 4px;
+}
+
+.image-upload-field__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.image-upload-field__label {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--stall-ink);
+}
+
+.image-upload-field__hint {
+  font-size: 12px;
+  color: var(--stall-ink-soft);
+}
+
+.image-upload-field__buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.image-upload-field__upload-btn,
+.image-upload-field__clear-btn {
+  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--stall-border);
+  background: #fff;
+  cursor: pointer;
+  color: var(--stall-ink);
+}
+
+.image-upload-field__upload-btn:hover,
+.image-upload-field__clear-btn:hover {
+  border-color: var(--stall-accent);
+}
+
+.image-upload-field__clear-btn {
+  color: #a1372c;
+}
+
+.image-upload-field__error {
+  font-size: 12px;
+  color: #8a1f1f;
+  line-height: 1.35;
+}
+
+.image-upload-field__upload-btn.is-disabled,
+.image-upload-field__upload-btn:has(input:disabled) {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.image-upload-field__spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #d8c9a8;
+  border-top-color: var(--stall-banner);
+  border-radius: 50%;
+  animation: image-upload-spin 0.7s linear infinite;
+}
+
+@keyframes image-upload-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.image-upload-field__thumb {
+  background-color: #eee2c9;
+  background-image:
+    linear-gradient(45deg, #e2d6bd 25%, transparent 25%),
+    linear-gradient(-45deg, #e2d6bd 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e2d6bd 75%),
+    linear-gradient(-45deg, transparent 75%, #e2d6bd 75%);
+  background-size: 10px 10px;
+  background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+}
+
+.image-upload-field__thumb img {
+  object-fit: contain;
+}

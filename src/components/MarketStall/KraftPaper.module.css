@@ -1,0 +1,44 @@
+/* Kraft paper tag with tape strip and paper texture */
+.kraft {
+  position: relative;
+  margin-top: auto;
+  transform: rotate(var(--rotate, -1deg));
+  filter: drop-shadow(0 2px 4px var(--shadow-soft));
+}
+
+.content {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0, 0, 0, 0.04) 3px,
+      rgba(0, 0, 0, 0.04) 4px
+    ),
+    linear-gradient(180deg, var(--paper) 0%, var(--paper-dark) 100%);
+  border: 2.5px solid var(--outline);
+  border-radius: 4px;
+  padding: 8px 10px;
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: var(--outline);
+}
+
+.tape {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%) rotate(2deg);
+  width: 36px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 2px;
+  z-index: 1;
+}

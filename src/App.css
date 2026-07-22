@@ -1,0 +1,97 @@
+:root {
+  --stall-ink: #0f172a;
+  --stall-ink-soft: #64748b;
+  --stall-border: #e2e8f0;
+  --stall-panel: #ffffff;
+  --stall-banner: #1e3a4c;
+  --stall-accent: #0f766e;
+  --stall-accent-bg: rgba(15, 118, 110, 0.08);
+}
+
+.app {
+  min-height: 100vh;
+  background: #f4f6f8;
+  padding: 28px 32px 60px;
+  box-sizing: border-box;
+}
+
+.app__header {
+  max-width: 1400px;
+  margin: 0 auto 24px;
+}
+
+.app__header h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--stall-banner);
+}
+
+.app__header p {
+  margin: 0;
+  color: var(--stall-ink-soft);
+  font-size: 14px;
+  max-width: 760px;
+}
+
+.app__form-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.app__generate-row {
+  display: flex;
+  justify-content: flex-end;
+  position: sticky;
+  bottom: 16px;
+}
+
+.app__generate-btn {
+  padding: 14px 30px;
+  border-radius: 8px;
+  border: none;
+  background: var(--stall-banner);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(30, 58, 76, 0.25);
+}
+
+.app__generate-btn:hover {
+  background: #163040;
+}
+
+.app--finished {
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.app__finished-toolbar {
+  display: flex;
+  margin-bottom: 14px;
+}
+
+.app__edit-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--stall-border);
+  background: #fff;
+  color: var(--stall-ink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.app__edit-btn:hover {
+  border-color: var(--stall-accent);
+}
+
+@media (max-width: 960px) {
+  .stall-preview--edit {
+    position: static;
+  }
+}

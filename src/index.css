@@ -1,0 +1,47 @@
+:root {
+  color-scheme: light;
+  font: 15px/145% 'Segoe UI', system-ui, Roboto, sans-serif;
+
+  /* Market Stall palette */
+  --cream: #f2e8d4;
+  --cream-dark: #e8dcc4;
+  --red: #c0392b;
+  --red-dark: #962d22;
+  --teal: #1a6168;
+  --teal-dark: #124850;
+  --teal-light: #247078;
+  --wood: #6b4423;
+  --wood-dark: #4a2e18;
+  --wood-light: #8a5a35;
+  --paper: #c9a56a;
+  --paper-dark: #a8844a;
+  --shadow: rgba(0, 0, 0, 0.28);
+  --shadow-soft: rgba(0, 0, 0, 0.14);
+  --outline: #1a1008;
+  --metal: #3a3a3a;
+  --metal-light: #8a8a8a;
+  --brown: #9a6b42;
+  --yellow: #edd23a;
+  --gold: #d4a017;
+  --white: #fffdf8;
+  --blue-label: #1c5f7a;
+  --green-border: #1a6168;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: inherit;
+}
+
+button {
+  font-family: inherit;
+}

@@ -1,0 +1,85 @@
+/* Right info board — cream panel, teal border, rounded corners */
+.panel {
+  position: absolute;
+  background: #f5ecd7;
+  border: 3px solid var(--teal);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow: 0 6px 16px var(--shadow-soft);
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  container-type: inline-size;
+}
+
+.section {
+  flex-shrink: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+.heading {
+  margin: 0 0 6px;
+  font-size: clamp(0.55rem, 7.5cqi, 0.72rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--outline);
+  line-height: 1.25;
+  text-align: left;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.greeting {
+  margin: 0 0 8px;
+  font-size: clamp(0.52rem, 7cqi, 0.7rem);
+  font-weight: 800;
+  color: var(--red);
+  line-height: 1.25;
+  text-align: left;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.about {
+  margin: 0;
+  font-size: clamp(0.48rem, 6.5cqi, 0.62rem);
+  line-height: 1.45;
+  color: var(--outline);
+  text-align: left;
+  word-break: normal;
+  overflow-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ambitionHeading {
+  margin: 0 0 5px;
+  font-size: clamp(0.5rem, 7cqi, 0.66rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--outline);
+  line-height: 1.2;
+  text-align: left;
+}
+
+.ambitionText {
+  margin: 0;
+  font-size: clamp(0.48rem, 6.5cqi, 0.6rem);
+  line-height: 1.4;
+  color: var(--outline);
+  text-align: left;
+  word-break: normal;
+  overflow-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

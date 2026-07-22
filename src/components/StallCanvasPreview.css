@@ -1,0 +1,124 @@
+.stall-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.stall-preview--edit {
+  position: sticky;
+  top: 20px;
+}
+
+.stall-preview--finished {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.stall-preview__canvas-wrap {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--stall-border);
+  background: #000;
+}
+
+.stall-preview__canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1920 / 1080;
+}
+
+/* Deliberately small and low-contrast - this is a testing affordance, not
+   a feature of the finished storefront graphic. */
+.stall-preview__download-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 0.15s ease, background 0.15s ease;
+  z-index: 3;
+}
+
+.stall-preview__download-icon:hover,
+.stall-preview__download-icon:focus-visible {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+/* Clickable highlight layer over the finished stall. */
+.stall-hotspots {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.stall-hotspot {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.stall-hotspot:hover {
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.18);
+}
+
+.stall-hotspot:focus-visible {
+  outline: none;
+  border-color: var(--stall-accent, #d1a12c);
+}
+
+.stall-hotspot.is-selected {
+  border-color: var(--stall-accent, #d1a12c);
+  background: rgba(209, 161, 44, 0.14);
+  box-shadow:
+    0 0 0 3px rgba(209, 161, 44, 0.45),
+    0 0 24px rgba(209, 161, 44, 0.55);
+}
+
+.stall-hotspot__label {
+  position: absolute;
+  top: -10px;
+  left: 8px;
+  transform: translateY(-100%);
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #1c2530;
+  color: #f3ead2;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.stall-hotspot:hover .stall-hotspot__label,
+.stall-hotspot.is-selected .stall-hotspot__label {
+  opacity: 1;
+}
+
+.stall-preview__hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--stall-ink-soft, #6b5847);
+  text-align: center;
+}

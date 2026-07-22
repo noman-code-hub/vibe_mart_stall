@@ -1,0 +1,79 @@
+/* Cardboard boxes — brown texture, tape, hover scale */
+.boxes {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 0 20px;
+}
+
+.box {
+  position: relative;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 8px,
+      rgba(0, 0, 0, 0.05) 8px,
+      rgba(0, 0, 0, 0.05) 9px
+    ),
+    linear-gradient(180deg, var(--brown) 0%, #7a5530 100%);
+  border: 3px solid var(--outline);
+  border-radius: 4px;
+  box-shadow: 0 6px 12px var(--shadow-soft);
+  transition: transform 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.box:hover {
+  transform: scale(1.06) rotate(var(--r, 0deg));
+}
+
+.flap {
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 14px;
+  background: rgba(0, 0, 0, 0.08);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+}
+
+.tapeH {
+  position: absolute;
+  top: 42%;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: rgba(30, 30, 30, 0.55);
+}
+
+.tapeV {
+  position: absolute;
+  top: 10%;
+  bottom: 10%;
+  left: 50%;
+  width: 8px;
+  margin-left: -4px;
+  background: rgba(30, 30, 30, 0.45);
+}
+
+.label {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--outline);
+  text-align: center;
+  line-height: 1.2;
+  z-index: 1;
+  padding: 4px;
+}
+
+@media (max-width: 480px) {
+  .boxes {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+}
