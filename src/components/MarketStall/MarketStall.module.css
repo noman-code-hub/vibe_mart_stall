@@ -16,6 +16,7 @@
   height: auto;
   user-select: none;
   pointer-events: none;
+  background: transparent;
 }
 
 .overlayLayer {

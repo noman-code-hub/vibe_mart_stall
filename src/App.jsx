@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import StallEditorForm from './components/StallEditorForm';
 import MarketStall from './components/MarketStall';
+import StallLoadingScreen from './components/StallLoadingScreen';
 import { createEmptyStallData } from './data/stallData';
+import stallCart from './assets/stall-cart.png';
 import './App.css';
 
 // ---------------------------------------------------------------------------
@@ -26,6 +28,19 @@ function useStableFileUrl(source) {
   return objectUrl;
 }
 
+function preloadImage(src) {
+  return new Promise((resolve) => {
+    if (!src) {
+      resolve();
+      return;
+    }
+    const img = new Image();
+    img.onload = () => resolve();
+    img.onerror = () => resolve();
+    img.src = src;
+  });
+}
+
 function toFormData(stall) {
   return {
     business_name: stall.business_name,
@@ -39,7 +54,7 @@ function toFormData(stall) {
 }
 
 function App() {
-  const [step, setStep] = useState('edit'); // 'edit' | 'finished'
+  const [step, setStep] = useState('edit'); // 'edit' | 'loading' | 'finished'
   const [data, setData] = useState(() => toFormData(createEmptyStallData()));
   const [selfieFile, setSelfieFile] = useState(null);
   const [productSlots, setProductSlots] = useState([]);
@@ -77,6 +92,25 @@ function App() {
       }),
     [productSlots, resolvedProductUrls]
   );
+
+  const handleGenerateStall = async () => {
+    setStep('loading');
+
+    // Stall cart is large — wait until it (and any uploaded photos) are ready
+    // so the finished view does not flash a blank brown background.
+    const assets = [stallCart, selfieUrl, ...resolvedProductUrls].filter(Boolean);
+    await Promise.all(assets.map(preloadImage));
+
+    setStep('finished');
+  };
+
+  if (step === 'loading') {
+    return (
+      <div className="app app--finished">
+        <StallLoadingScreen />
+      </div>
+    );
+  }
 
   if (step === 'finished') {
     return (
@@ -121,7 +155,7 @@ function App() {
           onClearAll={handleClearAll}
         />
         <div className="app__generate-row">
-          <button type="button" className="app__generate-btn" onClick={() => setStep('finished')}>
+          <button type="button" className="app__generate-btn" onClick={handleGenerateStall}>
             Generate Stall →
           </button>
         </div>
