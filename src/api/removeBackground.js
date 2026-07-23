@@ -1,6 +1,7 @@
 /**
- * Uploads an image to the local Express proxy which calls remove.bg
- * server-side. The API key never leaves the backend.
+ * Uploads an image to /api/remove-background (Vercel serverless / local Vite
+ * middleware), which calls remove.bg server-side. The API key never leaves
+ * the backend.
  *
  * @param {File|Blob} file
  * @param {{ signal?: AbortSignal }} [options]
@@ -27,7 +28,7 @@ export async function removeBackground(file, options = {}) {
     });
   } catch (error) {
     if (error?.name === 'AbortError') throw error;
-    throw new Error('Could not reach the background-removal service. Is the API server running?', {
+    throw new Error('Could not reach the background-removal service. Try again in a moment.', {
       cause: error,
     });
   }

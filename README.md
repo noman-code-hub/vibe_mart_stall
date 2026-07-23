@@ -1,7 +1,8 @@
 # Vibe Mart — Stall Editor (Phase 1)
 
-Local React preview of the vendor stall graphic, plus a small Express API that
-proxies [remove.bg](https://www.remove.bg/) so the API key never reaches the browser.
+Local React preview of the vendor stall graphic, with a Vercel Serverless
+Function that proxies [remove.bg](https://www.remove.bg/) so the API key never
+reaches the browser.
 
 ## Setup
 
@@ -20,36 +21,28 @@ copy .env.example .env
 Edit `.env`:
 
 ```
-PORT=3001
 REMOVE_BG_API_KEY=your_remove_bg_api_key_here
 MAX_UPLOAD_BYTES=10485760
 ```
 
 `.env` is gitignored — never commit real keys.
 
-## Run (frontend + API together)
+For Vercel: Project **Settings → Environment Variables** → add `REMOVE_BG_API_KEY`, then redeploy.
+
+## Run locally
 
 ```bash
 npm run dev
 ```
 
-- Web UI: http://localhost:3000  
-- API: http://localhost:3001  
-- Vite proxies `/api/*` → the Express server
-
-### Run separately (optional)
-
-```bash
-npm run server   # Express on :3001
-npm run client   # Vite on :3000
-```
+- Web UI + API: http://localhost:3000  
+- Network (same Wi‑Fi): http://YOUR_LAN_IP:3000  
+- `/api/remove-background` is served by the same Vite process (same handler as Vercel)
 
 ## Background removal
 
-1. Open the stall editor.
-2. Scroll to **Background removal**.
-3. Choose an image → **Remove background**.
-4. Preview the transparent PNG, **Download PNG**, or **Use on stall selfie**.
+Upload a selfie or product photo in the stall editor — backgrounds are removed
+automatically via `POST /api/remove-background`.
 
 ### API
 
@@ -59,17 +52,21 @@ npm run client   # Vite on :3000
 Success: `image/png` body  
 Errors: JSON `{ "error": "...", "code": "..." }`
 
-Health check: `GET /api/health`
-
 ### Quick curl test
 
 ```bash
-curl -X POST http://localhost:3001/api/remove-background ^
+curl -X POST http://localhost:3000/api/remove-background ^
   -F "image=@path\to\photo.jpg" ^
   --output cutout.png
 ```
 
+## Deploy (Vercel)
+
+1. Push to GitHub and import the repo in Vercel (or `vercel`).
+2. Set `REMOVE_BG_API_KEY` in Vercel environment variables.
+3. Deploy — `api/remove-background.js` becomes the serverless endpoint.
+
 ## Security notes
 
-- The remove.bg key lives only in server `.env`.
-- Uploads are capped (default 10 MB), MIME-filtered (JPEG/PNG/WebP), rate-limited (30 / 15 min), and temp files are deleted after each request.
+- The remove.bg key lives only in server/env config (never in the client bundle).
+- Uploads are capped (default 10 MB) and MIME-filtered (JPEG/PNG/WebP); temp files are deleted after each request.

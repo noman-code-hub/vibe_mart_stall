@@ -18,7 +18,7 @@ dist-ssr
 
 # Temp uploads from the remove-bg endpoint
 uploads
-server/uploads
+.vercel
 
 # Editor directories and files
 .vscode/*
