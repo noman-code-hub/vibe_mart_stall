@@ -96,7 +96,6 @@ export default function StallEditorForm({
 
         <ImageUploadField
           label="Selfie / photo"
-          hint="Background is removed automatically via remove.bg when you upload"
           value={selfieFile}
           onChange={onSelfieChange}
           onClear={onSelfieClear}
@@ -240,7 +239,6 @@ export default function StallEditorForm({
             </div>
             <ImageUploadField
               label="Product photo"
-              hint="Background is removed automatically via remove.bg when you upload"
               value={product.file}
               onChange={(file) => updateProduct(index, 'file', file)}
               onClear={() => updateProduct(index, 'file', null)}
