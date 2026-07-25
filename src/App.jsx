@@ -124,7 +124,7 @@ function App() {
           businessName={data.business_name}
           products={stallProducts}
           seller={data.seller}
-          pitch={data.pitch}
+          pitch={{ ...data.pitch, product_count: productSlots.length }}
           selfieUrl={selfieUrl}
           selfieAlt={data.seller?.name}
           selectedProductIndex={selectedProductIndex}

@@ -20,14 +20,14 @@ export function PitchLocation({ location, style }) {
   );
 }
 
-/** Product count line */
+/** Product count next to the box icon on the pitch board */
 export function PitchCount({ count, style }) {
-  if (!count) return null;
+  const n = Number(count);
+  if (!Number.isFinite(n) || n <= 0) return null;
+
   return (
     <div className={styles.box} style={style} aria-label="Product count">
-      <p className={styles.line}>
-        {count} product{count === 1 ? '' : 's'}
-      </p>
+      <p className={styles.count}>{n}</p>
     </div>
   );
 }

@@ -30,6 +30,11 @@ export default function MarketStall({
     };
   });
 
+  const productCount =
+    slots.filter((s) => s.name || s.image || s.price).length ||
+    Number(pitch?.product_count) ||
+    0;
+
   return (
     <div className={`${styles.stall} ${className}`} style={{ aspectRatio: STALL_IMAGE.aspectRatio }}>
       <img
@@ -80,7 +85,7 @@ export default function MarketStall({
 
         <PitchNumber number={pitch?.number} style={overlayStyle(OVERLAY.pitchNumber)} />
         <PitchLocation location={pitch?.location} style={overlayStyle(OVERLAY.pitchLocation)} />
-        <PitchCount count={pitch?.product_count} style={overlayStyle(OVERLAY.pitchCount)} />
+        <PitchCount count={productCount} style={overlayStyle(OVERLAY.pitchCount)} />
       </div>
     </div>
   );

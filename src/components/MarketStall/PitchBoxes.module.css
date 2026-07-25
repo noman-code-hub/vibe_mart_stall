@@ -43,3 +43,17 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.count {
+  margin: 0;
+  width: 100%;
+  font-size: clamp(0.7rem, 1.5vw, 1.15rem);
+  font-size: clamp(0.7rem, 1.7cqw, 1.15rem);
+  font-weight: 800;
+  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  color: var(--outline);
+  line-height: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

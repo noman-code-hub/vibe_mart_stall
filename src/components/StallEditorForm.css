@@ -76,6 +76,12 @@
   font-weight: 600;
 }
 
+.stall-form__field--compact textarea {
+  min-height: 0;
+  resize: vertical;
+  max-height: 4.5rem;
+}
+
 .stall-form__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));

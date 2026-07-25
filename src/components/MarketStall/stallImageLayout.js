@@ -38,12 +38,13 @@ export const OVERLAY = {
   infoPanel: { left: 80.2, top: 26.5, width: 15, height: 23 },
 
   /* Above MY AMBITION graphic */
-  ambition: { left: 80.2, top: 51.5, width: 15, height: 13 },
+  ambition: { left: 80.2, top: 52.8, width: 15, height: 13 },
 
   /* Separate pitch fields (PITCH NO: title + icons are in artwork) */
   pitchNumber: { left: 83, top: 76.2, width: 10, height: 3.5 },
   pitchLocation: { left: 83.5, top: 81.2, width: 10, height: 3 },
-  pitchCount: { left: 83, top: 86.5, width: 10, height: 3 },
+  /* Beside the box icon on the pitch board */
+  pitchCount: { left: 85.5, top: 84.6, width: 7, height: 3.2 },
 };
 
 export function overlayStyle(box) {
