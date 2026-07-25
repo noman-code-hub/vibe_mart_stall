@@ -2,7 +2,7 @@
 .panel {
   position: absolute;
   margin: 0;
-  padding: 6px 10px;
+  padding: 5px 8px;
   box-sizing: border-box;
   overflow: hidden;
   background: transparent;
@@ -17,8 +17,10 @@
 .text {
   margin: 0;
   width: 100%;
-  font-size: clamp(0.45rem, 0.9vw, 0.6rem);
-  font-weight: bold;
+  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: clamp(0.55rem, 1vw, 0.9rem);
+  font-size: clamp(0.55rem, 1.2cqw, 0.9rem);
+  font-weight: 700;
   line-height: 1.35;
   color: var(--outline);
   white-space: normal;

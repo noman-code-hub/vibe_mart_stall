@@ -55,4 +55,5 @@
   object-position: bottom center;
   transform-origin: bottom center;
   filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.18));
+  max-height: 92%;
 }

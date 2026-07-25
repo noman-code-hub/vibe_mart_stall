@@ -8,6 +8,8 @@
   border-radius: 12px;
   box-shadow: 0 16px 40px var(--shadow);
   background: #9a9088;
+  container-type: inline-size;
+  container-name: stall;
 }
 
 .stallImage {
@@ -25,23 +27,26 @@
   z-index: 2;
 }
 
-/* Business name in top arch */
+/* Business / trader name in top banner */
 .arch {
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
   z-index: 4;
+  min-width: 0;
 }
 
 .archText {
-  font-family: 'Brush Script MT', 'Segoe Script', cursive;
-  font-size: clamp(0.9rem, 3vw, 1.75rem);
-  font-weight: 700;
+  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: clamp(1.15rem, 3.6vw, 2.85rem);
+  font-size: clamp(1.15rem, 5.2cqw, 2.85rem);
+  font-weight: 800;
   color: var(--outline);
   text-align: center;
-  line-height: 1;
-  padding: 0 6%;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  padding: 0 4%;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -52,5 +57,9 @@
   .stall {
     max-width: 100%;
     border-radius: 0;
+  }
+
+  .archText {
+    font-size: clamp(0.95rem, 4.6cqw, 2.2rem);
   }
 }

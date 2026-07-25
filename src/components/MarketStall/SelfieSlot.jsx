@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { trimImageToContent } from '../../utils/trimImageContent.js';
 import styles from './SelfieSlot.module.css';
 
-const MAX_SCALE = 2.8;
-const FILL_RATIO = 0.96;
+const MAX_SCALE = 2.35;
+const FILL_RATIO = 0.88;
 
 function computePersonScale(img, boxW, boxH) {
   const nw = img.naturalWidth;

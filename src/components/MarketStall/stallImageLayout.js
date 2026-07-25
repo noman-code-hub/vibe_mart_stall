@@ -9,40 +9,41 @@ export const STALL_IMAGE = {
 };
 
 export const OVERLAY = {
-  arch: { left: 14, top: 16.5, width: 56, height: 9.5 },
+  /* Slightly taller banner box so larger trader names stay centered */
+  arch: { left: 14, top: 15.8, width: 56, height: 11 },
 
   products: [
     {
-      panel: { left: 10.6, top: 34.5, width: 13, height: 24 },
-      board: { left: 12.7, top: 65.5, width: 8, height: 6.5 },
+      panel: { left: 10.2, top: 33.5, width: 13.8, height: 26.5 },
+      board: { left: 11.6, top: 65.2, width: 11, height: 7.8 },
     },
     {
-      panel: { left: 23.6, top: 34.5, width: 13, height: 24 },
-      board: { left: 25.7, top: 65.5, width: 8, height: 6.5 },
+      panel: { left: 23.2, top: 33.5, width: 13.8, height: 26.5 },
+      board: { left: 24.6, top: 65.2, width: 11, height: 7.8 },
     },
     {
-      panel: { left: 36.6, top: 34.5, width: 13, height: 24 },
-      board: { left: 38.7, top: 65.5, width: 8, height: 6.5 },
+      panel: { left: 36.2, top: 33.5, width: 13.8, height: 26.5 },
+      board: { left: 37.6, top: 65.2, width: 11, height: 7.8 },
     },
     {
-      panel: { left: 49.6, top: 34.5, width: 13, height: 24 },
-      board: { left: 51.7, top: 65.5, width: 8, height: 6.5 },
+      panel: { left: 49.2, top: 33.5, width: 13.8, height: 26.5 },
+      board: { left: 50.6, top: 65.2, width: 11, height: 7.8 },
     },
   ],
 
-  /* Keep selfie left of the right info board */
-  seller: { left: 62, top: 17, width: 18, height: 80 },
+  /* Slightly shorter trader photo so it sits more naturally */
+  seller: { left: 62.5, top: 22, width: 17, height: 70 },
 
   /* Blank middle of right board (below WHO'S BEHIND art) */
-  infoPanel: { left: 80.5, top: 27, width: 14.5, height: 22 },
+  infoPanel: { left: 80.2, top: 26.5, width: 15, height: 23 },
 
   /* Above MY AMBITION graphic */
-  ambition: { left: 80.5, top: 52, width: 14.5, height: 12 },
+  ambition: { left: 80.2, top: 51.5, width: 15, height: 13 },
 
   /* Separate pitch fields (PITCH NO: title + icons are in artwork) */
-  pitchNumber: { left: 83.5, top: 76.5, width: 9, height: 3.2 },
-  pitchLocation: { left: 84.5, top: 81.5, width: 9, height: 2.6 },
-  pitchCount: { left: 83.5, top: 86.8, width: 9, height: 2.6 },
+  pitchNumber: { left: 83, top: 76.2, width: 10, height: 3.5 },
+  pitchLocation: { left: 83.5, top: 81.2, width: 10, height: 3 },
+  pitchCount: { left: 83, top: 86.5, width: 10, height: 3 },
 };
 
 export function overlayStyle(box) {

@@ -2,7 +2,7 @@
 .box {
   position: absolute;
   margin: 0;
-  padding: 0 4px;
+  padding: 0 3px;
   box-sizing: border-box;
   overflow: hidden;
   background: transparent;
@@ -19,9 +19,10 @@
 .number {
   margin: 0;
   width: 100%;
-  font-size: clamp(0.48rem, 1.05vw, 0.72rem);
+  font-size: clamp(0.62rem, 1.2vw, 1.05rem);
+  font-size: clamp(0.62rem, 1.45cqw, 1.05rem);
   font-weight: 800;
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
   color: var(--outline);
   line-height: 1.1;
   overflow: hidden;
@@ -32,10 +33,12 @@
 .line {
   margin: 0;
   width: 100%;
-  font-size: clamp(0.38rem, 0.85vw, 1.55rem);
-  font-weight: bold;
+  font-size: clamp(0.52rem, 1.05vw, 0.95rem);
+  font-size: clamp(0.52rem, 1.25cqw, 0.95rem);
+  font-weight: 800;
+  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
   color: var(--outline);
-  line-height: 1.2;
+  line-height: 1.15;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

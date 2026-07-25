@@ -46,7 +46,8 @@
   justify-content: center;
   min-height: 0;
   height: 100%;
-  padding: 18% 7% 8%;
+  /* Tighter padding so product images fill more of the frame */
+  padding: 12% 3.5% 4%;
   background: transparent;
   box-sizing: border-box;
 }
@@ -62,7 +63,7 @@
 }
 
 .placeholder {
-  font-size: clamp(0.35rem, 0.85vw, 0.55rem);
+  font-size: clamp(0.42rem, 1.1cqw, 0.7rem);
   color: var(--paper-dark);
   font-style: italic;
   opacity: 0.7;
@@ -74,9 +75,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1px;
+  gap: 0.15em;
   margin: 0;
-  padding: 2px 4px;
+  padding: 3px 5px;
   background: transparent;
   border: none;
   border-radius: 0;
@@ -91,8 +92,10 @@
 }
 
 .detail {
-  font-size: clamp(0.36rem, 0.9vw, 0.62rem);
-  font-weight: bold;
+  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: clamp(0.48rem, 1.05vw, 0.88rem);
+  font-size: clamp(0.48rem, 1.25cqw, 0.88rem);
+  font-weight: 800;
   line-height: 1.15;
   color: var(--outline);
   display: -webkit-box;
@@ -102,11 +105,14 @@
   overflow: hidden;
   white-space: normal;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .price {
-  font-size: clamp(0.42rem, 1.05vw, 0.72rem);
-  font-weight: bold;
+  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: clamp(0.55rem, 1.2vw, 1.05rem);
+  font-size: clamp(0.55rem, 1.45cqw, 1.05rem);
+  font-weight: 800;
   line-height: 1.1;
   color: var(--red);
   display: block;
