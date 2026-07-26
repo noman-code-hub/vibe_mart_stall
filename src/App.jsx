@@ -3,7 +3,6 @@ import StallEditorForm from './components/StallEditorForm';
 import MarketStall from './components/MarketStall';
 import StallLoadingScreen from './components/StallLoadingScreen';
 import { createEmptyStallData } from './data/stallData';
-import { demoStallData, demoSelfieUrl, demoProductSlots } from './data/demoStallData';
 import stallCart from './assets/stall-cart.png';
 import './App.css';
 
@@ -56,17 +55,10 @@ function toFormData(stall) {
 
 function App() {
   const [step, setStep] = useState('edit'); // 'edit' | 'loading' | 'finished'
-  const [data, setData] = useState(() => toFormData(demoStallData));
-  const [selfieFile, setSelfieFile] = useState(() => demoSelfieUrl());
-  const [productSlots, setProductSlots] = useState(() => demoProductSlots());
+  const [data, setData] = useState(() => toFormData(createEmptyStallData()));
+  const [selfieFile, setSelfieFile] = useState(null);
+  const [productSlots, setProductSlots] = useState([]);
   const [selectedProductIndex, setSelectedProductIndex] = useState(null);
-
-  const handleLoadDemo = () => {
-    setData(toFormData(demoStallData));
-    setSelfieFile(demoSelfieUrl());
-    setProductSlots(demoProductSlots());
-    setSelectedProductIndex(null);
-  };
 
   const handleClearAll = () => {
     setData(toFormData(createEmptyStallData()));
@@ -160,7 +152,6 @@ function App() {
           onSelfieClear={() => setSelfieFile(null)}
           productSlots={productSlots}
           onProductSlotsChange={setProductSlots}
-          onLoadDemo={handleLoadDemo}
           onClearAll={handleClearAll}
         />
         <div className="app__generate-row">
