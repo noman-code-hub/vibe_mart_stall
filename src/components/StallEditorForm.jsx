@@ -13,6 +13,7 @@ export default function StallEditorForm({
   onSelfieClear,
   productSlots,
   onProductSlotsChange,
+  onLoadDemo,
   onClearAll,
 }) {
   const [errors, setErrors] = useState({});
@@ -74,6 +75,15 @@ export default function StallEditorForm({
   return (
     <form className="stall-form" onSubmit={(e) => e.preventDefault()}>
       <div className="stall-form__toolbar">
+        <button
+          type="button"
+          onClick={() => {
+            resetErrors();
+            onLoadDemo();
+          }}
+        >
+          Load demo data
+        </button>
         <button
           type="button"
           onClick={() => {

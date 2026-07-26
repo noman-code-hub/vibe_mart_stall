@@ -15,36 +15,36 @@ export const OVERLAY = {
   products: [
     {
       panel: { left: 10.2, top: 33.5, width: 13.8, height: 26.5 },
-      board: { left: 11.6, top: 65.2, width: 11, height: 7.8 },
+      board: { left: 12, top: 62.5, width: 9.4, height: 12 },
     },
     {
       panel: { left: 23.2, top: 33.5, width: 13.8, height: 26.5 },
-      board: { left: 24.6, top: 65.2, width: 11, height: 7.8 },
+      board: { left: 25.2, top: 62.5, width: 9.4, height: 12 },
     },
     {
       panel: { left: 36.2, top: 33.5, width: 13.8, height: 26.5 },
-      board: { left: 37.6, top: 65.2, width: 11, height: 7.8 },
+      board: { left: 38.4, top: 62.5, width: 9.4, height: 12 },
     },
     {
       panel: { left: 49.2, top: 33.5, width: 13.8, height: 26.5 },
-      board: { left: 50.6, top: 65.2, width: 11, height: 7.8 },
+      board: { left: 51.5, top: 62.5, width: 9.4, height: 12 },
     },
   ],
 
   /* Slightly shorter trader photo so it sits more naturally */
-  seller: { left: 62.5, top: 22, width: 17, height: 70 },
+  seller: { left: 62.5, top: 26, width: 17, height: 72 },
 
   /* Blank middle of right board (below WHO'S BEHIND art) */
   infoPanel: { left: 80.2, top: 26.5, width: 15, height: 23 },
 
   /* Above MY AMBITION graphic */
-  ambition: { left: 80.2, top: 52.8, width: 15, height: 13 },
+  ambition: { left: 80.2, top: 52.5, width: 15, height: 13 },
 
   /* Separate pitch fields (PITCH NO: title + icons are in artwork) */
-  pitchNumber: { left: 83, top: 76.2, width: 10, height: 3.5 },
-  pitchLocation: { left: 83.5, top: 81.2, width: 10, height: 3 },
+  pitchNumber: { left: 83, top: 74.2, width: 10, height: 3.5 },
+  pitchLocation: { left: 85.5, top: 81.2, width: 10, height: 3 },
   /* Beside the box icon on the pitch board */
-  pitchCount: { left: 85.5, top: 84.6, width: 7, height: 3.2 },
+  pitchCount: { left: 85.5, top: 85.9, width: 7, height: 3.2 },
 };
 
 export function overlayStyle(box) {

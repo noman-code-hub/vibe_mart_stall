@@ -38,10 +38,11 @@
 }
 
 .archText {
-  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-family: 'Amatic SC', sans-serif;
   font-size: clamp(1.15rem, 3.6vw, 2.85rem);
-  font-size: clamp(1.15rem, 5.2cqw, 2.85rem);
-  font-weight: 800;
+  font-size: clamp(1.15rem, 3.2cqw, 2.85rem);
+  font-weight: 700;
+  font-style: normal;
   color: var(--outline);
   text-align: center;
   line-height: 1.05;

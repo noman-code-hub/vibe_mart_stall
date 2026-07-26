@@ -42,12 +42,11 @@
 .body {
   flex: 1 1 auto;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   min-height: 0;
   height: 100%;
-  /* Tighter padding so product images fill more of the frame */
-  padding: 12% 3.5% 4%;
+  padding: 10% 4% 4%;
   background: transparent;
   box-sizing: border-box;
 }
@@ -60,6 +59,8 @@
   object-fit: contain;
   object-position: bottom center;
   display: block;
+  transform: scale(0.92);
+  transform-origin: bottom center;
 }
 
 .placeholder {
@@ -73,17 +74,16 @@
   position: absolute;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  gap: 0.15em;
+  gap: 0.08em;
   margin: 0;
-  padding: 3px 5px;
+  padding: 2px 4px;
   background: transparent;
   border: none;
   border-radius: 0;
   box-sizing: border-box;
   box-shadow: none;
-  overflow: hidden;
+  overflow: visible;
   z-index: 6;
   pointer-events: none;
   text-align: center;
@@ -91,12 +91,14 @@
   min-height: 0;
 }
 
-.detail {
-  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+.detail,
+.name {
+  font-family: 'Oswald', sans-serif;
+  font-optical-sizing: auto;
   font-size: clamp(0.48rem, 1.05vw, 0.88rem);
-  font-size: clamp(0.48rem, 1.25cqw, 0.88rem);
-  font-weight: 800;
-  line-height: 1.15;
+  font-size: 14px;
+  font-style: normal;
+  line-height: 1.2;
   color: var(--outline);
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -108,17 +110,35 @@
   overflow-wrap: anywhere;
 }
 
+.size {
+  font-family: 'Oswald', sans-serif;
+  font-optical-sizing: auto;
+  font-size: clamp(0.4rem, 0.95vw, 0.72rem);
+  font-size: 14px;
+  font-style: normal;
+  line-height: 1.25;
+  color: var(--outline);
+  display: block;
+  max-width: 100%;
+  overflow: visible;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  opacity: 0.9;
+}
+
 .price {
-  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-family: 'Oswald', sans-serif;
+  font-optical-sizing: auto;
   font-size: clamp(0.55rem, 1.2vw, 1.05rem);
-  font-size: clamp(0.55rem, 1.45cqw, 1.05rem);
-  font-weight: 800;
-  line-height: 1.1;
-  color: var(--red);
+  font-size: 18px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.2;
+  color: var(--outline);
   display: block;
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  flex-shrink: 0;
 }

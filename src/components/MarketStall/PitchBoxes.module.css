@@ -20,9 +20,9 @@
   margin: 0;
   width: 100%;
   font-size: clamp(0.62rem, 1.2vw, 1.05rem);
-  font-size: clamp(0.62rem, 1.45cqw, 1.05rem);
-  font-weight: 800;
-  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: 19px;
+  font-weight: bold;
+  font-family: 'Oswald', sans-serif;
   color: var(--outline);
   line-height: 1.1;
   overflow: hidden;
@@ -34,9 +34,9 @@
   margin: 0;
   width: 100%;
   font-size: clamp(0.52rem, 1.05vw, 0.95rem);
-  font-size: clamp(0.52rem, 1.25cqw, 0.95rem);
-  font-weight: 800;
-  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: 'Oswald', sans-serif;
   color: var(--outline);
   line-height: 1.15;
   overflow: hidden;
@@ -48,9 +48,9 @@
   margin: 0;
   width: 100%;
   font-size: clamp(0.7rem, 1.5vw, 1.15rem);
-  font-size: clamp(0.7rem, 1.7cqw, 1.15rem);
-  font-weight: 800;
-  font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: 'Oswald', sans-serif;
   color: var(--outline);
   line-height: 1;
   overflow: hidden;
