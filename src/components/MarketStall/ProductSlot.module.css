@@ -3,12 +3,6 @@
   pointer-events: none;
 }
 
-.selected .panel,
-.selected .tag {
-  outline: 3px solid var(--gold);
-  outline-offset: 1px;
-}
-
 .hitArea {
   position: absolute;
   padding: 0;
@@ -96,7 +90,7 @@
   font-family: 'Oswald', sans-serif;
   font-optical-sizing: auto;
   font-size: clamp(0.48rem, 1.05vw, 0.88rem);
-  font-size: 14px;
+  font-size: 17px;
   font-style: normal;
   line-height: 1.2;
   color: var(--outline);
@@ -114,7 +108,7 @@
   font-family: 'Oswald', sans-serif;
   font-optical-sizing: auto;
   font-size: clamp(0.4rem, 0.95vw, 0.72rem);
-  font-size: 14px;
+  font-size: 17px;
   font-style: normal;
   line-height: 1.25;
   color: var(--outline);
@@ -131,7 +125,7 @@
   font-family: 'Oswald', sans-serif;
   font-optical-sizing: auto;
   font-size: clamp(0.55rem, 1.2vw, 1.05rem);
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 500;
   font-style: normal;
   line-height: 1.2;
