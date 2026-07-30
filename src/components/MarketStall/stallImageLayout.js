@@ -32,7 +32,7 @@ export const OVERLAY = {
   ],
 
   /* Slightly shorter trader photo so it sits more naturally */
-  seller: { left: 62.5, top: 23, width: 18, height: 76 },
+  seller: { left: 61.5, top: 18, width: 19, height: 80 },
 
   /* Blank middle of right board (below WHO'S BEHIND art) */
   infoPanel: { left: 80.2, top: 26.5, width: 15, height: 23 },

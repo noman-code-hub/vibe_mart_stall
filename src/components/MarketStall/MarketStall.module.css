@@ -38,10 +38,10 @@
 }
 
 .archText {
-  font-family: 'Amatic SC', sans-serif;
+  font-family: 'Bangers', cursive;
   font-size: clamp(1.15rem, 3.6vw, 2.85rem);
-  font-size: clamp(3.15rem, 3.2cqw, 2.85rem);
-  font-weight: bold;
+  font-size: 36px;
+  font-weight: 400;
   font-style: normal;
   color: var(--outline);
   text-align: center;
