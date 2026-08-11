@@ -5,6 +5,7 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { RuntimeConfigProvider } from './context/RuntimeConfigContext.jsx'
+import { TrolleyProvider } from './context/TrolleyContext.jsx'
 
 // Theme prints #vibe-mart-root; index.html uses the same id for local Vite.
 const container =
@@ -18,9 +19,11 @@ if (container) {
     <StrictMode>
       <RuntimeConfigProvider>
         <AuthProvider>
-          <BrowserRouter basename={basename}>
-            <App />
-          </BrowserRouter>
+          <TrolleyProvider>
+            <BrowserRouter basename={basename}>
+              <App />
+            </BrowserRouter>
+          </TrolleyProvider>
         </AuthProvider>
       </RuntimeConfigProvider>
     </StrictMode>

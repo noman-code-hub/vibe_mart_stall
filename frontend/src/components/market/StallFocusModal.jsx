@@ -164,6 +164,7 @@ export default function StallFocusModal({ stall, onClose }) {
 
       <ProductDetailModal
         product={modalProduct}
+        stall={stall}
         onClose={() => {
           setModalProduct(null)
           setSelectedProductIndex(null)

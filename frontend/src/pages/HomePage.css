@@ -1,0 +1,12 @@
+.vm-main--wide:has(.vm-home) {
+  max-width: none;
+  padding: 0;
+  background: #ffffff;
+}
+
+.vm-home {
+  margin: 0;
+  min-height: calc(100vh - 180px);
+  width: 100%;
+  background: #ffffff;
+}

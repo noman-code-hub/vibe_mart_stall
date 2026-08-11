@@ -10,6 +10,7 @@ import RegisterPage from './pages/RegisterPage.jsx'
 import MyTrolleyPage from './pages/MyTrolleyPage.jsx'
 import ContactPage from './pages/ContactPage.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import AppSplash from './components/AppSplash.jsx'
 import './App.css'
 import './styles/marketplace.css'
 
@@ -20,27 +21,30 @@ function MarketStallRedirect() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route element={<MainLayout />}>
-        <Route index element={<HomePage />} />
-        <Route path="our-vibes" element={<OurVibesPage />} />
-        <Route path="sell-smart" element={<SellSmartPage />} />
-        <Route path="market" element={<MarketPage />} />
-        <Route path="market/:id" element={<MarketStallRedirect />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
-        <Route path="my-trolley" element={<MyTrolleyPage />} />
-        <Route path="contact" element={<ContactPage />} />
-        <Route
-          path="my-account"
-          element={
-            <ProtectedRoute>
-              <MyAccountPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Route>
-    </Routes>
+    <>
+      <AppSplash />
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path="our-vibes" element={<OurVibesPage />} />
+          <Route path="sell-smart" element={<SellSmartPage />} />
+          <Route path="market" element={<MarketPage />} />
+          <Route path="market/:id" element={<MarketStallRedirect />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
+          <Route path="my-trolley" element={<MyTrolleyPage />} />
+          <Route path="contact" element={<ContactPage />} />
+          <Route
+            path="my-account"
+            element={
+              <ProtectedRoute>
+                <MyAccountPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+    </>
   )
 }

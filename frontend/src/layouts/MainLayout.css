@@ -17,6 +17,18 @@
   background: #ffffff;
 }
 
+.vm-shell--trolley {
+  background: #ffffff;
+}
+
+.vm-shell--market {
+  background: #ffffff;
+}
+
+.vm-shell--home {
+  background: #ffffff;
+}
+
 .vm-header {
   position: sticky;
   top: 0;
@@ -176,7 +188,21 @@
   max-width: none;
   width: 100%;
   padding: 0;
-  background: transparent;
+  background: #ffffff;
+}
+
+.vm-main--trolley {
+  max-width: none;
+  width: 100%;
+  padding: 0;
+  background: #ffffff;
+}
+
+.vm-main--home {
+  max-width: none;
+  width: 100%;
+  padding: 0;
+  background: #ffffff;
 }
 
 .vm-main--login {

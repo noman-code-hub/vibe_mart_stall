@@ -1,0 +1,235 @@
+.vm-main--wide:has(.vm-trolley) {
+  max-width: none;
+  padding: 0;
+  background: #ffffff;
+}
+
+.vm-trolley {
+  margin: 0;
+  background: #ffffff;
+}
+
+.vm-trolley__banner {
+  width: 100%;
+  margin: 0;
+  padding: 16px 20px 8px;
+  box-sizing: border-box;
+  display: grid;
+  justify-items: center;
+  line-height: 0;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.vm-trolley__banner-img {
+  display: block;
+  width: min(720px, 88%);
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center top;
+  user-select: none;
+}
+
+.vm-trolley__body {
+  width: min(920px, 100%);
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+  box-sizing: border-box;
+}
+
+.vm-trolley__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.vm-trolley__clear {
+  padding: 8px 12px;
+  border: 2px solid #1a1008;
+  border-radius: 10px;
+  background: #fff;
+  color: #c0392b;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #1a1008;
+}
+
+.vm-trolley__empty {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+  padding: 22px;
+  border: 2px solid #1a1008;
+  border-radius: 16px;
+  background: #fffdf8;
+  box-shadow: 4px 4px 0 #1a1008;
+}
+
+.vm-trolley__empty p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.vm-trolley__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.vm-trolley__item {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border: 2px solid #1a1008;
+  border-radius: 16px;
+  background: #fffdf8;
+  box-shadow: 3px 3px 0 #1a1008;
+}
+
+.vm-trolley__media {
+  width: 88px;
+  height: 88px;
+  border: 2px solid #1a1008;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f3eee4;
+  display: grid;
+  place-items: center;
+}
+
+.vm-trolley__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.vm-trolley__media-fallback {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6b5847;
+  text-align: center;
+  padding: 6px;
+}
+
+.vm-trolley__copy {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.vm-trolley__name {
+  margin: 0;
+  font-family: 'Bangers', Impact, cursive;
+  font-size: 1.35rem;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.vm-trolley__stall,
+.vm-trolley__meta {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #5c4a3a;
+}
+
+.vm-trolley__price {
+  margin: 2px 0 0;
+  width: fit-content;
+  padding: 4px 8px;
+  border: 2px solid #1a1008;
+  border-radius: 8px;
+  background: #ffe600;
+  font-family: 'Bangers', Impact, cursive;
+  font-size: 1.05rem;
+  box-shadow: 2px 2px 0 #1a1008;
+}
+
+.vm-trolley__controls {
+  display: grid;
+  gap: 8px;
+  justify-items: end;
+}
+
+.vm-trolley__qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.vm-trolley__qty input {
+  width: 64px;
+  padding: 6px 8px;
+  border: 2px solid #1a1008;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+}
+
+.vm-trolley__remove {
+  padding: 6px 10px;
+  border: 2px solid #1a1008;
+  border-radius: 8px;
+  background: #fff;
+  color: #c0392b;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.vm-trolley__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px;
+  border: 2px solid #1a1008;
+  border-radius: 14px;
+  background: #fffdf8;
+  box-shadow: 3px 3px 0 #1a1008;
+}
+
+.vm-trolley__note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #5c4a3a;
+  font-weight: 600;
+}
+
+.vm-trolley__checkout {
+  padding: 10px 16px;
+  border: 2px solid #1a1008;
+  border-radius: 12px;
+  background: #025fd7;
+  color: #ffffff;
+  font-family: 'Bangers', Impact, cursive;
+  font-size: 1.2rem;
+  letter-spacing: 0.03em;
+  cursor: not-allowed;
+  box-shadow: 2px 2px 0 #1a1008;
+}
+
+@media (max-width: 640px) {
+  .vm-trolley__item {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .vm-trolley__controls {
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr auto;
+    justify-items: stretch;
+    align-items: center;
+  }
+}

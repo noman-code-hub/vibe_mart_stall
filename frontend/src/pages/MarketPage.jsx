@@ -146,7 +146,9 @@ export default function MarketPage() {
         />
       </header>
 
-      <div className="vm-market-body">
+      <div
+        className={`vm-market-body${!loading && stalls.length === 0 && !error ? ' is-empty' : ''}`}
+      >
         {error && <p className="vm-error vm-market-error">{error}</p>}
 
         {!loading && stalls.length === 0 && !error ? (

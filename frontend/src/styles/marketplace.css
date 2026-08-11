@@ -259,6 +259,9 @@
   margin: 0;
   padding: 0;
   background: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 120px);
 }
 
 .vm-market-top {
@@ -267,6 +270,7 @@
   padding: 0;
   line-height: 0;
   overflow: hidden;
+  flex: 0 0 auto;
 }
 
 .vm-market-top__img {
@@ -284,16 +288,27 @@
   box-sizing: border-box;
 }
 
+.vm-market-body.is-empty {
+  flex: 1 1 auto;
+  display: grid;
+  place-items: center;
+  padding: 40px 16px 64px;
+  min-height: min(48vh, 420px);
+}
+
 .vm-market-error,
 .vm-market-empty {
-  max-width: 720px;
-  margin: 0 auto 16px;
-  padding: 12px 16px;
+  max-width: 420px;
+  width: min(420px, 100%);
+  margin: 0;
+  padding: 14px 18px;
+  border: 2px solid #1a1008;
   border-radius: 10px;
-  background: #fff8f0;
+  background: #ffffff;
   color: #1a1008;
   font-weight: 700;
   text-align: center;
+  box-shadow: 2px 2px 0 #1a1008;
 }
 
 .vm-market-hero {

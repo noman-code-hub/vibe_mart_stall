@@ -246,7 +246,7 @@ export default function StallDetailPage() {
         )}
       </div>
 
-      <ProductDetailModal product={modalProduct} onClose={closeModal} />
+      <ProductDetailModal product={modalProduct} stall={stall} onClose={closeModal} />
     </section>
   )
 }

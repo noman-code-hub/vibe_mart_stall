@@ -1,5 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { formatStallPrice } from '../../services/stallDisplay.js'
+import { useTrolley } from '../../context/TrolleyContext.jsx'
 
 function collectProductImages(product) {
   if (!product) return []
@@ -25,10 +27,12 @@ function collectProductImages(product) {
 /**
  * Product detail modal — comic-style panel with image slider + details.
  */
-export default function ProductDetailModal({ product, onClose }) {
+export default function ProductDetailModal({ product, stall = null, onClose }) {
   const titleId = useId()
   const closeRef = useRef(null)
   const touchStartX = useRef(null)
+  const navigate = useNavigate()
+  const { addItem } = useTrolley()
   const [activeIndex, setActiveIndex] = useState(0)
   const [entered, setEntered] = useState(false)
 
@@ -100,6 +104,12 @@ export default function ProductDetailModal({ product, onClose }) {
     if (Math.abs(delta) < 40) return
     if (delta > 0) goPrev()
     else goNext()
+  }
+
+  const handleBuy = () => {
+    addItem(product, stall)
+    onClose?.()
+    navigate('/my-trolley')
   }
 
   return (
@@ -210,7 +220,7 @@ export default function ProductDetailModal({ product, onClose }) {
           ) : null}
 
           <div className="vm-modal__actions">
-            <button type="button" className="vm-modal__buy">
+            <button type="button" className="vm-modal__buy" onClick={handleBuy}>
               Buy now
             </button>
           </div>

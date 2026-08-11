@@ -46,8 +46,12 @@ export default function MainLayout() {
     location.pathname.startsWith('/market') ||
     location.pathname.startsWith('/sell-smart') ||
     location.pathname.startsWith('/our-vibes') ||
+    location.pathname.startsWith('/contact') ||
+    location.pathname.startsWith('/my-trolley') ||
     location.pathname.startsWith('/my-account') ||
-    location.pathname.startsWith('/register')
+    location.pathname.startsWith('/register') ||
+    location.pathname === '/' ||
+    location.pathname === ''
   const accountTab = new URLSearchParams(location.search).get('tab')
   const folderOnly =
     location.pathname.startsWith('/my-account') && accountTab === 'stalls'
@@ -56,6 +60,9 @@ export default function MainLayout() {
     location.pathname.startsWith('/my-account') && !folderOnly
   const marketOnly =
     location.pathname === '/market' || location.pathname === '/market/'
+  const trolleyOnly =
+    location.pathname === '/my-trolley' || location.pathname === '/my-trolley/'
+  const homeOnly = location.pathname === '/' || location.pathname === ''
   const loginOnly =
     location.pathname === '/login' || location.pathname === '/login/'
   const registerOnly =
@@ -70,7 +77,7 @@ export default function MainLayout() {
   })
 
   return (
-    <div className={`vm-shell${dashboardOnly ? ' vm-shell--dashboard' : ''}${folderOnly ? ' vm-shell--folder' : ''}${marketOnly ? ' vm-shell--market' : ''}${loginOnly ? ' vm-shell--login' : ''}${registerOnly ? ' vm-shell--register' : ''}`}>
+    <div className={`vm-shell${dashboardOnly ? ' vm-shell--dashboard' : ''}${folderOnly ? ' vm-shell--folder' : ''}${marketOnly ? ' vm-shell--market' : ''}${trolleyOnly ? ' vm-shell--trolley' : ''}${homeOnly ? ' vm-shell--home' : ''}${loginOnly ? ' vm-shell--login' : ''}${registerOnly ? ' vm-shell--register' : ''}`}>
       <header
         className="vm-header"
         style={{ '--vm-header-bg': `url(${headerBg})` }}
@@ -106,7 +113,7 @@ export default function MainLayout() {
       </header>
 
       <main
-        className={`vm-main${wideMain ? ' vm-main--wide' : ''}${dashboardOnly ? ' vm-main--dashboard' : ''}${folderOnly ? ' vm-main--folder' : ''}${marketOnly ? ' vm-main--market' : ''}${loginOnly ? ' vm-main--login' : ''}${registerOnly ? ' vm-main--register' : ''}`}
+        className={`vm-main${wideMain ? ' vm-main--wide' : ''}${dashboardOnly ? ' vm-main--dashboard' : ''}${folderOnly ? ' vm-main--folder' : ''}${marketOnly ? ' vm-main--market' : ''}${trolleyOnly ? ' vm-main--trolley' : ''}${homeOnly ? ' vm-main--home' : ''}${loginOnly ? ' vm-main--login' : ''}${registerOnly ? ' vm-main--register' : ''}`}
       >
         <Outlet />
       </main>
