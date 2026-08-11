@@ -1,20 +1,23 @@
 {
-  "name": "vibe_mart_stall",
+  "name": "vibe-mart",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "start": "npm run dev",
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "dev": "vite --config frontend/vite.config.js",
+    "build": "vite build --config frontend/vite.config.js",
+    "build:wp": "npm run build && node scripts/build-wordpress.mjs && node scripts/php-syntax-gate.mjs",
+    "lint": "eslint frontend/src",
+    "verify:php": "node scripts/php-syntax-gate.mjs",
+    "preview": "vite preview --config frontend/vite.config.js"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
     "formidable": "^3.5.4",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.9.4"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

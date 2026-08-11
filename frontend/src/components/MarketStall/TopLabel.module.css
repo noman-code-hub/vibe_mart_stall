@@ -1,0 +1,21 @@
+/* Pill-shaped product header label */
+.label {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 2.5px solid var(--outline);
+  color: var(--white);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px var(--shadow-soft);
+}
+
+@media (max-width: 480px) {
+  .label {
+    font-size: 0.65rem;
+    padding: 4px 10px;
+  }
+}

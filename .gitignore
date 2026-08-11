@@ -10,17 +10,26 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+dist-packages
 *.local
 
 # Secrets & local env
 .env
 .env.*.local
+frontend/.env
 
-# Temp uploads from the remove-bg endpoint
-uploads
+# Temp uploads
+/uploads
 .vercel
+.local-data
 
-# Editor directories and files
+# WordPress build outputs (regenerate with npm run build:wp)
+wordpress-theme/vibe-mart/assets/app/*
+!wordpress-theme/vibe-mart/assets/app/.gitkeep
+wordpress-plugin/vibe-stall-generator/assets/react/*
+!wordpress-plugin/vibe-stall-generator/assets/react/.gitkeep
+
+# Editor
 .vscode/*
 !.vscode/extensions.json
 .idea

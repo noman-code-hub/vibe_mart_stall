@@ -1,0 +1,465 @@
+/* Stall Details — comic / pop-art listing page */
+
+.vm-page--stall-detail {
+  --sd-ink: #1a1008;
+  --sd-yellow: #ffe600;
+  --sd-red: #e1251b;
+  --sd-blue: #0e5ccb;
+  --sd-paper: #fffdf5;
+  --sd-wash: #fff3b0;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(14, 92, 203, 0.12), transparent 28%),
+    radial-gradient(circle at 88% 12%, rgba(225, 37, 27, 0.1), transparent 26%),
+    repeating-linear-gradient(
+      -12deg,
+      transparent,
+      transparent 10px,
+      rgba(26, 16, 8, 0.03) 10px,
+      rgba(26, 16, 8, 0.03) 11px
+    ),
+    linear-gradient(180deg, var(--sd-wash) 0%, var(--sd-paper) 28%, #fff 100%);
+  color: var(--sd-ink);
+}
+
+.vm-sd {
+  width: min(1120px, calc(100% - 24px));
+  margin: 0 auto;
+  padding: 18px 0 64px;
+  display: grid;
+  gap: 28px;
+}
+
+.vm-sd__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.vm-sd__back,
+.vm-sd__browse {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 2px solid var(--sd-ink);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 2px 2px 0 var(--sd-ink);
+  color: var(--sd-ink);
+  font: inherit;
+  font-weight: 800;
+  font-size: 0.88rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.vm-sd__back:hover,
+.vm-sd__browse:hover,
+.vm-sd__back:focus-visible,
+.vm-sd__browse:focus-visible {
+  background: var(--sd-yellow);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--sd-ink);
+  outline: none;
+}
+
+.vm-sd__error {
+  margin: 0;
+}
+
+.vm-sd__mast {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  animation: vm-sd-rise 0.55s ease-out;
+}
+
+.vm-sd__kicker {
+  margin: 0;
+  padding: 4px 10px;
+  border: 2px solid var(--sd-ink);
+  border-radius: 999px;
+  background: var(--sd-blue);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.vm-sd__brand {
+  margin: 0;
+  max-width: 16ch;
+  font-family: 'Bangers', Impact, cursive;
+  font-size: clamp(3rem, 10vw, 5.4rem);
+  line-height: 0.92;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--sd-yellow);
+  text-shadow:
+    4px 4px 0 var(--sd-ink),
+    -2px -2px 0 var(--sd-red);
+  word-break: break-word;
+}
+
+.vm-sd__pitch-line {
+  margin: 0;
+  font-family: 'Oswald', 'Montserrat Alternates', sans-serif;
+  font-size: clamp(1rem, 2.4vw, 1.2rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.vm-sd__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vm-sd__badge {
+  padding: 6px 12px;
+  border: 2px solid var(--sd-ink);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 2px 2px 0 var(--sd-ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.vm-sd__stage {
+  position: relative;
+  padding: 10px;
+  border: 3px solid var(--sd-ink);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle, rgba(26, 16, 8, 0.08) 1.2px, transparent 1.3px) 0 0 / 10px 10px,
+    #fff;
+  box-shadow: 6px 6px 0 var(--sd-ink);
+  animation: vm-sd-rise 0.65s ease-out 0.05s both;
+}
+
+.vm-sd__tap-hint {
+  margin: 10px 0 0;
+  text-align: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5a4636;
+}
+
+.vm-sd__story {
+  display: grid;
+  grid-template-columns: minmax(180px, 280px) 1fr;
+  gap: 22px;
+  align-items: center;
+  padding: 22px;
+  border: 3px solid var(--sd-ink);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 5px 5px 0 var(--sd-blue);
+  animation: vm-sd-rise 0.65s ease-out 0.12s both;
+}
+
+.vm-sd__portrait {
+  position: relative;
+}
+
+.vm-sd__portrait-img,
+.vm-sd__portrait-empty {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 3px solid var(--sd-ink);
+  border-radius: 16px;
+  background: var(--sd-yellow);
+  box-shadow: 4px 4px 0 var(--sd-red);
+  object-fit: cover;
+}
+
+.vm-sd__portrait-empty {
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: var(--sd-ink);
+}
+
+.vm-sd__story-kicker {
+  margin: 0 0 6px;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sd-red);
+}
+
+.vm-sd__story-title {
+  margin: 0 0 12px;
+  font-family: 'Bangers', Impact, cursive;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
+
+.vm-sd__story-text {
+  margin: 0 0 16px;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.vm-sd__ambition {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 2px solid var(--sd-ink);
+  border-radius: 14px;
+  background: var(--sd-yellow);
+  box-shadow: 3px 3px 0 var(--sd-ink);
+}
+
+.vm-sd__ambition-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.vm-sd__ambition p {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.vm-sd__facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  animation: vm-sd-rise 0.65s ease-out 0.18s both;
+}
+
+.vm-sd__fact {
+  display: grid;
+  gap: 6px;
+  padding: 14px 12px;
+  border: 2px solid var(--sd-ink);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 3px 3px 0 var(--sd-ink);
+  text-align: center;
+}
+
+.vm-sd__fact-label {
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #5a4636;
+}
+
+.vm-sd__fact strong {
+  font-family: 'Bangers', Impact, cursive;
+  font-size: clamp(1.2rem, 2.5vw, 1.55rem);
+  letter-spacing: 0.03em;
+}
+
+.vm-sd__goods {
+  display: grid;
+  gap: 16px;
+  animation: vm-sd-rise 0.65s ease-out 0.22s both;
+}
+
+.vm-sd__goods-head {
+  display: grid;
+  gap: 4px;
+}
+
+.vm-sd__goods-title {
+  margin: 0;
+  font-family: 'Bangers', Impact, cursive;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
+
+.vm-sd__goods-sub {
+  margin: 0;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #5a4636;
+}
+
+.vm-sd__empty {
+  margin: 0;
+  padding: 18px;
+  border: 2px dashed var(--sd-ink);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.7);
+  font-weight: 700;
+}
+
+.vm-sd__goods-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.vm-sd__good {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  border: 3px solid var(--sd-ink);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 4px 4px 0 var(--sd-ink);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.vm-sd__good:hover,
+.vm-sd__good:focus-visible {
+  transform: translate(-2px, -2px) rotate(-0.4deg);
+  box-shadow: 6px 6px 0 var(--sd-red);
+  outline: none;
+}
+
+.vm-sd__good-media {
+  position: relative;
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle, rgba(26, 16, 8, 0.08) 1px, transparent 1.2px) 0 0 / 8px 8px,
+    #f4efe6;
+}
+
+.vm-sd__good-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.vm-sd__good-empty {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-weight: 700;
+  color: #6b5847;
+}
+
+.vm-sd__good-count {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 4px 8px;
+  border: 2px solid var(--sd-ink);
+  border-radius: 999px;
+  background: var(--sd-yellow);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.vm-sd__good-body {
+  display: grid;
+  gap: 4px;
+  padding: 0 12px 12px;
+}
+
+.vm-sd__good-name {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.vm-sd__good-meta {
+  color: #5a4636;
+  font-size: 0.88rem;
+}
+
+.vm-sd__good-price {
+  font-family: 'Bangers', Impact, cursive;
+  font-size: 1.35rem;
+  letter-spacing: 0.03em;
+  color: var(--sd-red);
+}
+
+@keyframes vm-sd-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vm-sd__mast,
+  .vm-sd__stage,
+  .vm-sd__story,
+  .vm-sd__facts,
+  .vm-sd__goods,
+  .vm-sd__back,
+  .vm-sd__browse,
+  .vm-sd__good {
+    animation: none;
+    transition: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .vm-sd__story {
+    grid-template-columns: 1fr;
+  }
+
+  .vm-sd__portrait {
+    max-width: 220px;
+    margin: 0 auto;
+  }
+
+  .vm-sd__facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vm-sd__brand {
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .vm-sd {
+    width: min(100% - 16px, 1120px);
+    gap: 22px;
+  }
+
+  .vm-sd__stage {
+    padding: 6px;
+  }
+
+  .vm-sd__goods-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}

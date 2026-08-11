@@ -1,0 +1,113 @@
+/**
+ * Scoped to the React mount roots so WordPress themes cannot leak in.
+ * Always use `#root .child` form — never `#root, #other .child` (that styles the root as the child).
+ */
+html {
+  margin: 0;
+  overflow-x: clip;
+  /* Page scrolls; scrollbar UI hidden */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+body {
+  margin: 0;
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+#vibe-mart-root,
+#stall-root {
+  color-scheme: light;
+  isolation: isolate;
+  max-width: 100%;
+  /* clip avoids the overflow-x:hidden quirk that creates a second vertical scrollbar */
+  overflow-x: clip;
+  overflow-y: visible;
+
+  font: 15px/145% 'Segoe UI', system-ui, Roboto, sans-serif;
+  color: #1a1008;
+  text-align: left;
+  text-transform: none;
+  text-shadow: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  font-style: normal;
+  font-variant: normal;
+  direction: ltr;
+
+  /* Market Stall palette */
+  --cream: #f2e8d4;
+  --cream-dark: #e8dcc4;
+  --red: #c0392b;
+  --red-dark: #962d22;
+  --teal: #1a6168;
+  --teal-dark: #124850;
+  --teal-light: #247078;
+  --wood: #6b4423;
+  --wood-dark: #4a2e18;
+  --wood-light: #8a5a35;
+  --paper: #c9a56a;
+  --paper-dark: #a8844a;
+  --shadow: rgba(0, 0, 0, 0.28);
+  --shadow-soft: rgba(0, 0, 0, 0.14);
+  --outline: #1a1008;
+  --metal: #3a3a3a;
+  --metal-light: #8a8a8a;
+  --brown: #9a6b42;
+  --yellow: #edd23a;
+  --gold: #d4a017;
+  --white: #fffdf8;
+  --blue-label: #1c5f7a;
+  --green-border: #1a6168;
+}
+
+#vibe-mart-root *,
+#vibe-mart-root *::before,
+#vibe-mart-root *::after,
+#stall-root *,
+#stall-root *::before,
+#stall-root *::after {
+  box-sizing: border-box;
+}
+
+#vibe-mart-root p,
+#vibe-mart-root figure,
+#vibe-mart-root fieldset,
+#stall-root p,
+#stall-root figure,
+#stall-root fieldset {
+  margin: 0;
+}
+
+#vibe-mart-root fieldset,
+#stall-root fieldset {
+  min-width: 0;
+}
+
+#vibe-mart-root h1,
+#vibe-mart-root h2,
+#vibe-mart-root h3,
+#vibe-mart-root button,
+#vibe-mart-root input,
+#vibe-mart-root textarea,
+#vibe-mart-root label,
+#vibe-mart-root legend,
+#stall-root h1,
+#stall-root h2,
+#stall-root h3,
+#stall-root button,
+#stall-root input,
+#stall-root textarea,
+#stall-root label,
+#stall-root legend {
+  font-family: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+}

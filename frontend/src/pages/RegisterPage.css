@@ -1,0 +1,288 @@
+/* Full sign-up artwork — transparent inputs/buttons over cream panel */
+
+.vm-main--wide:has(.vm-register) {
+  max-width: none;
+  padding: 0;
+  background: transparent;
+}
+
+.vm-register {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background: #0b2a8a;
+  color: #1a1008;
+}
+
+.vm-register--status {
+  display: grid;
+  place-items: center;
+  min-height: 40vh;
+  padding: 48px 20px;
+  text-align: center;
+  color: #fff;
+  background: #0b2a8a;
+}
+
+.vm-register__stage {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  display: block;
+}
+
+.vm-register__art {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+.vm-register__fields {
+  position: absolute;
+  inset: 0;
+}
+
+.vm-register__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.vm-register__input,
+.vm-register__check,
+.vm-register__submit,
+.vm-register__login,
+.vm-register__error {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Slots tuned to NEW SIGN UP A.png — adjust like login if needed */
+.vm-register__input--username {
+  --x: 38.4%;
+  --y: 38.3%;
+  --w: 28.6%;
+  --h: 5.3%;
+}
+
+.vm-register__input--email {
+  --x: 38.5%;
+  --y: 45.7%;
+  --w: 28.6%;
+  --h: 5.2%;
+}
+
+.vm-register__input--password {
+  --x: 38.5%;
+  --y: 53.2%;
+  --w: 28.6%;
+  --h: 5.2%;
+}
+
+.vm-register__input--password-confirm {
+  --x: 38.5%;
+  --y: 60.7%;
+  --w: 28.6%;
+  --h: 5.2%;
+}
+
+.vm-register__check--terms {
+  --x: 34.8%;
+  --y: 68.2%;
+  --w: 4.2%;
+  --h: 2.8%;
+}
+
+.vm-register__submit {
+  --x: 35.9%;
+  --y: 72.9%;
+  --w: 28.6%;
+  --h: 7%;
+}
+
+.vm-register__login {
+  --x: 58.8%;
+  --y: 86.9%;
+  --w: 6%;
+  --h: 2.5%;
+}
+
+.vm-register__error {
+  --x: 38.4%;
+  --y: 33.8%;
+  --w: 28.6%;
+  --h: auto;
+  z-index: 5;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 232, 228, 0.96);
+  color: #8a1f1f;
+  font-size: clamp(0.62rem, 1.35vw, 0.82rem);
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  box-shadow: 0 2px 0 rgba(138, 31, 31, 0.2);
+  pointer-events: none;
+}
+
+.vm-register__error--username {
+  --x: 38.4%;
+  --y: 33.8%;
+}
+
+.vm-register__error--email {
+  --x: 38.5%;
+  --y: 41.2%;
+}
+
+.vm-register__error--password {
+  --x: 38.5%;
+  --y: 48.8%;
+}
+
+.vm-register__error--password_confirm {
+  --x: 38.5%;
+  --y: 56.2%;
+}
+
+.vm-register__error--terms {
+  --x: 39.5%;
+  --y: 64.5%;
+  --w: 24%;
+}
+
+.vm-register__input {
+  padding: 0 2%;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  appearance: none;
+  -webkit-appearance: none;
+  text-align: left;
+  color: #1a1008;
+  caret-color: #1a1008;
+  font: 600 clamp(0.7rem, 1.5vw, 1rem) / 1.2 'Segoe UI', system-ui, sans-serif;
+  border-radius: 6px;
+}
+
+.vm-register__input::placeholder {
+  color: rgba(26, 16, 8, 0.45);
+  font-weight: 600;
+  opacity: 1;
+}
+
+.vm-register__input:focus,
+.vm-register__input:focus-visible,
+.vm-register__input:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+.vm-register__input.is-error {
+  background: rgba(255, 110, 110, 0.35) !important;
+  box-shadow: inset 0 0 0 2px #c41e1e !important;
+  color: #5c1212;
+}
+
+.vm-register__check.is-error {
+  box-shadow: 0 0 0 2px #c41e1e;
+  border-radius: 4px;
+}
+
+.vm-register__check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent !important;
+  cursor: pointer;
+}
+
+.vm-register__check input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  opacity: 0 !important;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* Dark tick sits on the yellow art checkbox when checked */
+.vm-register__check::after {
+  content: '';
+  width: 55%;
+  height: 55%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  background: no-repeat center / contain;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%231a1008' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round' d='M3.2 8.2 6.5 11.4 12.8 4.4'/%3E%3C/svg%3E");
+  transition: opacity 0.12s ease;
+}
+
+.vm-register__check:has(input:checked)::after {
+  opacity: 1;
+}
+
+.vm-register__submit {
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: transparent;
+  cursor: pointer;
+}
+
+.vm-register__submit:hover:not(:disabled) {
+  background: rgba(255, 230, 0, 0.12);
+}
+
+.vm-register__submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.vm-register__login {
+  display: block;
+  border-radius: 4px;
+  text-decoration: none;
+  background: transparent;
+}
+
+.vm-register__login:hover {
+  background: rgba(30, 90, 200, 0.1);
+}
+
+@media (max-width: 720px) {
+  .vm-register__input {
+    font-size: clamp(0.65rem, 2.6vw, 0.9rem);
+  }
+
+  .vm-register__error {
+    font-size: 0.7rem;
+  }
+}

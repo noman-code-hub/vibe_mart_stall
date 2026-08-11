@@ -1,0 +1,90 @@
+/* Cart background + coded overlay boxes */
+.stall {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 14px;
+  box-shadow: 0 16px 40px var(--shadow);
+  background: #9a9088;
+  container-type: inline-size;
+  container-name: stall;
+}
+
+.stallImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+  background: transparent;
+}
+
+.overlayLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+.focusClose {
+  /* Tune these to pin the × on the Who's Behind panel corner */
+  --x: 96.4%;
+  --y: 0.3%;
+  --w: 3.3%;
+  --h: 5.6%;
+
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  z-index: 12;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  background: #ffe600;
+  color: #1a1008;
+  font-size: clamp(0.95rem, 3.2cqw, 1.3rem);
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  outline: 2px solid #1a1008;
+  outline-offset: 0;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* Business / trader name in top banner */
+.arch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 4;
+  min-width: 0;
+}
+
+.archText {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(0.85rem, 5.5cqw, 2.85rem);
+  font-weight: 400;
+  font-style: normal;
+  color: var(--outline);
+  text-align: center;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  padding: 0 4%;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .stall {
+    max-width: 100%;
+    border-radius: 10px;
+  }
+}

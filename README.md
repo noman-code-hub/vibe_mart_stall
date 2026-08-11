@@ -1,72 +1,43 @@
-# Vibe Mart — Stall Editor (Phase 1)
+# Vibe Mart Marketplace
 
-Local React preview of the vendor stall graphic, with a Vercel Serverless
-Function that proxies [remove.bg](https://www.remove.bg/) so the API key never
-reaches the browser.
+Monorepo for the custom Vibe Mart website:
 
-## Setup
+- **React SPA** (`frontend/`) — complete marketplace UI + preserved Stall Generator
+- **WordPress theme** (`wordpress-theme/vibe-mart/`) — loads the React app only
+- **WordPress plugin** (`wordpress-plugin/vibe-mart/`) — auth, stalls, products, remove.bg
 
-1. Install dependencies:
+## Quick start (local React)
 
 ```bash
 npm install
-```
-
-2. Copy environment variables and set your remove.bg key:
-
-```bash
-copy .env.example .env
-```
-
-Edit `.env`:
-
-```
-REMOVE_BG_API_KEY=your_remove_bg_api_key_here
-MAX_UPLOAD_BYTES=10485760
-```
-
-`.env` is gitignored — never commit real keys.
-
-For Vercel: Project **Settings → Environment Variables** → add `REMOVE_BG_API_KEY`, then redeploy.
-
-## Run locally
-
-```bash
+copy frontend\.env.example frontend\.env   # set REMOVE_BG_API_KEY
 npm run dev
 ```
 
-- Web UI + API: http://localhost:3000  
-- Network (same Wi‑Fi): http://YOUR_LAN_IP:3000  
-- `/api/remove-background` is served by the same Vite process (same handler as Vercel)
+Open http://localhost:3000
 
-## Background removal
-
-Upload a selfie or product photo in the stall editor — backgrounds are removed
-automatically via `POST /api/remove-background`.
-
-### API
-
-`POST /api/remove-background`  
-`multipart/form-data` field name: `image`
-
-Success: `image/png` body  
-Errors: JSON `{ "error": "...", "code": "..." }`
-
-### Quick curl test
+## Build WordPress packages
 
 ```bash
-curl -X POST http://localhost:3000/api/remove-background ^
-  -F "image=@path\to\photo.jpg" ^
-  --output cutout.png
+npm run build:wp
 ```
 
-## Deploy (Vercel)
+Creates:
 
-1. Push to GitHub and import the repo in Vercel (or `vercel`).
-2. Set `REMOVE_BG_API_KEY` in Vercel environment variables.
-3. Deploy — `api/remove-background.js` becomes the serverless endpoint.
+- `dist-packages/vibe-mart-theme.zip`
+- `dist-packages/vibe-mart-plugin.zip`
+- Populates `wordpress-theme/vibe-mart/assets/app/`
 
-## Security notes
+## Deploy to WordPress
 
-- The remove.bg key lives only in server/env config (never in the client bundle).
-- Uploads are capped (default 10 MB) and MIME-filtered (JPEG/PNG/WebP); temp files are deleted after each request.
+1. Upload and activate **vibe-mart-plugin.zip**
+2. Upload and activate **vibe-mart-theme.zip**
+3. Settings → Vibe Mart → paste remove.bg API key  
+   (or `define('VIBE_MART_REMOVE_BG_API_KEY', '...');` in wp-config.php)
+4. Visit the site — React Router handles `/`, `/sell-smart`, `/market`, etc.
+
+## Architecture
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for folder structure, database schema, REST map, and migration notes.
+
+The legacy stall-only plugin remains under `wordpress-plugin/vibe-stall-generator/` for reference; new deployments should use `vibe-mart`.

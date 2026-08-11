@@ -1,0 +1,223 @@
+/* Stall editor chrome — scoped under both mount roots. */
+#vibe-mart-root,
+#stall-root {
+  --stall-ink: #0f172a;
+  --stall-ink-soft: #64748b;
+  --stall-border: #e2e8f0;
+  --stall-panel: #ffffff;
+  --stall-banner: #1e3a4c;
+  --stall-accent: #0f766e;
+  --stall-accent-bg: rgba(15, 118, 110, 0.08);
+}
+
+#vibe-mart-root .app,
+#stall-root .app {
+  min-height: 100vh;
+  background: #f4f6f8;
+  padding: 28px 32px 60px;
+  box-sizing: border-box;
+}
+
+#vibe-mart-root .app__header,
+#stall-root .app__header {
+  max-width: 1400px;
+  margin: 0 auto 24px;
+}
+
+#vibe-mart-root .app__header h1,
+#stall-root .app__header h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--stall-banner);
+}
+
+#vibe-mart-root .app__header p,
+#stall-root .app__header p {
+  margin: 0;
+  color: var(--stall-ink-soft);
+  font-size: 14px;
+  max-width: 760px;
+}
+
+#vibe-mart-root .app__form-wrap,
+#stall-root .app__form-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#vibe-mart-root .app__generate-row,
+#stall-root .app__generate-row {
+  display: flex;
+  justify-content: flex-end;
+  position: sticky;
+  bottom: 16px;
+}
+
+#vibe-mart-root .app__generate-btn,
+#stall-root .app__generate-btn {
+  padding: 14px 30px;
+  border-radius: 8px;
+  border: none;
+  background: var(--stall-banner);
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(30, 58, 76, 0.25);
+}
+
+#vibe-mart-root .app__generate-btn:hover,
+#stall-root .app__generate-btn:hover {
+  background: #163040;
+}
+
+#vibe-mart-root .app.app--finished,
+#stall-root .app.app--finished {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: 10px 4px 28px;
+  background: #ffffff;
+  box-sizing: border-box;
+}
+
+#vibe-mart-root .app--finished .stall,
+#stall-root .app--finished .stall {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  border-radius: 10px;
+}
+
+#vibe-mart-root .app__finished-toolbar,
+#stall-root .app__finished-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+#vibe-mart-root .app__finished-actions,
+#stall-root .app__finished-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+#vibe-mart-root .app__edit-btn,
+#stall-root .app__edit-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--stall-border);
+  background: #fff;
+  color: var(--stall-ink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#vibe-mart-root .app__edit-btn:hover,
+#stall-root .app__edit-btn:hover {
+  border-color: var(--stall-accent);
+}
+
+#vibe-mart-root .app__create-btn,
+#stall-root .app__create-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  background: var(--stall-banner);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+#vibe-mart-root .app__create-btn:hover,
+#stall-root .app__create-btn:hover {
+  background: #163040;
+}
+
+#vibe-mart-root .app__create-btn:disabled,
+#stall-root .app__create-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+#vibe-mart-root .app__success-actions,
+#stall-root .app__success-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+#vibe-mart-root .app__validation-list,
+#stall-root .app__validation-list {
+  margin: 8px 0 0;
+  padding-left: 1.2rem;
+}
+
+#vibe-mart-root .app__save-banner__hint,
+#stall-root .app__save-banner__hint {
+  margin: 6px 0 0;
+  font-weight: 500;
+}
+
+#vibe-mart-root .app__save-banner .app__edit-btn,
+#stall-root .app__save-banner .app__edit-btn {
+  margin-top: 10px;
+}
+
+#vibe-mart-root .app__quota,
+#stall-root .app__quota,
+#vibe-mart-root .app__quota-note,
+#stall-root .app__quota-note {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--stall-ink-soft);
+}
+
+#vibe-mart-root .app__quota-note--limit,
+#stall-root .app__quota-note--limit {
+  color: #8a1f1f;
+  font-weight: 700;
+}
+
+#vibe-mart-root .app__save-banner,
+#stall-root .app__save-banner {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#vibe-mart-root .app__save-banner--ok,
+#stall-root .app__save-banner--ok {
+  background: rgba(26, 97, 104, 0.12);
+  color: #1a6168;
+}
+
+#vibe-mart-root .app__save-banner--error,
+#stall-root .app__save-banner--error {
+  background: rgba(138, 31, 31, 0.1);
+  color: #8a1f1f;
+}
+
+@media (max-width: 960px) {
+  #vibe-mart-root .stall-preview--edit,
+  #stall-root .stall-preview--edit {
+    position: static;
+  }
+}

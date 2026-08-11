@@ -1,0 +1,678 @@
+/* Scoped editor form styles. */
+#vibe-mart-root .stall-form,
+#stall-root .stall-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#vibe-mart-root .stall-form__toolbar,
+#stall-root .stall-form__toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#vibe-mart-root .stall-form__toolbar button,
+#stall-root .stall-form__toolbar button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--stall-border);
+  background: var(--stall-panel);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--stall-ink);
+}
+
+#vibe-mart-root .stall-form__toolbar button:hover,
+#stall-root .stall-form__toolbar button:hover {
+  border-color: var(--stall-accent);
+}
+
+#vibe-mart-root .stall-form__section,
+#stall-root .stall-form__section {
+  border: 1px solid var(--stall-border);
+  border-radius: 12px;
+  padding: 16px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #fff;
+}
+
+#vibe-mart-root .stall-form__section legend,
+#stall-root .stall-form__section legend {
+  font-weight: 700;
+  padding: 0 6px;
+  color: var(--stall-banner);
+}
+
+#vibe-mart-root .stall-form__field,
+#stall-root .stall-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--stall-ink-soft);
+}
+
+#vibe-mart-root .stall-form__field input,
+#vibe-mart-root .stall-form__field textarea,
+#stall-root .stall-form__field input,
+#stall-root .stall-form__field textarea {
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--stall-border);
+  color: var(--stall-ink);
+  background: #fffdf8;
+  resize: vertical;
+}
+
+#vibe-mart-root .stall-form__field input::placeholder,
+#vibe-mart-root .stall-form__field textarea::placeholder,
+#stall-root .stall-form__field input::placeholder,
+#stall-root .stall-form__field textarea::placeholder {
+  font-size: 12px;
+  opacity: 1;
+}
+
+#vibe-mart-root .stall-form__field input:focus,
+#vibe-mart-root .stall-form__field textarea:focus,
+#stall-root .stall-form__field input:focus,
+#stall-root .stall-form__field textarea:focus {
+  outline: 2px solid var(--stall-accent);
+  outline-offset: 1px;
+}
+
+#vibe-mart-root .stall-form__field--error textarea,
+#stall-root .stall-form__field--error textarea {
+  border-color: #a1372c;
+}
+
+#vibe-mart-root .stall-form__error,
+#stall-root .stall-form__error {
+  color: #a1372c;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+#vibe-mart-root .stall-form__field--compact textarea,
+#stall-root .stall-form__field--compact textarea {
+  min-height: 0;
+  resize: vertical;
+  max-height: 4.5rem;
+}
+
+#vibe-mart-root .stall-form__grid,
+#stall-root .stall-form__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+#vibe-mart-root .stall-form__product,
+#stall-root .stall-form__product {
+  border: 1px dashed var(--stall-border);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#vibe-mart-root .stall-form__product-header,
+#stall-root .stall-form__product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--stall-ink);
+}
+
+#vibe-mart-root .stall-form__product-header button,
+#stall-root .stall-form__product-header button {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--stall-border);
+  background: #fff;
+  color: #a1372c;
+  cursor: pointer;
+}
+
+#vibe-mart-root .stall-form__add-btn,
+#stall-root .stall-form__add-btn {
+  align-self: flex-start;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px dashed var(--stall-accent);
+  background: var(--stall-accent-bg);
+  color: var(--stall-banner);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+#vibe-mart-root .stall-form__empty-note,
+#stall-root .stall-form__empty-note {
+  font-size: 13px;
+  color: var(--stall-ink-soft);
+  margin: 0;
+}
+
+#vibe-mart-root .stall-form__product-chip,
+#stall-root .stall-form__product-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--stall-border);
+  border-radius: 8px;
+  background: #fff;
+}
+
+#vibe-mart-root .stall-form__product-chip-name,
+#stall-root .stall-form__product-chip-name {
+  font-size: 13px;
+  color: var(--stall-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#vibe-mart-root .stall-form__product-chip-edit,
+#stall-root .stall-form__product-chip-edit {
+  align-self: flex-start;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--stall-border);
+  background: #fff;
+  color: var(--stall-ink);
+  cursor: pointer;
+}
+
+/* Product details popup — self-contained stacked form */
+.stall-product-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(8, 6, 4, 0.72);
+  box-sizing: border-box;
+}
+
+.stall-product-modal__dialog {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: min(88vh, 760px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(255, 230, 0, 0.14), transparent 42%),
+    linear-gradient(180deg, #fff8e8 0%, #fffdf8 45%, #f7f0e4 100%);
+  border: 3px solid #1a1008;
+  border-radius: 22px;
+  box-shadow:
+    6px 6px 0 #1a1008,
+    0 28px 70px rgba(0, 0, 0, 0.35);
+  color: #1a1008;
+  font-family: 'Segoe UI', system-ui, Roboto, sans-serif;
+}
+
+.stall-product-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 16px 12px;
+  border-bottom: 3px solid #1a1008;
+  background:
+    repeating-linear-gradient(
+      -12deg,
+      rgba(2, 95, 215, 0.08) 0 10px,
+      rgba(2, 95, 215, 0.02) 10px 20px
+    ),
+    #fffdf8;
+}
+
+.stall-product-modal__eyebrow {
+  margin: 0 0 4px;
+  width: fit-content;
+  padding: 3px 8px;
+  border: 2px solid #1a1008;
+  border-radius: 999px;
+  background: #025fd7;
+  color: #fffdf8;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: 2px 2px 0 #1a1008;
+}
+
+.stall-product-modal__title {
+  margin: 0;
+  font-family: 'Bangers', Impact, cursive;
+  font-size: clamp(1.55rem, 5vw, 2.05rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  color: #1a1008;
+}
+
+.stall-product-modal__hint {
+  margin: 8px 0 0;
+  max-width: 38ch;
+  font-size: 0.84rem;
+  line-height: 1.4;
+  color: #5c4a3a;
+}
+
+.stall-product-modal__close {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  background: #ffe600;
+  color: #1a1008;
+  font-size: 1.5rem;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  outline: 2px solid #1a1008;
+  outline-offset: 0;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease;
+}
+
+.stall-product-modal__close:hover {
+  transform: scale(1.06) rotate(-6deg);
+  background: #fff28a;
+}
+
+.stall-product-modal__close:focus-visible {
+  outline: 3px solid #025fd7;
+  outline-offset: 2px;
+}
+
+.stall-product-modal__body {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+.stall-product-modal__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.stall-product-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.stall-product-modal__label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #1a1008;
+}
+
+.stall-product-modal__label em {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.74rem;
+  color: #6b5847;
+}
+
+.stall-product-modal__field input,
+.stall-product-modal__field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 10px 12px;
+  border: 2px solid #1a1008;
+  border-radius: 12px;
+  background: #fff;
+  color: #1a1008;
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  box-shadow: 2px 2px 0 rgba(26, 16, 8, 0.12);
+  transition: box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.stall-product-modal__field input::placeholder,
+.stall-product-modal__field textarea::placeholder {
+  color: #a3906f;
+  opacity: 1;
+  font-size: 0.88rem;
+}
+
+.stall-product-modal__field input:focus,
+.stall-product-modal__field textarea:focus {
+  outline: 3px solid #025fd7;
+  outline-offset: 1px;
+  border-color: #1a1008;
+  background: #fffef8;
+  box-shadow: 3px 3px 0 #025fd7;
+}
+
+.stall-product-modal__field--desc textarea {
+  min-height: 88px;
+  max-height: 140px;
+  resize: vertical;
+}
+
+.stall-product-modal__field.is-error input,
+.stall-product-modal__field.is-error textarea {
+  border-color: #c0392b;
+  box-shadow: 2px 2px 0 #c0392b;
+}
+
+.stall-product-modal__error {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #c0392b;
+}
+
+.stall-product-modal__photo {
+  min-width: 0;
+  padding: 10px;
+  border: 2px dashed #1a1008;
+  border-radius: 14px;
+  background: rgba(255, 253, 248, 0.72);
+}
+
+.stall-product-modal__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px 14px;
+  border-top: 3px solid #1a1008;
+  background: #fffdf8;
+}
+
+.stall-product-modal__actions-end {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.stall-product-modal__cancel,
+.stall-product-modal__save,
+.stall-product-modal__remove {
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+
+.stall-product-modal__cancel {
+  border: 2px solid #1a1008;
+  background: #fff;
+  color: #1a1008;
+  box-shadow: 2px 2px 0 #1a1008;
+}
+
+.stall-product-modal__cancel:hover {
+  background: #fff8ee;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #1a1008;
+}
+
+.stall-product-modal__save {
+  border: 2px solid #1a1008;
+  background: #ffe600;
+  color: #1a1008;
+  font-family: 'Bangers', Impact, cursive;
+  font-size: 1.15rem;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  box-shadow: 3px 3px 0 #1a1008;
+}
+
+.stall-product-modal__save:hover {
+  background: #fff28a;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #1a1008;
+}
+
+.stall-product-modal__save:active,
+.stall-product-modal__cancel:active,
+.stall-product-modal__remove:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #1a1008;
+}
+
+.stall-product-modal__remove {
+  border: 2px solid #1a1008;
+  background: #fff;
+  color: #c0392b;
+  box-shadow: 2px 2px 0 #1a1008;
+}
+
+.stall-product-modal__remove:hover {
+  background: #fff5f4;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #c0392b;
+}
+
+@media (max-width: 480px) {
+  .stall-product-modal__row {
+    grid-template-columns: 1fr;
+  }
+
+  .stall-product-modal__hint {
+    max-width: none;
+  }
+
+  .stall-product-modal__actions {
+    flex-wrap: wrap;
+  }
+
+  .stall-product-modal__actions-end {
+    width: 100%;
+  }
+
+  .stall-product-modal__cancel,
+  .stall-product-modal__save {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stall-product-modal__close,
+  .stall-product-modal__cancel,
+  .stall-product-modal__save,
+  .stall-product-modal__remove {
+    transition: none;
+  }
+}
+
+/* Tips image buttons — dashboard position lives in DashboardForm.css */
+.stall-form__selfie-tips,
+.stall-form__market-stall-tips {
+  display: inline-block;
+  margin: 8px 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.stall-form__selfie-tips img,
+.stall-form__market-stall-tips img {
+  display: block;
+  width: min(320px, 100%);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+.stall-form__selfie-tips-cover {
+  display: none;
+}
+
+/* Shared tips image modal (selfie + market stall) */
+.stall-tips-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(10, 8, 4, 0.62);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.stall-tips-modal__shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(960px, 100%);
+  max-height: calc(100dvh - 32px);
+  min-height: 0;
+}
+
+.stall-tips-modal__dialog {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  max-height: calc(100dvh - 32px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.stall-tips-modal__dialog::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.stall-tips-modal__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 4;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #1a1008;
+  border-radius: 999px;
+  background: #ffe600;
+  color: #1a1008;
+  font-size: 1.4rem;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.stall-tips-modal__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.stall-tips-modal__scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  animation: stall-tips-scroll-hint-fade 0.35s ease-out;
+}
+
+.stall-tips-modal__scroll-arrow {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.72);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  animation: stall-tips-scroll-arrow-bounce 1.15s ease-in-out infinite;
+}
+
+.stall-tips-modal__scroll-label {
+  padding: 4px 10px;
+  border: 2px solid #1a1008;
+  border-radius: 999px;
+  background: #ffe566;
+  color: #111;
+  font-family: 'Bangers', 'Comic Sans MS', cursive, system-ui;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@keyframes stall-tips-scroll-arrow-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(14px);
+  }
+}
+
+@keyframes stall-tips-scroll-hint-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stall-tips-modal__scroll-arrow,
+  .stall-tips-modal__scroll-hint {
+    animation: none;
+  }
+}

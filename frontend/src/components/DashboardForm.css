@@ -1,0 +1,976 @@
+/* Dashboard stall editor — MY DASH.png form background + section slots */
+
+#vibe-mart-root .app.app--dashboard,
+#stall-root .app.app--dashboard {
+  min-height: 0;
+  padding: 0;
+  background: #fff;
+}
+
+#vibe-mart-root .app--dashboard .vm-dash,
+#stall-root .app--dashboard .vm-dash {
+  position: relative;
+  width: min(100%, 920px);
+  margin: 0 auto;
+}
+
+#vibe-mart-root .app--dashboard .vm-dash__art,
+#stall-root .app--dashboard .vm-dash__art {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+#vibe-mart-root .app--dashboard .vm-dash__overlay,
+#stall-root .app--dashboard .vm-dash__overlay {
+  position: absolute;
+  inset: 0;
+}
+
+#vibe-mart-root .app--dashboard .app__quota-note,
+#stall-root .app--dashboard .app__quota-note {
+  position: absolute;
+  left: 1%;
+  top: 20.6%;
+  z-index: 3;
+  margin: 0;
+  padding: 4px 8px;
+  max-width: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  color: #111;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+#vibe-mart-root .app--dashboard .app__save-banner,
+#stall-root .app--dashboard .app__save-banner {
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(100%, 920px);
+  margin: 0 auto 12px;
+  padding: 10px 14px;
+  max-height: none;
+  overflow: visible;
+  border: 2px solid #1a1008;
+  border-radius: 10px;
+  background: #fff8f0;
+  box-shadow: 3px 3px 0 #1a1008;
+  color: #1a1008;
+  font-size: clamp(0.8rem, 1.4vw, 0.95rem);
+  font-weight: 700;
+  line-height: 1.3;
+  box-sizing: border-box;
+}
+
+#vibe-mart-root .app--dashboard .app__save-banner--dash-top,
+#stall-root .app--dashboard .app__save-banner--dash-top {
+  position: relative;
+}
+
+#vibe-mart-root .app--dashboard .app__save-banner--error,
+#stall-root .app--dashboard .app__save-banner--error {
+  background: #ffe8e4;
+  border-color: #8a1f1f;
+  color: #5c1212;
+  box-shadow: 3px 3px 0 #8a1f1f;
+}
+
+#vibe-mart-root .app--dashboard .app__save-banner--ok,
+#stall-root .app--dashboard .app__save-banner--ok {
+  background: #e8f6f4;
+  border-color: #1a6168;
+  color: #114046;
+  box-shadow: 3px 3px 0 #1a6168;
+}
+
+#vibe-mart-root .app--dashboard .app__save-banner__mark,
+#stall-root .app--dashboard .app__save-banner__mark {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 999px;
+  background: #8a1f1f;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+#vibe-mart-root .app--dashboard .app__save-banner--ok .app__save-banner__mark,
+#stall-root .app--dashboard .app__save-banner--ok .app__save-banner__mark {
+  background: #1a6168;
+}
+
+#vibe-mart-root .app--dashboard .app__save-banner__body,
+#stall-root .app--dashboard .app__save-banner__body {
+  min-width: 0;
+  flex: 1;
+}
+
+#vibe-mart-root .app--dashboard .app__save-banner__title,
+#stall-root .app--dashboard .app__save-banner__title {
+  margin: 0 0 2px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+#vibe-mart-root .app--dashboard .app__save-banner p,
+#stall-root .app--dashboard .app__save-banner p,
+#vibe-mart-root .app--dashboard .app__save-banner ul,
+#stall-root .app--dashboard .app__save-banner ul {
+  margin: 0;
+}
+
+#vibe-mart-root .app--dashboard .app__save-banner .app__validation-list,
+#stall-root .app--dashboard .app__save-banner .app__validation-list {
+  padding-left: 1.1em;
+}
+
+#vibe-mart-root .app--dashboard .stall-form,
+#stall-root .app--dashboard .stall-form {
+  position: absolute;
+  inset: 0;
+  display: block;
+  gap: 0;
+  background: transparent;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__toolbar,
+#stall-root .app--dashboard .stall-form__toolbar {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 4%;
+  --y: 34.9%;
+  --w: 9%;
+  --h: 2.9%;
+  z-index: 3;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  gap: 0;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__toolbar button,
+#stall-root .app--dashboard .stall-form__toolbar button {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: clamp(0.65rem, 1.4vw, 0.85rem);
+  font-weight: 800;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: none;
+  color: transparent;
+  cursor: pointer;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__toolbar button:hover,
+#stall-root .app--dashboard .stall-form__toolbar button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#vibe-mart-root .app--dashboard .stall-form__toolbar button:focus-visible,
+#stall-root .app--dashboard .stall-form__toolbar button:focus-visible {
+  outline: 3px solid #ffe600;
+  outline-offset: 2px;
+}
+
+/* —— Section slots over MY DASH panels —— */
+#vibe-mart-root .app--dashboard .stall-form__section,
+#stall-root .app--dashboard .stall-form__section {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  margin: 0;
+  padding: 0.6% 1.8%;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  overflow: hidden;
+  gap: 4px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__section[data-section='trading-name'],
+#stall-root .app--dashboard .stall-form__section[data-section='trading-name'] {
+  --x: 5.4%;
+  --y: 42.9%;
+  --w: 88.8%;
+  --h: 2.2%;
+  padding: 0;
+  justify-content: flex-start;
+  position: absolute;
+}
+
+/* Business / Trading name — separate absolute slot */
+#vibe-mart-root .app--dashboard .stall-form__field--business-name,
+#stall-root .app--dashboard .stall-form__field--business-name {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 0%;
+  --y: -1%;
+  --w: 100%;
+  --h: 100%;
+  margin: 0;
+  flex: none;
+  z-index: 2;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field--business-name input,
+#stall-root .app--dashboard .stall-form__field--business-name input {
+  display: block;
+  width: 100%;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100%;
+  text-align: left;
+  font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+  line-height: 1;
+  padding: 0 8px;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__section[data-section='about-you'],
+#stall-root .app--dashboard .stall-form__section[data-section='about-you'] {
+  --x: 4.4%;
+  --y: 50.2%;
+  --w: 87.8%;
+  --h: 24%;
+  padding: 0;
+  justify-content: flex-start;
+  position: absolute;
+  overflow: visible;
+}
+
+/* Your name — top cyan input in About You */
+#vibe-mart-root .app--dashboard .stall-form__field--seller-name,
+#stall-root .app--dashboard .stall-form__field--seller-name {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 1%;
+  --y: 10%;
+  --w: 80%;
+  --h: 10%;
+  margin: 0;
+  flex: none;
+  z-index: 2;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field--seller-name input,
+#stall-root .app--dashboard .stall-form__field--seller-name input {
+  height: 100% !important;
+  font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+  line-height: 1;
+  padding: 0 8px;
+}
+
+/* Selfie upload — separate slot (SELFIE TIPS area) */
+#vibe-mart-root .app--dashboard .image-upload-field--selfie,
+#stall-root .app--dashboard .image-upload-field--selfie {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 1%;
+  --y: 25%;
+  --w: 39%;
+  --h: 55%;
+  margin: 0;
+  z-index: 2;
+  display: block;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Selfie preview — separate from the upload button */
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__thumb,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__thumb {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 0%;
+  --y: -2%;
+  --w: 31%;
+  --h: 61%;
+  margin: 0;
+  flex: none;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+  border: none;
+  box-shadow: none;
+}
+
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__placeholder,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__placeholder {
+  position: static;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  border: 0;
+  color: #0e5ccb;
+  padding: 0;
+}
+
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__person-icon,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__person-icon {
+  width: 58%;
+  max-width: none;
+  color: #0e5ccb;
+  opacity: 0.85;
+}
+
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__placeholder-text,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__placeholder-text {
+  display: none;
+}
+
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__controls,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__controls {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 0%;
+  --y: 66%;
+  --w: 31%;
+  --h: 19%;
+  margin: 0;
+  padding: 0;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__buttons,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__buttons {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__upload-btn,
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__clear-btn,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__upload-btn,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__clear-btn {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: transparent;
+  font-size: 0;
+  cursor: pointer;
+}
+
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__upload-btn:hover,
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__clear-btn:hover,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__upload-btn:hover,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__clear-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+}
+
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__upload-btn:focus-visible,
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__clear-btn:focus-visible,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__upload-btn:focus-visible,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__clear-btn:focus-visible {
+  outline: 3px solid #ffe600;
+  outline-offset: 2px;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field--about,
+#stall-root .app--dashboard .stall-form__field--about {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 25.5%;
+  --y: 32%;
+  --w: 55%;
+  --h: 22%;
+  margin: 0;
+  flex: none;
+  z-index: 2;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field--ambition,
+#stall-root .app--dashboard .stall-form__field--ambition {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 20%;
+  --y: 66%;
+  --w: 60%;
+  --h: 23%;
+  margin: 0;
+  flex: none;
+  z-index: 2;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__section[data-section='stall-info'],
+#stall-root .app--dashboard .stall-form__section[data-section='stall-info'] {
+  --x: 5.4%;
+  --y: 78.3%;
+  --w: 87.8%;
+  --h: 7.2%;
+  padding: 0;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__section[data-section='stall-info'] .stall-form__grid--pitch,
+#stall-root .app--dashboard .stall-form__section[data-section='stall-info'] .stall-form__grid--pitch {
+  position: absolute;
+  inset: 0;
+  display: block !important;
+  grid-template-columns: none !important;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field--pitch-number,
+#stall-root .app--dashboard .stall-form__field--pitch-number {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 0%;
+  --y: 1%;
+  --w: 20%;
+  --h: 30%;
+  margin: 0;
+  flex: none;
+  z-index: 2;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field--pitch-location,
+#stall-root .app--dashboard .stall-form__field--pitch-location {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 23%;
+  --y: -1%;
+  --w: 21.2%;
+  --h: 30%;
+  margin: 0;
+  flex: none;
+  z-index: 2;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field--member-since,
+#stall-root .app--dashboard .stall-form__field--member-since {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 46.4%;
+  --y: 1%;
+  --w: 18.6%;
+  --h: 29%;
+  margin: 0;
+  flex: none;
+  z-index: 2;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field--rating,
+#stall-root .app--dashboard .stall-form__field--rating {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 68.2%;
+  --y: 0%;
+  --w: 11.6%;
+  --h: 30%;
+  margin: 0;
+  flex: none;
+  z-index: 2;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field--review-count,
+#stall-root .app--dashboard .stall-form__field--review-count {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 0%;
+  --y: 69%;
+  --w: 20%;
+  --h: 30%;
+  margin: 0;
+  flex: none;
+  z-index: 2;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__section[data-section='products'],
+#stall-root .app--dashboard .stall-form__section[data-section='products'] {
+  --x: 4.4%;
+  --y: 89.5%;
+  --w: 90%;
+  --h: 5.6%;
+  padding: 0;
+  justify-content: flex-start;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__products-list,
+#stall-root .app--dashboard .stall-form__products-list {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 22%;
+  --y: 6%;
+  --w: 35%;
+  --h: 88%;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  z-index: 3;
+  pointer-events: auto;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__products-list::-webkit-scrollbar,
+#stall-root .app--dashboard .stall-form__products-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Add Product — left transparent hit */
+#vibe-mart-root .app--dashboard .stall-form__add-btn,
+#stall-root .app--dashboard .stall-form__add-btn {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 1%;
+  --y: 57%;
+  --w: 13%;
+  --h: 38%;
+  margin: 0 !important;
+  align-self: auto;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  padding: 0 !important;
+  cursor: pointer;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__add-btn:hover,
+#stall-root .app--dashboard .stall-form__add-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__add-btn:focus-visible,
+#stall-root .app--dashboard .stall-form__add-btn:focus-visible {
+  outline: 3px solid #ffe600;
+  outline-offset: 2px;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__section legend,
+#stall-root .app--dashboard .stall-form__section legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field > span,
+#stall-root .app--dashboard .stall-form__field > span,
+#vibe-mart-root .app--dashboard .stall-form__product-header > span,
+#stall-root .app--dashboard .stall-form__product-header > span,
+#vibe-mart-root .app--dashboard .stall-form__empty-note,
+#stall-root .app--dashboard .stall-form__empty-note,
+#vibe-mart-root .app--dashboard .image-upload-field__label,
+#stall-root .app--dashboard .image-upload-field__label,
+#vibe-mart-root .app--dashboard .image-upload-field__hint,
+#stall-root .app--dashboard .image-upload-field__hint {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field,
+#stall-root .app--dashboard .stall-form__field {
+  min-height: 0;
+  flex: 1 1 auto;
+  gap: 0;
+  justify-content: center;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field input,
+#vibe-mart-root .app--dashboard .stall-form__field textarea,
+#stall-root .app--dashboard .stall-form__field input,
+#stall-root .app--dashboard .stall-form__field textarea {
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0;
+  padding: 0 8px;
+  margin: 0;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  line-height: 1.2;
+  font-size: clamp(0.75rem, 1.8vw, 1rem);
+  overflow: hidden !important;
+  resize: none;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field input::placeholder,
+#vibe-mart-root .app--dashboard .stall-form__field textarea::placeholder,
+#stall-root .app--dashboard .stall-form__field input::placeholder,
+#stall-root .app--dashboard .stall-form__field textarea::placeholder {
+  color: rgba(17, 17, 17, 0.45);
+  opacity: 1;
+  font-size: 0.82em;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__section[data-section='products'] input::placeholder,
+#stall-root .app--dashboard .stall-form__section[data-section='products'] input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.82em;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field input::-webkit-scrollbar,
+#vibe-mart-root .app--dashboard .stall-form__field textarea::-webkit-scrollbar,
+#stall-root .app--dashboard .stall-form__field input::-webkit-scrollbar,
+#stall-root .app--dashboard .stall-form__field textarea::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field input:focus,
+#vibe-mart-root .app--dashboard .stall-form__field textarea:focus,
+#stall-root .app--dashboard .stall-form__field input:focus,
+#stall-root .app--dashboard .stall-form__field textarea:focus {
+  outline: none !important;
+  background: transparent !important;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__field--compact textarea,
+#stall-root .app--dashboard .stall-form__field--compact textarea {
+  max-height: 3.2rem;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__grid,
+#stall-root .app--dashboard .stall-form__grid {
+  gap: 6px 10px;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__product,
+#stall-root .app--dashboard .stall-form__product {
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 6px;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__product-chip,
+#stall-root .app--dashboard .stall-form__product-chip {
+  flex: 0 0 auto;
+  max-width: 11rem;
+  min-width: 4.3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: #0E5CCB;
+  padding: 6px 8px;
+  border-radius: 7px;
+  gap: 4px;
+  min-height: 0;
+  height: auto;
+  max-height: 100%;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__product-chip-name,
+#stall-root .app--dashboard .stall-form__product-chip-name {
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__product-chip-edit,
+#stall-root .app--dashboard .stall-form__product-chip-edit {
+  align-self: stretch;
+  font-size: 11px;
+  padding: 4px 8px;
+  line-height: 1.2;
+  background: rgba(255, 255, 255, 0.94);
+  border: none;
+  border-radius: 5px;
+  color: #1a1008;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__section[data-section='products'] input,
+#stall-root .app--dashboard .stall-form__section[data-section='products'] input {
+  color: #fff;
+  caret-color: #fff;
+}
+
+/* Generate Stall — right transparent hit (separate from Add Product) */
+#vibe-mart-root .app--dashboard .app__generate-row,
+#stall-root .app--dashboard .app__generate-row {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 71%;
+  --y: 90%;
+  --w: 23%;
+  --h: 3.9%;
+  margin: 0;
+  justify-content: stretch;
+  bottom: auto;
+  z-index: 4;
+}
+
+#vibe-mart-root .app--dashboard .app__generate-btn,
+#stall-root .app--dashboard .app__generate-btn {
+  width: 100%;
+  height: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: transparent !important;
+  font-size: 0 !important;
+}
+
+#vibe-mart-root .app--dashboard .app__generate-btn:hover,
+#stall-root .app--dashboard .app__generate-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+#vibe-mart-root .app--dashboard .app__generate-btn:focus-visible,
+#stall-root .app--dashboard .app__generate-btn:focus-visible {
+  outline: 3px solid #ffe600;
+  outline-offset: 2px;
+}
+
+#vibe-mart-root .vm-account-stack--generator:has(.app--finished),
+#stall-root .vm-account-stack--generator:has(.app--finished) {
+  width: 100%;
+  max-width: none;
+}
+
+#vibe-mart-root .vm-account--dashboard,
+#stall-root .vm-account--dashboard {
+  padding: 0;
+  margin: 0;
+  max-width: none;
+}
+
+#vibe-mart-root .vm-account--dashboard .vm-account-panel,
+#stall-root .vm-account--dashboard .vm-account-panel,
+#vibe-mart-root .vm-account-panel:has(.app--dashboard),
+#stall-root .vm-account-panel:has(.app--dashboard) {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  border: none;
+  box-shadow: none;
+}
+
+#vibe-mart-root .vm-dash-limit,
+#stall-root .vm-dash-limit {
+  position: relative;
+  width: min(100%, 920px);
+  margin: 0 auto;
+  padding: 48px 16px 24px;
+}
+
+
+/* White cover over painted SELFIE TIPS graphic on MY DASH */
+#vibe-mart-root .app--dashboard .stall-form__selfie-tips-cover,
+#stall-root .app--dashboard .stall-form__selfie-tips-cover {
+  display: block;
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 82%;
+  --y: 49%;
+  --w: 20%;
+  --h: 42%;
+  margin: 0;
+  border: 0;
+  border-radius: 8px;
+  background: #fcfdfd;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Visible SELFIE TIPS button (covers white box + old painted tip) */
+#vibe-mart-root .app--dashboard .stall-form__selfie-tips,
+#stall-root .app--dashboard .stall-form__selfie-tips {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: auto;
+  --x: 83%;
+  --y: 68%;
+  --w: 20%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  z-index: 5;
+  line-height: 0;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__selfie-tips img,
+#stall-root .app--dashboard .stall-form__selfie-tips img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__selfie-tips:hover,
+#stall-root .app--dashboard .stall-form__selfie-tips:hover {
+  filter: brightness(1.05);
+}
+
+#vibe-mart-root .app--dashboard .stall-form__selfie-tips:focus-visible,
+#stall-root .app--dashboard .stall-form__selfie-tips:focus-visible {
+  outline: 3px solid #ffe600;
+  outline-offset: 2px;
+}
+
+/* Visible MARKET STALL TIPS button (near Selfie Tips) */
+#vibe-mart-root .app--dashboard .stall-form__market-stall-tips,
+#stall-root .app--dashboard .stall-form__market-stall-tips {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: auto;
+  --x: 83%;
+  --y: 47%;
+  --w: 20%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  z-index: 5;
+  line-height: 0;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__market-stall-tips img,
+#stall-root .app--dashboard .stall-form__market-stall-tips img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__market-stall-tips:hover,
+#stall-root .app--dashboard .stall-form__market-stall-tips:hover {
+  filter: brightness(1.05);
+}
+
+#vibe-mart-root .app--dashboard .stall-form__market-stall-tips:focus-visible,
+#stall-root .app--dashboard .stall-form__market-stall-tips:focus-visible {
+  outline: 3px solid #ffe600;
+  outline-offset: 2px;
+}

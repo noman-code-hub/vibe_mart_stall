@@ -1,0 +1,154 @@
+/* Scoped upload field styles. */
+#vibe-mart-root .image-upload-field,
+#stall-root .image-upload-field {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--stall-border);
+  border-radius: 10px;
+  background: var(--stall-panel);
+}
+
+#vibe-mart-root .image-upload-field__thumb,
+#stall-root .image-upload-field__thumb {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #eee2c9;
+  background-image:
+    linear-gradient(45deg, #e2d6bd 25%, transparent 25%),
+    linear-gradient(-45deg, #e2d6bd 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e2d6bd 75%),
+    linear-gradient(-45deg, transparent 75%, #e2d6bd 75%);
+  background-size: 10px 10px;
+  background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+}
+
+#vibe-mart-root .image-upload-field__thumb img,
+#stall-root .image-upload-field__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#vibe-mart-root .image-upload-field__placeholder,
+#stall-root .image-upload-field__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #a3906f;
+  text-align: center;
+  padding: 4px;
+}
+
+#vibe-mart-root .image-upload-field__person-icon,
+#stall-root .image-upload-field__person-icon {
+  width: 46%;
+  max-width: 52px;
+  height: auto;
+  color: #8a7a66;
+  opacity: 0.9;
+}
+
+#vibe-mart-root .image-upload-field__placeholder-text,
+#stall-root .image-upload-field__placeholder-text {
+  display: block;
+  line-height: 1.2;
+}
+
+#vibe-mart-root .image-upload-field__controls,
+#stall-root .image-upload-field__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+#vibe-mart-root .image-upload-field__label,
+#stall-root .image-upload-field__label {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--stall-ink);
+}
+
+#vibe-mart-root .image-upload-field__hint,
+#stall-root .image-upload-field__hint {
+  font-size: 12px;
+  color: var(--stall-ink-soft);
+}
+
+#vibe-mart-root .image-upload-field__buttons,
+#stall-root .image-upload-field__buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+#vibe-mart-root .image-upload-field__upload-btn,
+#vibe-mart-root .image-upload-field__clear-btn,
+#stall-root .image-upload-field__upload-btn,
+#stall-root .image-upload-field__clear-btn {
+  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--stall-border);
+  background: #fff;
+  cursor: pointer;
+  color: var(--stall-ink);
+}
+
+#vibe-mart-root .image-upload-field__upload-btn:hover,
+#vibe-mart-root .image-upload-field__clear-btn:hover,
+#stall-root .image-upload-field__upload-btn:hover,
+#stall-root .image-upload-field__clear-btn:hover {
+  border-color: var(--stall-accent);
+}
+
+#vibe-mart-root .image-upload-field__clear-btn,
+#stall-root .image-upload-field__clear-btn {
+  color: #a1372c;
+}
+
+#vibe-mart-root .image-upload-field__error,
+#stall-root .image-upload-field__error {
+  font-size: 12px;
+  color: #8a1f1f;
+  line-height: 1.35;
+}
+
+#vibe-mart-root .image-upload-field__upload-btn.is-disabled,
+#vibe-mart-root .image-upload-field__upload-btn:has(input:disabled),
+#stall-root .image-upload-field__upload-btn.is-disabled,
+#stall-root .image-upload-field__upload-btn:has(input:disabled) {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+#vibe-mart-root .image-upload-field__spinner,
+#stall-root .image-upload-field__spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #d8c9a8;
+  border-top-color: var(--stall-banner);
+  border-radius: 50%;
+  animation: image-upload-spin 0.7s linear infinite;
+}
+
+@keyframes image-upload-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

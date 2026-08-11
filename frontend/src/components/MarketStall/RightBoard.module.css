@@ -1,0 +1,146 @@
+/* Right info boards — vertical cream panels with dark green borders */
+.boards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  filter: drop-shadow(0 6px 12px var(--shadow-soft));
+}
+
+.topPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.panelFrame {
+  width: 200px;
+  background: var(--cream);
+  border: 4px solid var(--outline);
+  border-radius: 12px;
+  padding: 14px 14px 18px;
+  box-shadow: inset 0 0 0 3px var(--green-border);
+}
+
+.topHeading {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: var(--outline);
+}
+
+.topHeading :global(span) {
+  color: var(--red);
+}
+
+.topBody {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--outline);
+  margin-bottom: 14px;
+}
+
+.ambitionHeading {
+  margin: 0 0 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--blue-label);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.target {
+  color: var(--red);
+  font-size: 1rem;
+}
+
+.ambitionBody {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--outline);
+  opacity: 0.9;
+}
+
+.pole {
+  margin-top: -2px;
+}
+
+.bottomPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pitchFrame {
+  width: 168px;
+  background: var(--cream);
+  border: 3px solid var(--outline);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: 0 4px 10px var(--shadow-soft);
+  transform: rotate(1deg);
+}
+
+.pitchHeading {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--red);
+  text-transform: uppercase;
+}
+
+.pitchBody {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--outline);
+}
+
+.aFrame {
+  position: relative;
+  width: 100px;
+  height: 28px;
+  margin-top: -4px;
+}
+
+.aLegL,
+.aLegR {
+  position: absolute;
+  bottom: 0;
+  width: 4px;
+  height: 28px;
+  background: var(--metal);
+  border: 2px solid var(--outline);
+  border-radius: 2px;
+}
+
+.aLegL {
+  left: 20%;
+  transform: rotate(-8deg);
+}
+
+.aLegR {
+  right: 20%;
+  transform: rotate(8deg);
+}
+
+@media (max-width: 768px) {
+  .panelFrame {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .pitchFrame {
+    width: 100%;
+    max-width: 240px;
+  }
+}
+
+@media (max-width: 480px) {
+  .boards {
+    width: 100%;
+    align-items: center;
+  }
+}

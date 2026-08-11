@@ -1,0 +1,69 @@
+import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+
+const RuntimeConfigContext = createContext(null)
+
+const DEV_DEFAULTS = {
+  restBase: '/wp-json/vibe-mart/v1',
+  removeBgUrl: '/api/remove-background',
+  nonce: '',
+  basename: '/',
+  siteName: 'Vibe Mart',
+  maxUploadBytes: 10 * 1024 * 1024,
+  isWordPress: false,
+}
+
+function readInjected() {
+  if (typeof window === 'undefined') return null
+  return window.vibeMartConfig || window.vibeStallGenerator || null
+}
+
+function buildConfig(nonceOverride) {
+  const injected = readInjected()
+  if (!injected) {
+    return {
+      ...DEV_DEFAULTS,
+      nonce: nonceOverride ?? DEV_DEFAULTS.nonce,
+    }
+  }
+
+  return {
+    restBase: injected.restBase || injected.restUrl?.replace(/\/remove-background\/?$/, '') || DEV_DEFAULTS.restBase,
+    removeBgUrl: injected.removeBgUrl || injected.restUrl || DEV_DEFAULTS.removeBgUrl,
+    nonce: nonceOverride ?? injected.nonce ?? '',
+    basename: injected.basename || '/',
+    siteName: injected.siteName || 'Vibe Mart',
+    maxUploadBytes: Number(injected.maxUploadBytes) || DEV_DEFAULTS.maxUploadBytes,
+    isWordPress: Boolean(injected.restBase || injected.restUrl),
+  }
+}
+
+export function RuntimeConfigProvider({ children }) {
+  const [nonce, setNonceState] = useState(() => buildConfig().nonce)
+
+  const setNonce = useCallback((nextNonce) => {
+    if (typeof nextNonce !== 'string') return
+    setNonceState(nextNonce)
+    // Keep window config in sync so other modules reading it stay current.
+    if (typeof window !== 'undefined') {
+      if (window.vibeMartConfig) {
+        window.vibeMartConfig = { ...window.vibeMartConfig, nonce: nextNonce }
+      }
+    }
+  }, [])
+
+  const value = useMemo(() => {
+    const config = buildConfig(nonce)
+    return {
+      ...config,
+      setNonce,
+    }
+  }, [nonce, setNonce])
+
+  return <RuntimeConfigContext.Provider value={value}>{children}</RuntimeConfigContext.Provider>
+}
+
+export function useRuntimeConfig() {
+  const ctx = useContext(RuntimeConfigContext)
+  if (!ctx) throw new Error('useRuntimeConfig must be used inside RuntimeConfigProvider')
+  return ctx
+}

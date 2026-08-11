@@ -1,0 +1,351 @@
+.vm-shell {
+  min-height: 163vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: clip;
+  background:
+    radial-gradient(circle at top left, rgba(212, 160, 23, 0.12), transparent 40%),
+    linear-gradient(180deg, #f7f1e6 0%, #efe4d2 45%, #f4efe6 100%);
+  color: #1a1008;
+}
+
+.vm-shell--dashboard {
+  background: #ffffff;
+}
+
+.vm-shell--folder {
+  background: #ffffff;
+}
+
+.vm-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  /* Asset is mostly white; lock crop onto the blue strip (~25–45% down the image). */
+  background-color: #1657c8;
+  background-image: var(--vm-header-bg);
+  background-size: cover;
+  background-position: center 32%;
+  background-repeat: no-repeat;
+  border-bottom: none;
+}
+
+.vm-header__inner {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  margin: 0 auto;
+  padding: 0 16px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 68px;
+}
+
+.vm-logo {
+  --x: 8%;
+  --y: 8%;
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: clamp(260px, 34vw, 440px);
+  height: 100%;
+  overflow: hidden;
+  text-decoration: none;
+  z-index: 1;
+  line-height: 0;
+}
+
+.vm-logo__img {
+  /* PNG has a large black margin around the burst — overscale + clip so the mark fills the bar. */
+  display: block;
+  height: 263%;
+  width: auto;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+  object-position: left center;
+  user-select: none;
+  margin-left: -4%;
+}
+
+.vm-nav {
+  --x: 50%;
+  --y: 50%;
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  max-width: calc(100% - 260px);
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  z-index: 1;
+}
+
+.vm-nav__icon-link {
+  display: block;
+  flex: 0 0 auto;
+  line-height: 0;
+  border-radius: 8px;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.vm-nav__icon-link:hover,
+.vm-nav__icon-link.active {
+  transform: translateY(-2px);
+  filter: brightness(1.05);
+}
+
+.vm-nav__icon-link.active {
+  outline: 2px solid #1a1008;
+  outline-offset: 1px;
+}
+
+.vm-nav__icon {
+  display: block;
+  height: clamp(38px, 4.8vw, 54px);
+  width: auto;
+  max-width: min(72px, 11vw);
+  object-fit: contain;
+  user-select: none;
+}
+
+.vm-nav__button,
+.vm-nav__button-link {
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1a1008;
+  text-decoration: none;
+  background: #fff;
+  border: 2px solid #1a1008;
+  cursor: pointer;
+  padding: 5px 9px;
+  border-radius: 8px;
+  box-shadow: 2px 2px 0 #1a1008;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.vm-nav__button:hover,
+.vm-nav__button-link:hover {
+  background: #ffe600;
+}
+
+.vm-main {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+}
+
+.vm-main--wide {
+  max-width: min(100%, 1500px);
+}
+
+.vm-main--dashboard {
+  max-width: min(100%, 1500px);
+  padding: 12px 12px 40px;
+  background: #ffffff;
+}
+
+.vm-main--dashboard:has(.app--finished) {
+  max-width: min(100%, 1800px);
+  padding: 8px 8px 28px;
+}
+
+.vm-main--folder {
+  max-width: min(100%, 1600px);
+  padding: 16px 16px 40px;
+  background: #ffffff;
+}
+
+.vm-main--market {
+  max-width: none;
+  width: 100%;
+  padding: 0;
+  background: transparent;
+}
+
+.vm-main--login {
+  max-width: none;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background: transparent;
+}
+
+.vm-main--register {
+  max-width: none;
+  width: 100%;
+  flex: 0 0 auto;
+  padding: 0;
+  background: transparent;
+}
+
+.vm-shell--login {
+  min-height: 163vh;
+  background: #0b2a8a;
+}
+
+.vm-shell--register {
+  min-height: 163vh;
+  background: #0b2a8a;
+}
+
+.vm-shell--login .vm-main--login {
+  flex: 0 0 auto;
+  min-height: 0;
+}
+
+.vm-shell--login .vm-main--login .vm-login {
+  flex: none;
+  width: 100%;
+  min-height: 0;
+}
+
+#vibe-mart-root .vm-account--dashboard:has(.app--finished),
+#stall-root .vm-account--dashboard:has(.app--finished) {
+  max-width: none;
+  width: 100%;
+}
+
+/* —— Footer (pop-art banner image) —— */
+.vm-footer {
+  margin-top: auto;
+  background-color: #1657c8;
+  background-image: var(--vm-footer-bg);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #fff;
+  border-top: none;
+  min-height: 200px;
+}
+
+.vm-footer__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 24px;
+}
+
+.vm-footer__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding-bottom: 18px;
+}
+
+.vm-footer__logo {
+  display: flex;
+  align-items: center;
+  line-height: 0;
+  text-decoration: none;
+  width: clamp(220px, 28vw, 360px);
+  height: 110px;
+  overflow: hidden;
+}
+
+.vm-footer__logo-img {
+  /* Same PNG black margin as header — overscale so the burst reads big. */
+  display: block;
+  height: 189%;
+  width: auto;
+  max-width: none;
+  max-height: none;
+  object-fit: contain;
+  object-position: left center;
+  user-select: none;
+  margin-left: -6%;
+}
+
+.vm-footer__logo:hover {
+  opacity: 0.92;
+}
+
+.vm-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.vm-footer__link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.vm-footer__link:hover,
+.vm-footer__link.active {
+  color: #ffe600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.vm-footer__bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.35);
+  font-size: 0.82rem;
+  color: #fff;
+}
+
+.vm-footer__copy,
+.vm-footer__meta {
+  margin: 0;
+  color: #fff;
+}
+
+@media (max-width: 820px) {
+  .vm-logo {
+    display: none;
+  }
+
+  .vm-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .vm-nav__icon {
+    height: 42px;
+    max-width: 58px;
+  }
+}
+
+@media (max-width: 560px) {
+  .vm-footer__top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .vm-footer__nav {
+    justify-content: flex-start;
+  }
+
+  .vm-footer__bar {
+    flex-direction: column;
+  }
+}
