@@ -145,6 +145,20 @@
   border: 0 !important;
 }
 
+/* Kill Chrome/Edge autofill blue/yellow wash over transparent fields */
+.vm-login__input:-webkit-autofill,
+.vm-login__input:-webkit-autofill:hover,
+.vm-login__input:-webkit-autofill:focus,
+.vm-login__input:-webkit-autofill:active {
+  -webkit-text-fill-color: #1a1008 !important;
+  caret-color: #1a1008;
+  border: 0 !important;
+  outline: none !important;
+  transition: background-color 99999s ease-out 0s;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+}
+
 .vm-login__remember input {
   width: 100%;
   height: 100%;

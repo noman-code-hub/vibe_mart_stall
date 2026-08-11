@@ -25,7 +25,8 @@ export default function App() {
       <AppSplash />
       <Routes>
         <Route element={<MainLayout />}>
-          <Route index element={<HomePage />} />
+          <Route index element={<Navigate to="/market" replace />} />
+          <Route path="home" element={<HomePage />} />
           <Route path="our-vibes" element={<OurVibesPage />} />
           <Route path="sell-smart" element={<SellSmartPage />} />
           <Route path="market" element={<MarketPage />} />
@@ -42,7 +43,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/market" replace />} />
         </Route>
       </Routes>
     </>

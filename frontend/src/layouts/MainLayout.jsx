@@ -15,7 +15,7 @@ import iconContact from '../assets/8 CONTACT.png'
 import './MainLayout.css'
 
 const NAV = [
-  { to: '/', label: 'Home', end: true, icon: iconHome },
+  { to: '/home', label: 'Home', end: true, icon: iconHome },
   { to: '/our-vibes', label: 'Our Vibes', icon: iconVibes },
   { to: '/sell-smart', label: 'Sell Smart', icon: iconSell },
   { to: '/my-account', label: 'My Account', icon: iconAccount, auth: 'in' },
@@ -26,7 +26,7 @@ const NAV = [
 ]
 
 const FOOTER_EXPLORE = [
-  { to: '/', label: 'Home', end: true },
+  { to: '/home', label: 'Home', end: true },
   { to: '/our-vibes', label: 'Our Vibes' },
   { to: '/market', label: 'Market' },
   { to: '/contact', label: 'Contact' },
@@ -50,6 +50,7 @@ export default function MainLayout() {
     location.pathname.startsWith('/my-trolley') ||
     location.pathname.startsWith('/my-account') ||
     location.pathname.startsWith('/register') ||
+    location.pathname.startsWith('/home') ||
     location.pathname === '/' ||
     location.pathname === ''
   const accountTab = new URLSearchParams(location.search).get('tab')
@@ -62,7 +63,8 @@ export default function MainLayout() {
     location.pathname === '/market' || location.pathname === '/market/'
   const trolleyOnly =
     location.pathname === '/my-trolley' || location.pathname === '/my-trolley/'
-  const homeOnly = location.pathname === '/' || location.pathname === ''
+  const homeOnly =
+    location.pathname === '/home' || location.pathname === '/home/'
   const loginOnly =
     location.pathname === '/login' || location.pathname === '/login/'
   const registerOnly =
@@ -83,7 +85,7 @@ export default function MainLayout() {
         style={{ '--vm-header-bg': `url(${headerBg})` }}
       >
         <div className="vm-header__inner">
-          <NavLink to="/" className="vm-logo" end aria-label={siteName}>
+          <NavLink to="/market" className="vm-logo" end aria-label={siteName}>
             <img
               className="vm-logo__img"
               src={brandLogo}
@@ -124,7 +126,7 @@ export default function MainLayout() {
       >
         <div className="vm-footer__inner">
           <div className="vm-footer__top">
-            <NavLink to="/" className="vm-footer__logo" aria-label={siteName}>
+            <NavLink to="/market" className="vm-footer__logo" aria-label={siteName}>
               <img
                 className="vm-footer__logo-img"
                 src={brandLogo}
