@@ -119,6 +119,15 @@
     <script>
       window.__vmSplashStartedAt = Date.now()
       document.documentElement.classList.add('vm-splash-lock')
+      // Static / Vercel boot config — overrides stale caches that still used /wp-json.
+      // WordPress theme injects its own vibeMartConfig instead of this file.
+      window.vibeMartConfig = {
+        restBase: '/api/vm',
+        removeBgUrl: '/api/remove-background',
+        basename: '/',
+        siteName: 'Vibe Mart',
+        isWordPress: false,
+      }
     </script>
   </head>
   <body>

@@ -3,7 +3,25 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": null,
+  "headers": [
+    {
+      "source": "/",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/index.html",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, must-revalidate" }
+      ]
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/wp-json/vibe-mart/v1/(.*)",
+      "destination": "/api/vm?path=$1"
+    },
     {
       "source": "/((?!api/).*)",
       "destination": "/index.html"

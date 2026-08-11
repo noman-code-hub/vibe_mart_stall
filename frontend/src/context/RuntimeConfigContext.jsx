@@ -29,21 +29,33 @@ function readInjected() {
 
 function buildConfig(nonceOverride) {
   const injected = readInjected()
+  const onVercel =
+    typeof window !== 'undefined' && /\.vercel\.app$/i.test(window.location.hostname || '')
+
   if (!injected) {
     return {
       ...DEV_DEFAULTS,
+      restBase: onVercel ? '/api/vm' : DEV_DEFAULTS.restBase,
       nonce: nonceOverride ?? DEV_DEFAULTS.nonce,
     }
   }
 
+  let restBase =
+    injected.restBase || injected.restUrl?.replace(/\/remove-background\/?$/, '') || DEV_DEFAULTS.restBase
+
+  // Never call WordPress paths on Vercel (WAF + no WP server).
+  if (onVercel) {
+    restBase = '/api/vm'
+  }
+
   return {
-    restBase: injected.restBase || injected.restUrl?.replace(/\/remove-background\/?$/, '') || DEV_DEFAULTS.restBase,
+    restBase,
     removeBgUrl: injected.removeBgUrl || injected.restUrl || DEV_DEFAULTS.removeBgUrl,
     nonce: nonceOverride ?? injected.nonce ?? '',
     basename: injected.basename || '/',
     siteName: injected.siteName || 'Vibe Mart',
     maxUploadBytes: Number(injected.maxUploadBytes) || DEV_DEFAULTS.maxUploadBytes,
-    isWordPress: Boolean(injected.restBase || injected.restUrl),
+    isWordPress: injected.isWordPress === true && !onVercel,
   }
 }
 
