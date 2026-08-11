@@ -1,14 +1,16 @@
 /**
- * First-load splash only — stays until fonts and all visible website/page images are ready.
- * Does not reopen on later page navigations.
+ * First-load splash only — stays until fonts, DOM images, all page art,
+ * and marketplace stall images are preloaded in the background.
+ * Does not reopen on later navigations.
  */
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
+import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
+import { preloadAllSiteImages } from '../config/siteImagePreload.js'
 
 const MIN_VISIBLE_MS = 900
 const IMAGE_SETTLE_MS = 250
-const MAX_WAIT_MS = 25000
+const MAX_WAIT_MS = 30000
 const FADE_MS = 420
-/** Quiet rounds after the image count stops changing (redirect → Market needs time). */
 const STABLE_ROUNDS_WITH_IMAGES = 4
 const STABLE_ROUNDS_EMPTY = 5
 
@@ -37,7 +39,6 @@ function waitForImageElement(img) {
   if (!img) return Promise.resolve()
   if (img.complete && img.naturalWidth > 0) return Promise.resolve()
   if (img.complete && img.naturalWidth === 0 && img.src) {
-    // Broken / empty — don't block forever.
     return Promise.resolve()
   }
 
@@ -88,12 +89,11 @@ function collectBackgroundUrls(root) {
       extractUrlsFromCssValue(raw).forEach((url) => urls.add(url))
     })
 
-    // Computed backgrounds (header/footer shells, page art via CSS).
     try {
       const bg = getComputedStyle(node).backgroundImage
       extractUrlsFromCssValue(bg).forEach((url) => urls.add(url))
     } catch {
-      // Ignore nodes that can't be measured.
+      // Ignore
     }
   })
   return [...urls]
@@ -121,11 +121,8 @@ async function waitForCurrentImages(root) {
   return imgs.length + bgUrls.length
 }
 
-/**
- * Wait while React mounts layout + landing page assets (e.g. redirect to Market).
- * Splash stays until the image set is stable and fully loaded.
- */
-async function waitForWebsiteImages(signal) {
+/** Wait until currently mounted page images settle (Market after redirect, chrome, etc.). */
+async function waitForMountedImages(signal) {
   const root = getAppRoot()
   const deadline = Date.now() + MAX_WAIT_MS
   let lastCount = -1
@@ -163,6 +160,10 @@ export function dismissAppSplash() {
 }
 
 export default function AppSplash() {
+  const config = useRuntimeConfig()
+  const configRef = useRef(config)
+  configRef.current = config
+
   useEffect(() => {
     const startedAt = Number(window.__vmSplashStartedAt) || Date.now()
     const signal = { cancelled: false }
@@ -172,10 +173,13 @@ export default function AppSplash() {
         await Promise.all([waitForWindowLoad(), waitForFonts(), waitMinTime(startedAt)])
         if (signal.cancelled) return
 
-        // Stay until layout + current page (and post-redirect Market) images are ready.
-        await waitForWebsiteImages(signal)
+        // Mounted UI images + background preload of every main page + market media.
+        await Promise.all([
+          waitForMountedImages(signal),
+          preloadAllSiteImages(configRef.current, signal),
+        ])
       } catch {
-        // Still dismiss after hard-timeout path.
+        // Still dismiss after failures / max wait.
       }
 
       if (!signal.cancelled) dismissAppSplash()
