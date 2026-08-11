@@ -11,7 +11,8 @@ const RuntimeConfigContext = createContext(null)
  * // WORDPRESS: theme injects window.vibeMartConfig (restBase, nonce, etc.).
  */
 const DEV_DEFAULTS = {
-  restBase: '/api/vm/v1',
+  // Flat Vercel-safe endpoint — see api/vm.js (?path=...).
+  restBase: '/api/vm',
   removeBgUrl: '/api/remove-background',
   nonce: '',
   basename: '/',

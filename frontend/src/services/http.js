@@ -6,8 +6,22 @@ async function parseJson(response) {
   }
 }
 
+function buildApiUrl(restBase, path) {
+  const base = String(restBase || '').replace(/\/$/, '')
+  const cleanPath = String(path || '').replace(/^\//, '')
+
+  // Vercel serverless entry is a single function: /api/vm?path=auth/session
+  if (base === '/api/vm' || base.endsWith('/api/vm')) {
+    const url = new URL(base, typeof window !== 'undefined' ? window.location.origin : 'http://localhost')
+    url.searchParams.set('path', cleanPath)
+    return `${url.pathname}?${url.searchParams.toString()}`
+  }
+
+  return `${base}/${cleanPath}`
+}
+
 export async function apiRequest(config, path, options = {}) {
-  const url = `${config.restBase.replace(/\/$/, '')}/${path.replace(/^\//, '')}`
+  const url = buildApiUrl(config.restBase, path)
   const headers = {
     Accept: 'application/json',
     ...(options.body && !(options.body instanceof FormData)

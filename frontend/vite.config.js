@@ -58,11 +58,8 @@ function removeBackgroundDevApi() {
 /**
  * Local auth + stalls REST (or proxy to WordPress).
  *
- * Primary: `/api/vm/v1/*` (Vercel-safe; avoids WAF on `/wp-json/.../auth`).
- * Alias: `/wp-json/vibe-mart/v1/*` for WP-proxy compatibility.
- *
- * Set WP_PROXY_TARGET=http://your-local-wordpress.test to forward all
- * /wp-json and /api/vm requests to a real WordPress + vibe-mart plugin.
+ * Primary: `/api/vm?path=...` (matches Vercel serverless).
+ * Alias: `/api/vm/v1/*` and `/wp-json/vibe-mart/v1/*` path style.
  */
 function authDevApi() {
   const wpTarget = (process.env.WP_PROXY_TARGET || '').replace(/\/$/, '')
@@ -81,21 +78,26 @@ function authDevApi() {
       )
 
       const handleLocalApi = async (req, res, next) => {
-        const urlPath = req.url?.split('?')[0] || ''
-        const vmPrefix = '/api/vm/v1/'
-        const wpPrefix = '/wp-json/vibe-mart/v1/'
-        let relative = ''
+        const rawUrl = req.url || '/'
+        const urlPath = rawUrl.split('?')[0] || ''
+        const query = rawUrl.includes('?') ? rawUrl.slice(rawUrl.indexOf('?') + 1) : ''
+        const params = new URLSearchParams(query)
 
-        if (urlPath.startsWith(vmPrefix)) {
-          relative = urlPath.slice(vmPrefix.length)
-          // Shared handlers match on the WP-style prefix.
-          req.url = `/wp-json/vibe-mart/v1/${relative}${req.url.includes('?') ? '?' + req.url.split('?').slice(1).join('?') : ''}`
-        } else if (urlPath.startsWith(wpPrefix)) {
-          relative = urlPath.slice(wpPrefix.length)
+        let relative = ''
+        if (urlPath === '/api/vm' || urlPath === '/api/vm/') {
+          relative = String(params.get('path') || '').replace(/^\/+|\/+$/g, '')
+        } else if (urlPath.startsWith('/api/vm/v1/')) {
+          relative = urlPath.slice('/api/vm/v1/'.length)
+        } else if (urlPath.startsWith('/wp-json/vibe-mart/v1/')) {
+          relative = urlPath.slice('/wp-json/vibe-mart/v1/'.length)
         } else {
           next()
           return
         }
+
+        params.delete('path')
+        const qs = params.toString() ? `?${params.toString()}` : ''
+        req.url = `/wp-json/vibe-mart/v1/${relative}${qs}`
 
         try {
           if (relative.startsWith('auth')) {

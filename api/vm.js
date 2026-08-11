@@ -1,11 +1,12 @@
 /**
- * Vercel serverless API at `/api/vm/*`.
+ * Vercel serverless API — single entry at `/api/vm?path=auth/session`.
  *
- * Avoids `/wp-json/.../auth/*` which Vercel WAF mitigates with HTTP 403.
- * Handlers still see WordPress-style URLs so auth/stalls mocks stay shared.
+ * Multi-segment `/api/vm/[...path]` did not route on this project’s Vercel
+ * static+functions setup (only `/api/vm/marketplace` worked). Query routing
+ * is reliable. Also avoids WAF denials on `/wp-json/.../auth/*`.
  */
-import authDevHandler from '../../dev-server/authDevHandler.js'
-import stallsDevHandler from '../../dev-server/stallsDevHandler.js'
+import authDevHandler from '../dev-server/authDevHandler.js'
+import stallsDevHandler from '../dev-server/stallsDevHandler.js'
 
 function resolveRelative(req) {
   let fromQuery = req.query?.path
@@ -15,11 +16,13 @@ function resolveRelative(req) {
   }
 
   const raw = decodeURIComponent(String(req.url || '').split('?')[0] || '')
-  const markers = ['/api/vm/', '/api/vibe-mart/', '/wp-json/vibe-mart/v1/']
+  const markers = ['/api/vm/', '/api/vm']
   for (const marker of markers) {
-    const idx = raw.indexOf(marker)
+    if (raw === marker || raw === `${marker}/`) return ''
+    const idx = raw.indexOf(marker.endsWith('/') ? marker : `${marker}/`)
     if (idx !== -1) {
-      return raw.slice(idx + marker.length).replace(/^\/+|\/+$/g, '')
+      const start = idx + (marker.endsWith('/') ? marker.length : marker.length + 1)
+      return raw.slice(start).replace(/^\/+|\/+$/g, '')
     }
   }
   return ''
@@ -28,16 +31,17 @@ function resolveRelative(req) {
 export default async function handler(req, res) {
   const relative = resolveRelative(req)
   const qsIndex = typeof req.url === 'string' ? req.url.indexOf('?') : -1
-  const qs = qsIndex >= 0 ? req.url.slice(qsIndex) : ''
+  const search = new URLSearchParams(qsIndex >= 0 ? req.url.slice(qsIndex + 1) : '')
+  search.delete('path')
+  const qs = search.toString() ? `?${search.toString()}` : ''
 
-  // Shared local handlers expect the WordPress REST prefix.
   req.url = `/wp-json/vibe-mart/v1/${relative}${qs}`
 
   try {
     if (!relative) {
-      res.statusCode = 404
+      res.statusCode = 200
       res.setHeader('Content-Type', 'application/json')
-      res.end(JSON.stringify({ code: 'vibe_mart_not_found', message: 'Missing API path.' }))
+      res.end(JSON.stringify({ ok: true, service: 'vibe-mart-api' }))
       return
     }
 
