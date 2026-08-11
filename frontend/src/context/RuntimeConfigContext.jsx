@@ -2,6 +2,15 @@ import { createContext, useCallback, useContext, useMemo, useState } from 'react
 
 const RuntimeConfigContext = createContext(null)
 
+/**
+ * Defaults when `window.vibeMartConfig` is not injected (Vite + Vercel).
+ *
+ * restBase stays `/wp-json/vibe-mart/v1` so routes match WordPress.
+ * On Vercel, vercel.json rewrites that path to `/api/vibe-mart/*`.
+ *
+ * // WORDPRESS: theme injects window.vibeMartConfig (restBase, nonce, etc.).
+ * // Leave injection logic below intact for WP theme embeds.
+ */
 const DEV_DEFAULTS = {
   restBase: '/wp-json/vibe-mart/v1',
   removeBgUrl: '/api/remove-background',
@@ -14,6 +23,7 @@ const DEV_DEFAULTS = {
 
 function readInjected() {
   if (typeof window === 'undefined') return null
+  // WordPress theme sets vibeMartConfig (or legacy vibeStallGenerator).
   return window.vibeMartConfig || window.vibeStallGenerator || null
 }
 

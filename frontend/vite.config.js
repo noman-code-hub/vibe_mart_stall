@@ -122,8 +122,10 @@ const wpProxyTarget = (process.env.WP_PROXY_TARGET || '').replace(/\/$/, '')
 export default defineConfig({
   root: frontendRoot,
   plugins: [react(), removeBackgroundDevApi(), authDevApi()],
-  // Assets resolve relative to the theme's app/ directory in WordPress.
-  base: './',
+  // WORDPRESS theme embed: relative assets (`./`) under theme assets/app/.
+  // Vercel root deploy: absolute `/` so client routes like /market resolve assets.
+  // (VERCEL=1 is set during `vercel build`.)
+  base: process.env.VERCEL ? '/' : './',
   build: {
     target: 'es2020',
     outDir: path.join(projectRoot, 'dist'),

@@ -1,13 +1,16 @@
 /**
- * Development-only stalls API mirroring `/wp-json/vibe-mart/v1/stalls*`.
+ * Stalls + marketplace API mirroring `/wp-json/vibe-mart/v1/stalls*` and `/marketplace`.
  * Shares the auth cookie from authDevHandler (`vm_dev_session`).
+ *
+ * Used by local Vite middleware and Vercel serverless.
+ *
+ * // WORDPRESS: production uses wordpress-plugin/vibe-mart REST stall routes.
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { getLocalDataDir } from './localDataDir.js'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const DATA_DIR = path.join(__dirname, '..', '.local-data')
+const DATA_DIR = getLocalDataDir()
 const STALLS_FILE = path.join(DATA_DIR, 'stalls.json')
 const COOKIE_NAME = 'vm_dev_session'
 const API_PREFIX = '/wp-json/vibe-mart/v1'

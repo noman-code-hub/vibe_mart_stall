@@ -1,17 +1,19 @@
 /**
- * Development-only auth API mirroring `/wp-json/vibe-mart/v1/auth/*`.
+ * Auth API mirroring `/wp-json/vibe-mart/v1/auth/*`.
  *
- * Used when `npm run dev` runs without a WordPress proxy target, so Register /
- * Login / session persistence work against an in-memory (file-backed) store.
- * Production always uses the WordPress plugin REST routes.
+ * Used by:
+ * - `npm run dev` (Vite middleware) when WP_PROXY_TARGET is unset
+ * - Vercel serverless (`api/vibe-mart/[...path].js`) for temporary deploys
+ *
+ * // WORDPRESS: real production uses wordpress-plugin/vibe-mart REST auth routes.
+ * // Keep that plugin intact; this file is the Vercel/local stand-in only.
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto'
-import { fileURLToPath } from 'node:url'
+import { getLocalDataDir, isVercelRuntime } from './localDataDir.js'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const DATA_DIR = path.join(__dirname, '..', '.local-data')
+const DATA_DIR = getLocalDataDir()
 const USERS_FILE = path.join(DATA_DIR, 'traders.json')
 const COOKIE_NAME = 'vm_dev_session'
 const AUTH_PREFIX = '/wp-json/vibe-mart/v1/auth'
@@ -99,12 +101,15 @@ function sessionCookie(userId, remember = true) {
     'HttpOnly',
     'SameSite=Lax',
   ]
+  if (isVercelRuntime()) parts.push('Secure')
   if (maxAge) parts.push(`Max-Age=${maxAge}`)
   return parts.join('; ')
 }
 
 function clearSessionCookie() {
-  return `${COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`
+  const parts = [`${COOKIE_NAME}=`, 'Path=/', 'HttpOnly', 'SameSite=Lax', 'Max-Age=0']
+  if (isVercelRuntime()) parts.push('Secure')
+  return parts.join('; ')
 }
 
 function passwordsMatch(storedHash, salt, password) {
