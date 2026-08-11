@@ -12,6 +12,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto'
 import { getLocalDataDir, isVercelRuntime } from './localDataDir.js'
+import { readJsonBody } from './readJsonBody.js'
 
 const DATA_DIR = getLocalDataDir()
 const USERS_FILE = path.join(DATA_DIR, 'traders.json')
@@ -44,23 +45,7 @@ function parseCookies(header = '') {
 }
 
 function readBody(req) {
-  return new Promise((resolve, reject) => {
-    const chunks = []
-    req.on('data', (chunk) => chunks.push(chunk))
-    req.on('end', () => {
-      const raw = Buffer.concat(chunks).toString('utf8')
-      if (!raw) {
-        resolve({})
-        return
-      }
-      try {
-        resolve(JSON.parse(raw))
-      } catch {
-        reject(Object.assign(new Error('Invalid JSON body.'), { status: 400 }))
-      }
-    })
-    req.on('error', reject)
-  })
+  return readJsonBody(req)
 }
 
 async function loadUsers() {

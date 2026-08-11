@@ -5,10 +5,6 @@
   "framework": null,
   "rewrites": [
     {
-      "source": "/wp-json/vibe-mart/v1/:path*",
-      "destination": "/api/vibe-mart/:path*"
-    },
-    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

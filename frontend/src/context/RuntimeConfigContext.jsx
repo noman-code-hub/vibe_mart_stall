@@ -5,14 +5,13 @@ const RuntimeConfigContext = createContext(null)
 /**
  * Defaults when `window.vibeMartConfig` is not injected (Vite + Vercel).
  *
- * restBase stays `/wp-json/vibe-mart/v1` so routes match WordPress.
- * On Vercel, vercel.json rewrites that path to `/api/vibe-mart/*`.
+ * Use `/api/vm/v1` (not `/wp-json/.../auth/...`) so Vercel WAF does not
+ * mitigate session/login calls with HTTP 403.
  *
  * // WORDPRESS: theme injects window.vibeMartConfig (restBase, nonce, etc.).
- * // Leave injection logic below intact for WP theme embeds.
  */
 const DEV_DEFAULTS = {
-  restBase: '/wp-json/vibe-mart/v1',
+  restBase: '/api/vm/v1',
   removeBgUrl: '/api/remove-background',
   nonce: '',
   basename: '/',

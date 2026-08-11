@@ -1,31 +1,46 @@
 /**
- * Vercel serverless catch-all for `/api/vibe-mart/*`.
+ * Vercel serverless API at `/api/vm/*`.
  *
- * `vercel.json` rewrites `/wp-json/vibe-mart/v1/:path*` → here so the SPA can
- * keep the same REST paths used under WordPress.
- *
- * // WORDPRESS: production on WP uses wordpress-plugin/vibe-mart REST routes.
- * // When leaving Vercel testing, remove vercel.json API rewrites (or ask to
- * // restore WP-only deploy) — do not delete the plugin/theme folders.
+ * Avoids `/wp-json/.../auth/*` which Vercel WAF mitigates with HTTP 403.
+ * Handlers still see WordPress-style URLs so auth/stalls mocks stay shared.
  */
 import authDevHandler from '../../dev-server/authDevHandler.js'
 import stallsDevHandler from '../../dev-server/stallsDevHandler.js'
 
-function pathFromQuery(pathQuery) {
-  if (Array.isArray(pathQuery)) return pathQuery.filter(Boolean).join('/')
-  if (typeof pathQuery === 'string' && pathQuery) return pathQuery
+function resolveRelative(req) {
+  let fromQuery = req.query?.path
+  if (Array.isArray(fromQuery)) fromQuery = fromQuery.filter(Boolean).join('/')
+  if (typeof fromQuery === 'string' && fromQuery.trim()) {
+    return fromQuery.replace(/^\/+|\/+$/g, '')
+  }
+
+  const raw = decodeURIComponent(String(req.url || '').split('?')[0] || '')
+  const markers = ['/api/vm/', '/api/vibe-mart/', '/wp-json/vibe-mart/v1/']
+  for (const marker of markers) {
+    const idx = raw.indexOf(marker)
+    if (idx !== -1) {
+      return raw.slice(idx + marker.length).replace(/^\/+|\/+$/g, '')
+    }
+  }
   return ''
 }
 
 export default async function handler(req, res) {
-  const relative = pathFromQuery(req.query.path)
+  const relative = resolveRelative(req)
   const qsIndex = typeof req.url === 'string' ? req.url.indexOf('?') : -1
   const qs = qsIndex >= 0 ? req.url.slice(qsIndex) : ''
 
-  // Dev handlers match on the WordPress-style URL prefix.
+  // Shared local handlers expect the WordPress REST prefix.
   req.url = `/wp-json/vibe-mart/v1/${relative}${qs}`
 
   try {
+    if (!relative) {
+      res.statusCode = 404
+      res.setHeader('Content-Type', 'application/json')
+      res.end(JSON.stringify({ code: 'vibe_mart_not_found', message: 'Missing API path.' }))
+      return
+    }
+
     if (relative === 'auth' || relative.startsWith('auth/')) {
       const handled = await authDevHandler(req, res)
       if (!handled && !res.writableEnded) {
@@ -56,11 +71,11 @@ export default async function handler(req, res) {
     res.end(
       JSON.stringify({
         code: 'vibe_mart_not_found',
-        message: `Unknown route: ${relative || '(empty)'}`,
+        message: `Unknown route: ${relative}`,
       })
     )
   } catch (error) {
-    console.error('[vercel vibe-mart]', error)
+    console.error('[vercel /api/vm]', error)
     if (!res.headersSent) {
       res.statusCode = 500
       res.setHeader('Content-Type', 'application/json')

@@ -9,6 +9,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { getLocalDataDir } from './localDataDir.js'
+import { readJsonBody } from './readJsonBody.js'
 
 const DATA_DIR = getLocalDataDir()
 const STALLS_FILE = path.join(DATA_DIR, 'stalls.json')
@@ -34,23 +35,7 @@ function parseCookies(header = '') {
 }
 
 function readBody(req) {
-  return new Promise((resolve, reject) => {
-    const chunks = []
-    req.on('data', (chunk) => chunks.push(chunk))
-    req.on('end', () => {
-      const raw = Buffer.concat(chunks).toString('utf8')
-      if (!raw) {
-        resolve({})
-        return
-      }
-      try {
-        resolve(JSON.parse(raw))
-      } catch {
-        reject(Object.assign(new Error('Invalid JSON body.'), { status: 400 }))
-      }
-    })
-    req.on('error', reject)
-  })
+  return readJsonBody(req)
 }
 
 function currentUserId(req) {

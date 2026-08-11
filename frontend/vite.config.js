@@ -56,11 +56,13 @@ function removeBackgroundDevApi() {
 }
 
 /**
- * Local auth REST (or proxy to WordPress) so /wp-json/vibe-mart/v1/auth/*
- * works during `npm run dev` without embedding the React app in WP.
+ * Local auth + stalls REST (or proxy to WordPress).
+ *
+ * Primary: `/api/vm/v1/*` (Vercel-safe; avoids WAF on `/wp-json/.../auth`).
+ * Alias: `/wp-json/vibe-mart/v1/*` for WP-proxy compatibility.
  *
  * Set WP_PROXY_TARGET=http://your-local-wordpress.test to forward all
- * /wp-json requests to a real WordPress + vibe-mart plugin install.
+ * /wp-json and /api/vm requests to a real WordPress + vibe-mart plugin.
  */
 function authDevApi() {
   const wpTarget = (process.env.WP_PROXY_TARGET || '').replace(/\/$/, '')
@@ -70,7 +72,7 @@ function authDevApi() {
     apply: 'serve',
     configureServer(server) {
       if (wpTarget) {
-        console.info(`[vibe-mart] Proxying /wp-json → ${wpTarget}`)
+        console.info(`[vibe-mart] Proxying /wp-json and /api/vm → ${wpTarget}`)
         return
       }
 
@@ -78,25 +80,32 @@ function authDevApi() {
         '[vibe-mart] Local auth + stalls mock enabled (no WP_PROXY_TARGET). Data: .local-data/'
       )
 
-      server.middlewares.use(async (req, res, next) => {
+      const handleLocalApi = async (req, res, next) => {
         const urlPath = req.url?.split('?')[0] || ''
-        if (!urlPath.startsWith('/wp-json/vibe-mart/v1/')) {
+        const vmPrefix = '/api/vm/v1/'
+        const wpPrefix = '/wp-json/vibe-mart/v1/'
+        let relative = ''
+
+        if (urlPath.startsWith(vmPrefix)) {
+          relative = urlPath.slice(vmPrefix.length)
+          // Shared handlers match on the WP-style prefix.
+          req.url = `/wp-json/vibe-mart/v1/${relative}${req.url.includes('?') ? '?' + req.url.split('?').slice(1).join('?') : ''}`
+        } else if (urlPath.startsWith(wpPrefix)) {
+          relative = urlPath.slice(wpPrefix.length)
+        } else {
           next()
           return
         }
 
         try {
-          if (urlPath.startsWith('/wp-json/vibe-mart/v1/auth')) {
+          if (relative.startsWith('auth')) {
             const { default: handler } = await importDevModule('dev-server/authDevHandler.js')
             const handled = await handler(req, res)
             if (!handled) next()
             return
           }
 
-          if (
-            urlPath.startsWith('/wp-json/vibe-mart/v1/stalls') ||
-            urlPath.startsWith('/wp-json/vibe-mart/v1/marketplace')
-          ) {
+          if (relative.startsWith('stalls') || relative.startsWith('marketplace')) {
             const { default: handler } = await importDevModule('dev-server/stallsDevHandler.js')
             const handled = await handler(req, res)
             if (!handled) next()
@@ -105,14 +114,16 @@ function authDevApi() {
 
           next()
         } catch (error) {
-          console.error('[dev wp-json]', error)
+          console.error('[dev api]', error)
           if (!res.headersSent) {
             res.statusCode = 500
             res.setHeader('Content-Type', 'application/json')
             res.end(JSON.stringify({ message: 'Local API middleware failed.', code: 'INTERNAL_ERROR' }))
           }
         }
-      })
+      }
+
+      server.middlewares.use(handleLocalApi)
     },
   }
 }
@@ -146,6 +157,12 @@ export default defineConfig({
               target: wpProxyTarget,
               changeOrigin: true,
               secure: false,
+            },
+            '/api/vm': {
+              target: wpProxyTarget,
+              changeOrigin: true,
+              secure: false,
+              rewrite: (p) => p.replace(/^\/api\/vm\/v1/, '/wp-json/vibe-mart/v1'),
             },
           },
         }
