@@ -1,27 +1,16 @@
 /**
- * Splash overlay — first load, then again on image-heavy routes until page images are ready.
- * Splash is hidden/shown (kept in the DOM), not removed after first dismiss.
+ * First-load splash only — stays until fonts and all visible website/page images are ready.
+ * Does not reopen on later page navigations.
  */
-import { useEffect, useRef } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 
 const MIN_VISIBLE_MS = 900
-const NAV_MIN_VISIBLE_MS = 450
-const IMAGE_SETTLE_MS = 180
-const MAX_WAIT_MS = 20000
-
-/** Routes with large artwork / product media — show splash while images load. */
-const HEAVY_PATHS = ['/market', '/contact', '/my-trolley', '/login', '/register', '/my-account']
-
-function normalizePath(pathname) {
-  const p = (pathname || '/').replace(/\/+$/, '')
-  return p || '/'
-}
-
-function isHeavyPath(pathname) {
-  const p = normalizePath(pathname)
-  return HEAVY_PATHS.some((base) => p === base || p.startsWith(`${base}/`))
-}
+const IMAGE_SETTLE_MS = 250
+const MAX_WAIT_MS = 25000
+const FADE_MS = 420
+/** Quiet rounds after the image count stops changing (redirect → Market needs time). */
+const STABLE_ROUNDS_WITH_IMAGES = 4
+const STABLE_ROUNDS_EMPTY = 5
 
 function waitForWindowLoad() {
   if (document.readyState === 'complete') return Promise.resolve()
@@ -35,8 +24,8 @@ function waitForFonts() {
   return Promise.resolve()
 }
 
-function waitMinTime(startedAt, minMs) {
-  const remaining = Math.max(0, minMs - (Date.now() - startedAt))
+function waitMinTime(startedAt) {
+  const remaining = Math.max(0, MIN_VISIBLE_MS - (Date.now() - startedAt))
   return new Promise((resolve) => setTimeout(resolve, remaining))
 }
 
@@ -48,6 +37,7 @@ function waitForImageElement(img) {
   if (!img) return Promise.resolve()
   if (img.complete && img.naturalWidth > 0) return Promise.resolve()
   if (img.complete && img.naturalWidth === 0 && img.src) {
+    // Broken / empty — don't block forever.
     return Promise.resolve()
   }
 
@@ -89,6 +79,7 @@ function collectBackgroundUrls(root) {
   const nodes = root.querySelectorAll('*')
   nodes.forEach((node) => {
     if (!(node instanceof HTMLElement)) return
+
     const inline = node.getAttribute('style') || ''
     extractUrlsFromCssValue(inline).forEach((url) => urls.add(url))
 
@@ -96,6 +87,14 @@ function collectBackgroundUrls(root) {
       const raw = node.style?.getPropertyValue?.(name)
       extractUrlsFromCssValue(raw).forEach((url) => urls.add(url))
     })
+
+    // Computed backgrounds (header/footer shells, page art via CSS).
+    try {
+      const bg = getComputedStyle(node).backgroundImage
+      extractUrlsFromCssValue(bg).forEach((url) => urls.add(url))
+    } catch {
+      // Ignore nodes that can't be measured.
+    }
   })
   return [...urls]
 }
@@ -123,8 +122,8 @@ async function waitForCurrentImages(root) {
 }
 
 /**
- * Keep waiting while React mounts more images / CSS backgrounds.
- * Splash stays until the page image set is stable and loaded.
+ * Wait while React mounts layout + landing page assets (e.g. redirect to Market).
+ * Splash stays until the image set is stable and fully loaded.
  */
 async function waitForWebsiteImages(signal) {
   const root = getAppRoot()
@@ -143,39 +142,13 @@ async function waitForWebsiteImages(signal) {
       lastCount = count
     }
 
-    if (stableRounds >= 2 && count > 0) return
-    if (stableRounds >= 3 && count === 0) return
+    if (stableRounds >= STABLE_ROUNDS_WITH_IMAGES && count > 0) return
+    if (stableRounds >= STABLE_ROUNDS_EMPTY && count === 0) return
 
     await wait(IMAGE_SETTLE_MS)
   }
 }
 
-function ensureSplashElement() {
-  let splash = document.getElementById('vm-splash')
-  if (splash) return splash
-
-  splash = document.createElement('div')
-  splash.id = 'vm-splash'
-  splash.setAttribute('role', 'status')
-  splash.setAttribute('aria-live', 'polite')
-  splash.setAttribute('aria-busy', 'true')
-  splash.setAttribute('aria-label', 'Loading Vibe Mart')
-  splash.innerHTML = `
-    <div class="vm-splash__card">
-      <img class="vm-splash__logo" src="/vibe-mart-logo.png?v=2" alt="Vibe Mart" width="380" height="168" decoding="async" />
-      <div class="vm-splash__dots" aria-hidden="true">
-        <span class="vm-splash__dot"></span>
-        <span class="vm-splash__dot"></span>
-        <span class="vm-splash__dot"></span>
-      </div>
-      <p class="vm-splash__copy">Opening the market…</p>
-    </div>
-  `
-  document.body.prepend(splash)
-  return splash
-}
-
-/** Hide splash — keep node for later route loads. */
 export function dismissAppSplash() {
   const splash = document.getElementById('vm-splash')
   if (!splash) return
@@ -183,72 +156,35 @@ export function dismissAppSplash() {
   splash.classList.add('is-done')
   splash.setAttribute('aria-busy', 'false')
   document.documentElement.classList.remove('vm-splash-lock')
-}
 
-export function showAppSplash() {
-  const splash = ensureSplashElement()
-  // Retrigger fade-in if we were mid-fade.
-  splash.classList.remove('is-done')
-  // Force style reflow so opacity transition applies cleanly.
-  void splash.offsetWidth
-  splash.setAttribute('aria-busy', 'true')
-  document.documentElement.classList.add('vm-splash-lock')
-  window.__vmSplashStartedAt = Date.now()
+  window.setTimeout(() => {
+    splash.remove()
+  }, FADE_MS)
 }
 
 export default function AppSplash() {
-  const location = useLocation()
-  const firstLoadRef = useRef(true)
-  const runIdRef = useRef(0)
-
   useEffect(() => {
-    const runId = ++runIdRef.current
-    const signal = { cancelled: false }
-    const isFirst = firstLoadRef.current
-    firstLoadRef.current = false
-
-    const heavy = isHeavyPath(location.pathname)
-
-    // After first paint, only image-heavy pages reopen the splash.
-    if (!isFirst && !heavy) {
-      dismissAppSplash()
-      return () => {
-        signal.cancelled = true
-      }
-    }
-
-    if (!isFirst && heavy) {
-      showAppSplash()
-    }
-
     const startedAt = Number(window.__vmSplashStartedAt) || Date.now()
-    const minMs = isFirst ? MIN_VISIBLE_MS : NAV_MIN_VISIBLE_MS
+    const signal = { cancelled: false }
 
     ;(async () => {
       try {
-        if (isFirst) {
-          await Promise.all([waitForWindowLoad(), waitForFonts(), waitMinTime(startedAt, minMs)])
-        } else {
-          // Let the route mount so imgs appear under the splash.
-          await wait(80)
-          await waitMinTime(startedAt, minMs)
-        }
-        if (signal.cancelled || runId !== runIdRef.current) return
+        await Promise.all([waitForWindowLoad(), waitForFonts(), waitMinTime(startedAt)])
+        if (signal.cancelled) return
 
+        // Stay until layout + current page (and post-redirect Market) images are ready.
         await waitForWebsiteImages(signal)
       } catch {
-        // Dismiss after failures / max wait path.
+        // Still dismiss after hard-timeout path.
       }
 
-      if (!signal.cancelled && runId === runIdRef.current) {
-        dismissAppSplash()
-      }
+      if (!signal.cancelled) dismissAppSplash()
     })()
 
     return () => {
       signal.cancelled = true
     }
-  }, [location.pathname])
+  }, [])
 
   return null
 }
