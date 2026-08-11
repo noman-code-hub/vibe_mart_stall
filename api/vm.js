@@ -8,6 +8,12 @@
 import authDevHandler from '../dev-server/authDevHandler.js'
 import stallsDevHandler from '../dev-server/stallsDevHandler.js'
 
+export const config = {
+  api: {
+    bodyParser: true,
+  },
+}
+
 function resolveRelative(req) {
   let fromQuery = req.query?.path
   if (Array.isArray(fromQuery)) fromQuery = fromQuery.filter(Boolean).join('/')
