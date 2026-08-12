@@ -12,7 +12,7 @@
 .vm-trolley__banner {
   width: 100%;
   margin: 0;
-  padding: 16px 20px 8px;
+  padding: 12px clamp(40px, 10vw, 88px) 8px;
   box-sizing: border-box;
   display: grid;
   justify-items: center;
@@ -23,8 +23,8 @@
 
 .vm-trolley__banner-img {
   display: block;
-  width: min(720px, 88%);
-  max-width: 100%;
+  width: 100%;
+  max-width: min(1180px, 100%);
   height: auto;
   object-fit: contain;
   object-position: center top;
@@ -32,10 +32,21 @@
 }
 
 .vm-trolley__body {
-  width: min(920px, 100%);
+  width: 100%;
+  max-width: min(1180px, 100%);
   margin: 0 auto;
-  padding: 24px 16px 48px;
+  padding: 24px clamp(40px, 10vw, 88px) 48px;
   box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .vm-trolley__banner {
+    padding: 10px clamp(20px, 6vw, 32px) 8px;
+  }
+
+  .vm-trolley__body {
+    padding: 20px clamp(20px, 6vw, 32px) 40px;
+  }
 }
 
 .vm-trolley__head {

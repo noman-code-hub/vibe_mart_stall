@@ -14,7 +14,8 @@ const INITIAL = {
 
 function classifyRegisterError(message) {
   const text = String(message || '').toLowerCase()
-  if (text.includes('username') || text.includes('email') || text.includes('already registered')) {
+
+  if (text.includes('already registered') || text.includes('already in use')) {
     return {
       fields: ['username', 'email'],
       message: message || 'That username or email is already registered.',
@@ -26,6 +27,12 @@ function classifyRegisterError(message) {
   }
   if (text.includes('password')) {
     return { fields: ['password'], message, anchor: 'password' }
+  }
+  if (text.includes('email') && !text.includes('username')) {
+    return { fields: ['email'], message, anchor: 'email' }
+  }
+  if (text.includes('username')) {
+    return { fields: ['username'], message, anchor: 'username' }
   }
   if (text.includes('terms')) {
     return { fields: ['terms'], message, anchor: 'terms' }

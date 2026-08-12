@@ -9,15 +9,26 @@
 .vm-sell {
   margin: -28px 0 0;
   width: 100%;
+  box-sizing: border-box;
+  display: grid;
+  justify-items: center;
   background: #ffffff;
+  padding: 12px clamp(40px, 10vw, 88px) 16px;
 }
 
 .vm-sell__image {
   display: block;
   width: 100%;
+  max-width: min(1180px, 100%);
   height: auto;
   object-fit: contain;
   object-position: top center;
   user-select: none;
   vertical-align: top;
+}
+
+@media (max-width: 640px) {
+  .vm-sell {
+    padding: 10px clamp(20px, 6vw, 32px) 12px;
+  }
 }

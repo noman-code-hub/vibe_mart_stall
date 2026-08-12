@@ -8,15 +8,27 @@
 .vm-vibes {
   margin: -28px 0 0;
   width: 100%;
-  background: #0a0a0a;
+  box-sizing: border-box;
+  display: grid;
+  justify-items: center;
+  background: #ffffff;
+  /* Small top/bottom, wider left/right gutters around the art */
+  padding: 12px clamp(40px, 10vw, 88px) 16px;
 }
 
 .vm-vibes__image {
   display: block;
   width: 100%;
+  max-width: min(1180px, 100%);
   height: auto;
   object-fit: contain;
   object-position: top center;
   user-select: none;
   vertical-align: top;
+}
+
+@media (max-width: 640px) {
+  .vm-vibes {
+    padding: 10px clamp(20px, 6vw, 32px) 12px;
+  }
 }

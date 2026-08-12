@@ -267,25 +267,39 @@
 .vm-market-top {
   width: 100%;
   margin: 0;
-  padding: 0;
+  padding: 12px clamp(40px, 10vw, 88px) 8px;
+  box-sizing: border-box;
   line-height: 0;
   overflow: hidden;
   flex: 0 0 auto;
+  display: grid;
+  justify-items: center;
 }
 
 .vm-market-top__img {
   display: block;
   width: 100%;
+  max-width: min(1180px, 100%);
   height: auto;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center top;
   user-select: none;
 }
 
 .vm-market-body {
   width: 100%;
-  padding: 28px 12px 56px;
+  padding: 28px clamp(40px, 10vw, 88px) 56px;
   box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .vm-market-top {
+    padding: 10px clamp(20px, 6vw, 32px) 8px;
+  }
+
+  .vm-market-body {
+    padding: 20px clamp(20px, 6vw, 32px) 40px;
+  }
 }
 
 .vm-market-body.is-empty {

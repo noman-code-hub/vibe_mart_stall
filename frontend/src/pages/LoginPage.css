@@ -3,8 +3,9 @@
 .vm-login {
   width: 100%;
   margin: 0;
-  padding: 0;
-  background: #0b2a8a;
+  box-sizing: border-box;
+  padding: 12px clamp(40px, 10vw, 88px) 16px;
+  background: #ffffff;
   color: #1a1008;
 }
 
@@ -14,12 +15,13 @@
   min-height: 40vh;
   padding: 48px 20px;
   text-align: center;
-  color: #fff;
+  color: #1a1008;
 }
 
 .vm-login__stage {
   position: relative;
   width: 100%;
+  max-width: min(1180px, 100%);
   margin: 0 auto;
   display: block;
 }
@@ -196,6 +198,10 @@
 }
 
 @media (max-width: 720px) {
+  .vm-login {
+    padding: 10px clamp(20px, 6vw, 32px) 12px;
+  }
+
   .vm-login__input {
     padding: 0 2%;
     font-size: clamp(0.65rem, 2.6vw, 0.9rem);

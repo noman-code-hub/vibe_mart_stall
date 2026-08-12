@@ -35,6 +35,7 @@ require_once VIBE_MART_PLUGIN_DIR . 'includes/rest-auth.php';
 require_once VIBE_MART_PLUGIN_DIR . 'includes/auth-redirects.php';
 require_once VIBE_MART_PLUGIN_DIR . 'includes/rest-stalls.php';
 require_once VIBE_MART_PLUGIN_DIR . 'includes/rest-remove-bg.php';
+require_once VIBE_MART_PLUGIN_DIR . 'includes/rest-contact.php';
 
 /**
  * Activation: tables + trader role + cron.

@@ -77,6 +77,32 @@ function authDevApi() {
         '[vibe-mart] Local auth + stalls mock enabled (no WP_PROXY_TARGET). Data: .local-data/'
       )
 
+      /** Buffer POST/PUT bodies before any await — otherwise the stream ends empty. */
+      async function bufferRequestBody(req) {
+        if (req.body !== undefined) return
+        const method = (req.method || 'GET').toUpperCase()
+        if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
+          req.body = {}
+          return
+        }
+
+        const chunks = []
+        for await (const chunk of req) {
+          chunks.push(chunk)
+        }
+        const raw = Buffer.concat(chunks).toString('utf8').replace(/^\uFEFF/, '').trim()
+        if (!raw) {
+          req.body = {}
+          return
+        }
+        try {
+          req.body = JSON.parse(raw)
+        } catch {
+          const err = Object.assign(new Error('Invalid JSON body.'), { status: 400 })
+          throw err
+        }
+      }
+
       const handleLocalApi = async (req, res, next) => {
         const rawUrl = req.url || '/'
         const urlPath = rawUrl.split('?')[0] || ''
@@ -100,6 +126,8 @@ function authDevApi() {
         req.url = `/wp-json/vibe-mart/v1/${relative}${qs}`
 
         try {
+          await bufferRequestBody(req)
+
           if (relative.startsWith('auth')) {
             const { default: handler } = await importDevModule('dev-server/authDevHandler.js')
             const handled = await handler(req, res)
@@ -114,13 +142,25 @@ function authDevApi() {
             return
           }
 
+          if (relative === 'contact') {
+            const { default: handler } = await importDevModule('dev-server/contactDevHandler.js')
+            const handled = await handler(req, res)
+            if (!handled) next()
+            return
+          }
+
           next()
         } catch (error) {
           console.error('[dev api]', error)
           if (!res.headersSent) {
-            res.statusCode = 500
+            res.statusCode = error.status || 500
             res.setHeader('Content-Type', 'application/json')
-            res.end(JSON.stringify({ message: 'Local API middleware failed.', code: 'INTERNAL_ERROR' }))
+            res.end(
+              JSON.stringify({
+                message: error.message || 'Local API middleware failed.',
+                code: error.status === 400 ? 'vibe_mart_invalid' : 'INTERNAL_ERROR',
+              })
+            )
           }
         }
       }

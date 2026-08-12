@@ -140,10 +140,24 @@ export default async function authDevHandler(req, res) {
       const password = String(body.password || '')
       const displayName = String(body.display_name || username).trim()
 
-      if (!username || !email || password.length < 8) {
+      if (!username) {
         sendJson(res, 400, {
           code: 'vibe_mart_invalid',
-          message: 'Provide a username, email, and password (8+ characters).',
+          message: 'Username is required.',
+        })
+        return true
+      }
+      if (!email) {
+        sendJson(res, 400, {
+          code: 'vibe_mart_invalid',
+          message: 'Email is required.',
+        })
+        return true
+      }
+      if (password.length < 8) {
+        sendJson(res, 400, {
+          code: 'vibe_mart_invalid',
+          message: 'Password must be at least 8 characters.',
         })
         return true
       }

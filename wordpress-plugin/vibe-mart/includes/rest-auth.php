@@ -197,10 +197,24 @@ function auth_register(WP_REST_Request $request): WP_REST_Response|WP_Error {
 	$password = (string) $request->get_param('password');
 	$display = sanitize_text_field((string) $request->get_param('display_name'));
 
-	if ('' === $username || '' === $email || strlen($password) < 8) {
+	if ('' === $username) {
 		return new WP_Error(
 			'vibe_mart_invalid',
-			__('Provide a username, email, and password (8+ characters).', 'vibe-mart'),
+			__('Username is required.', 'vibe-mart'),
+			array('status' => 400)
+		);
+	}
+	if ('' === $email) {
+		return new WP_Error(
+			'vibe_mart_invalid',
+			__('Email is required.', 'vibe-mart'),
+			array('status' => 400)
+		);
+	}
+	if (strlen($password) < 8) {
+		return new WP_Error(
+			'vibe_mart_invalid',
+			__('Password must be at least 8 characters.', 'vibe-mart'),
 			array('status' => 400)
 		);
 	}

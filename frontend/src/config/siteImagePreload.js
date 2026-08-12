@@ -27,6 +27,12 @@ import selfieTipsBtn from '../assets/SELFIE TIPS.png'
 import marketStallTipsBtn from '../assets/market-stall-tips-transparent.png'
 import marketStallTipsArt from '../assets/MARKET STALL FLOW.png'
 import stallTemplateUrl from '../assets/stall-template.jpg'
+import home1 from '../assets/homepage/1.png'
+import home2 from '../assets/homepage/2.png'
+import home3 from '../assets/homepage/3.png'
+import home4 from '../assets/homepage/4.png'
+import home5 from '../assets/homepage/5.png'
+import home6 from '../assets/homepage/6.png'
 import { listMarketplace } from '../services/stallApi.js'
 
 /** Bundled assets used across main routes + chrome. */
@@ -56,6 +62,12 @@ export const STATIC_SITE_IMAGES = [
   marketStallTipsBtn,
   marketStallTipsArt,
   stallTemplateUrl,
+  home1,
+  home2,
+  home3,
+  home4,
+  home5,
+  home6,
   '/vibe-mart-logo.png?v=2',
 ]
 
