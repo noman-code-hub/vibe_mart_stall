@@ -234,13 +234,40 @@
 
 @media (max-width: 640px) {
   .vm-trolley__item {
-    grid-template-columns: 72px minmax(0, 1fr);
+    grid-template-columns: 64px minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 10px;
   }
 
-  .vm-trolley__controls {
-    grid-column: 1 / -1;
-    grid-template-columns: 1fr auto;
-    justify-items: stretch;
-    align-items: center;
+  .vm-trolley__media {
+    width: 64px;
+    height: 64px;
+  }
+
+  .vm-trolley__name {
+    font-size: 1.1rem;
+  }
+
+  .vm-trolley__stall,
+  .vm-trolley__meta {
+    font-size: 0.75rem;
+  }
+
+  .vm-trolley__price {
+    font-size: 0.92rem;
+  }
+
+  .vm-trolley__qty input {
+    width: 52px;
+    padding: 4px 6px;
+  }
+
+  .vm-trolley__footer {
+    padding: 10px 12px;
+  }
+
+  .vm-trolley__checkout {
+    font-size: 1rem;
+    padding: 8px 12px;
   }
 }

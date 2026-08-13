@@ -15,6 +15,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import AppSplash from './components/AppSplash.jsx'
 import './App.css'
 import './styles/marketplace.css'
+import './styles/responsive.css'
 
 function MarketStallRedirect() {
   const { id } = useParams()

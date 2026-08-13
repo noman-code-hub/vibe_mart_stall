@@ -78,7 +78,7 @@
 
 .vm-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 16px;
   margin-top: 18px;
 }
@@ -292,13 +292,23 @@
   box-sizing: border-box;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1024px) {
   .vm-market-top {
-    padding: 10px clamp(20px, 6vw, 32px) 8px;
+    padding: 10px clamp(20px, 4vw, 40px) 8px;
   }
 
   .vm-market-body {
-    padding: 20px clamp(20px, 6vw, 32px) 40px;
+    padding: 20px clamp(20px, 4vw, 40px) 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .vm-market-top {
+    padding: 8px 14px 6px;
+  }
+
+  .vm-market-body {
+    padding: 16px 14px 32px;
   }
 }
 
@@ -582,10 +592,13 @@
 }
 
 @media (max-width: 700px) {
+  .vm-market-rail {
+    gap: 10px;
+  }
+
   .vm-market-rail__item {
-    flex-basis: 100%;
-    width: 100%;
-    max-width: none;
+    flex: 0 0 calc((100% - 10px) / 2);
+    width: calc((100% - 10px) / 2);
   }
 }
 
@@ -1132,27 +1145,37 @@
 
 @media (max-width: 768px) {
   .vm-stall-detail__info {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(120px, 180px) 1fr;
+    gap: 12px;
   }
 
   .vm-stall-detail__photo {
     max-width: 180px;
   }
-}
-
-@media (max-width: 768px) {
-  .vm-market-rail__item {
-    flex-basis: 100%;
-    width: 100%;
-  }
 
   .vm-market-rail {
-    gap: 16px;
+    gap: 10px;
     padding-inline: 0;
+  }
+
+  .vm-market-rail__item {
+    flex: 0 0 calc((100% - 10px) / 2);
+    width: calc((100% - 10px) / 2);
   }
 
   .vm-market-banner--entrance {
     border-radius: 12px;
+  }
+
+  .vm-market-slider__chrome {
+    justify-content: flex-end;
+  }
+
+  .vm-market-slider__chrome .vm-btn {
+    min-width: 40px;
+    min-height: 36px;
+    padding: 6px 10px;
+    font-size: 0.82rem;
   }
 }
 
@@ -1436,20 +1459,27 @@
 
 @media (max-width: 640px) {
   .vm-account-header {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
   }
 
-  .vm-account-header .vm-btn {
-    width: 100%;
-  }
-
-  .vm-card__actions {
-    flex-direction: column;
-  }
-
+  .vm-account-header .vm-btn,
   .vm-card__actions .vm-btn {
-    width: 100%;
+    padding: 7px 10px;
+    font-size: 0.82rem;
+  }
+
+  .vm-card-grid {
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .vm-card,
+  .vm-panel {
+    padding: 12px;
   }
 }
 

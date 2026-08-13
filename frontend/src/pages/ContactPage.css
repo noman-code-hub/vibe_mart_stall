@@ -16,6 +16,7 @@
   max-width: 100%;
   margin: 0 auto;
   display: block;
+  container-type: inline-size;
 }
 
 .vm-contact__art {
@@ -161,7 +162,7 @@
   caret-color: #1a1008;
   /* Match comic labels painted into CONTACT FORM.png */
   font-family: 'Bangers', Impact, 'Arial Black', system-ui, sans-serif;
-  font-size: clamp(0.95rem, 2.2vw, 1.35rem);
+  font-size: clamp(0.7rem, 1.85cqi, 1.35rem);
   font-weight: 400;
   letter-spacing: 0.04em;
   line-height: 1.25;
@@ -198,9 +199,5 @@
 @media (max-width: 640px) {
   .vm-contact {
     padding: 4px clamp(20px, 6vw, 32px) 4px;
-  }
-
-  .vm-contact__input {
-    font-size: clamp(0.85rem, 3.4vw, 1.1rem);
   }
 }

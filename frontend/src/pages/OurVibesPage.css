@@ -6,14 +6,13 @@
 }
 
 .vm-vibes {
-  margin: -28px 0 0;
+  margin: 0;
   width: 100%;
   box-sizing: border-box;
   display: grid;
   justify-items: center;
   background: #ffffff;
-  /* Small top/bottom, wider left/right gutters around the art */
-  padding: 12px clamp(40px, 10vw, 88px) 16px;
+  padding: 12px clamp(40px, 10vw, 88px) 20px;
 }
 
 .vm-vibes__image {
@@ -29,6 +28,6 @@
 
 @media (max-width: 640px) {
   .vm-vibes {
-    padding: 10px clamp(20px, 6vw, 32px) 12px;
+    padding: 8px clamp(20px, 6vw, 32px) 14px;
   }
 }

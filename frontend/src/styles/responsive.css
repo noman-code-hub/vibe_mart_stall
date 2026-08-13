@@ -1,0 +1,154 @@
+/* Phone + tablet: same layout as desktop, just smaller. */
+
+:root {
+  --vm-gutter: clamp(40px, 10vw, 88px);
+  --vm-tap: 44px;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --vm-gutter: clamp(24px, 5vw, 56px);
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --vm-gutter: clamp(16px, 4vw, 28px);
+  }
+}
+
+/* Safe area for notched phones */
+.vm-header {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.vm-footer {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.vm-home,
+.vm-vibes,
+.vm-sell,
+.vm-contact,
+.vm-login,
+.vm-register,
+.vm-reset,
+.vm-trolley__banner,
+.vm-trolley__body,
+.vm-market-top,
+.vm-market-body {
+  padding-left: var(--vm-gutter) !important;
+  padding-right: var(--vm-gutter) !important;
+}
+
+@media (max-width: 1024px) {
+  .vm-home,
+  .vm-sell,
+  .vm-contact {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  .vm-vibes {
+    padding-top: 8px !important;
+    padding-bottom: 14px !important;
+  }
+
+  .vm-login,
+  .vm-register {
+    padding-top: 10px !important;
+    padding-bottom: 12px !important;
+  }
+
+  .vm-reset {
+    padding: 12px var(--vm-gutter) 20px !important;
+  }
+
+  .vm-reset__card {
+    max-width: 360px;
+    padding: 22px 20px 18px;
+  }
+
+  .vm-trolley__body {
+    padding-top: 18px !important;
+    padding-bottom: 32px !important;
+  }
+
+  .vm-market-top {
+    padding-top: 8px !important;
+    padding-bottom: 6px !important;
+  }
+
+  .vm-market-body {
+    padding-top: 18px !important;
+    padding-bottom: 36px !important;
+  }
+
+  .vm-main--dashboard,
+  .vm-main--dashboard:has(.app--finished),
+  .vm-main--folder {
+    padding-left: var(--vm-gutter) !important;
+    padding-right: var(--vm-gutter) !important;
+  }
+
+  .vm-home__signup,
+  .vm-home__signup-img {
+    width: 140px !important;
+    height: 48px !important;
+    max-height: 48px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .vm-modal {
+    padding: 16px;
+  }
+
+  .vm-modal__dialog {
+    width: min(640px, 100%);
+    max-height: min(90dvh, 100%);
+  }
+
+  .vm-stall-focus {
+    padding: 12px;
+  }
+
+  .vm-stall-focus__dialog {
+    max-height: 90dvh;
+  }
+}
+
+@media (max-width: 480px) {
+  .vm-home__signup,
+  .vm-home__signup-img {
+    width: 120px !important;
+    height: 42px !important;
+    max-height: 42px !important;
+  }
+
+  .vm-reset__title {
+    font-size: 1.45rem;
+  }
+
+  .vm-btn,
+  .vm-trolley__clear,
+  .vm-trolley__remove,
+  .vm-modal__buy {
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 960px) {
+  #vibe-mart-root .app,
+  #stall-root .app {
+    padding: 16px var(--vm-gutter) 32px;
+  }
+
+  #vibe-mart-root .app.app--dashboard,
+  #stall-root .app.app--dashboard,
+  #vibe-mart-root .app.app--finished,
+  #stall-root .app.app--finished {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}

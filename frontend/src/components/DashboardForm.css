@@ -12,6 +12,8 @@
   position: relative;
   width: min(100%, 920px);
   margin: 0 auto;
+  overflow: visible;
+  container-type: inline-size;
 }
 
 #vibe-mart-root .app--dashboard .vm-dash__art,
@@ -36,12 +38,16 @@
   top: 20.6%;
   z-index: 3;
   margin: 0;
-  padding: 4px 8px;
-  max-width: 50%;
-  font-size: 11px;
+  padding: 2px 6px;
+  max-width: 48%;
+  font-size: clamp(0.5rem, 1.2cqi, 11px);
   font-weight: 700;
+  line-height: 1.15;
   color: #111;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.82);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #vibe-mart-root .app--dashboard .app__save-banner,
@@ -252,9 +258,9 @@
   min-height: 0 !important;
   max-height: 100%;
   text-align: left;
-  font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+  font-size: clamp(0.45rem, 1.39cqi, 0.8rem);
   line-height: 1;
-  padding: 0 8px;
+  padding: 0 clamp(2px, 0.7cqi, 8px);
 }
 
 #vibe-mart-root .app--dashboard .stall-form__section[data-section='about-you'],
@@ -289,9 +295,9 @@
 #vibe-mart-root .app--dashboard .stall-form__field--seller-name input,
 #stall-root .app--dashboard .stall-form__field--seller-name input {
   height: 100% !important;
-  font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+  font-size: clamp(0.45rem, 1.39cqi, 0.8rem);
   line-height: 1;
-  padding: 0 8px;
+  padding: 0 clamp(2px, 0.7cqi, 8px);
 }
 
 /* Selfie upload — separate slot (SELFIE TIPS area) */
@@ -686,13 +692,13 @@
   box-shadow: none !important;
   background: transparent !important;
   border-radius: 0;
-  padding: 0 8px;
+  padding: 0 clamp(2px, 0.7cqi, 8px);
   margin: 0;
   min-height: 0;
   height: 100%;
   max-height: 100%;
-  line-height: 1.2;
-  font-size: clamp(0.75rem, 1.8vw, 1rem);
+  line-height: 1.15;
+  font-size: clamp(0.5rem, 1.74cqi, 1rem);
   overflow: hidden !important;
   resize: none;
   scrollbar-width: none;
@@ -733,7 +739,9 @@
 
 #vibe-mart-root .app--dashboard .stall-form__field--compact textarea,
 #stall-root .app--dashboard .stall-form__field--compact textarea {
-  max-height: 3.2rem;
+  max-height: 100%;
+  font-size: clamp(0.45rem, 1.4cqi, 0.85rem);
+  line-height: 1.15;
 }
 
 #vibe-mart-root .app--dashboard .stall-form__grid,
@@ -751,17 +759,17 @@
 #vibe-mart-root .app--dashboard .stall-form__product-chip,
 #stall-root .app--dashboard .stall-form__product-chip {
   flex: 0 0 auto;
-  max-width: 11rem;
-  min-width: 4.3rem;
+  max-width: min(11rem, 28cqi);
+  min-width: min(4.3rem, 14cqi);
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.4);
   background: #0E5CCB;
-  padding: 6px 8px;
+  padding: clamp(3px, 0.55cqi, 6px) clamp(4px, 0.7cqi, 8px);
   border-radius: 7px;
-  gap: 4px;
+  gap: clamp(2px, 0.4cqi, 4px);
   min-height: 0;
   height: auto;
   max-height: 100%;
@@ -770,7 +778,7 @@
 #vibe-mart-root .app--dashboard .stall-form__product-chip-name,
 #stall-root .app--dashboard .stall-form__product-chip-name {
   color: #fff;
-  font-size: 12px;
+  font-size: clamp(0.5rem, 1.3cqi, 12px);
   line-height: 1.15;
   white-space: nowrap;
   overflow: hidden;
@@ -780,8 +788,8 @@
 #vibe-mart-root .app--dashboard .stall-form__product-chip-edit,
 #stall-root .app--dashboard .stall-form__product-chip-edit {
   align-self: stretch;
-  font-size: 11px;
-  padding: 4px 8px;
+  font-size: clamp(0.5rem, 1.2cqi, 11px);
+  padding: clamp(2px, 0.45cqi, 4px) clamp(4px, 0.8cqi, 8px);
   line-height: 1.2;
   background: rgba(255, 255, 255, 0.94);
   border: none;
@@ -977,4 +985,24 @@
 #stall-root .app--dashboard .stall-form__market-stall-tips:focus-visible {
   outline: 3px solid #ffe600;
   outline-offset: 2px;
+}
+
+@media (max-width: 1024px) {
+  #vibe-mart-root .app--dashboard .app__quota-note,
+  #stall-root .app--dashboard .app__quota-note {
+    top: 19.6%;
+    left: 1.4%;
+    padding: 1px 5px;
+    max-width: 46%;
+  }
+}
+
+@media (max-width: 640px) {
+  #vibe-mart-root .app--dashboard .app__quota-note,
+  #stall-root .app--dashboard .app__quota-note {
+    top: 18.8%;
+    left: 1.6%;
+    padding: 0 4px;
+    max-width: 52%;
+  }
 }

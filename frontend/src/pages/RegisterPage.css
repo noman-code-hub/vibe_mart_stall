@@ -31,6 +31,7 @@
   max-width: min(1180px, 100%);
   margin: 0 auto;
   display: block;
+  container-type: inline-size;
 }
 
 .vm-register__art {
@@ -133,7 +134,7 @@
   border-radius: 999px;
   background: rgba(255, 232, 228, 0.96);
   color: #8a1f1f;
-  font-size: clamp(0.62rem, 1.35vw, 0.82rem);
+  font-size: clamp(0.5rem, 1.2cqi, 0.82rem);
   font-weight: 700;
   line-height: 1.25;
   text-align: center;
@@ -178,7 +179,7 @@
   text-align: left;
   color: #1a1008;
   caret-color: #1a1008;
-  font: 600 clamp(0.7rem, 1.5vw, 1rem) / 1.2 'Segoe UI', system-ui, sans-serif;
+  font: 600 clamp(0.55rem, 1.35cqi, 1rem) / 1.2 'Segoe UI', system-ui, sans-serif;
   border-radius: 6px;
 }
 
@@ -345,11 +346,7 @@
     padding: 10px clamp(20px, 6vw, 32px) 12px;
   }
 
-  .vm-register__input {
-    font-size: clamp(0.65rem, 2.6vw, 0.9rem);
-  }
-
   .vm-register__error {
-    font-size: 0.7rem;
+    font-size: clamp(0.5rem, 1.2cqi, 0.7rem);
   }
 }

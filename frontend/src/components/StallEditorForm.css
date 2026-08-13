@@ -485,24 +485,23 @@
 
 @media (max-width: 480px) {
   .stall-product-modal__row {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
   }
 
   .stall-product-modal__hint {
     max-width: none;
+    font-size: 0.78rem;
   }
 
   .stall-product-modal__actions {
-    flex-wrap: wrap;
-  }
-
-  .stall-product-modal__actions-end {
-    width: 100%;
+    gap: 8px;
   }
 
   .stall-product-modal__cancel,
   .stall-product-modal__save {
-    flex: 1;
+    padding: 8px 12px;
+    font-size: 0.82rem;
   }
 }
 

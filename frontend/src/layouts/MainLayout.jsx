@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
@@ -44,6 +45,7 @@ export default function MainLayout() {
   const { isAuthenticated, loading, logout } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
+  const [menuOpen, setMenuOpen] = useState(false)
   const wideMain =
     location.pathname.startsWith('/market') ||
     location.pathname.startsWith('/sell-smart') ||
@@ -81,6 +83,8 @@ export default function MainLayout() {
     location.pathname.startsWith('/reset-password')
   const contactOnly =
     location.pathname === '/contact' || location.pathname === '/contact/'
+  const vibesOnly =
+    location.pathname === '/our-vibes' || location.pathname === '/our-vibes/'
   const year = new Date().getFullYear()
 
   const navItems = NAV.filter((item) => {
@@ -90,18 +94,45 @@ export default function MainLayout() {
     return true
   })
 
+  useEffect(() => {
+    setMenuOpen(false)
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (!menuOpen) return undefined
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = (event) => {
+      if (event.key === 'Escape') setMenuOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = previous
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [menuOpen])
+
   const onLogout = async () => {
+    setMenuOpen(false)
     await logout()
     navigate('/', { replace: true })
   }
 
   return (
-    <div className={`vm-shell${dashboardOnly ? ' vm-shell--dashboard' : ''}${folderOnly ? ' vm-shell--folder' : ''}${marketOnly ? ' vm-shell--market' : ''}${trolleyOnly ? ' vm-shell--trolley' : ''}${homeOnly ? ' vm-shell--home' : ''}${loginOnly ? ' vm-shell--login' : ''}${registerOnly ? ' vm-shell--register' : ''}${resetOnly ? ' vm-shell--reset' : ''}${contactOnly ? ' vm-shell--contact' : ''}`}>
+    <div className={`vm-shell${menuOpen ? ' is-open' : ''}${dashboardOnly ? ' vm-shell--dashboard' : ''}${folderOnly ? ' vm-shell--folder' : ''}${marketOnly ? ' vm-shell--market' : ''}${trolleyOnly ? ' vm-shell--trolley' : ''}${homeOnly ? ' vm-shell--home' : ''}${loginOnly ? ' vm-shell--login' : ''}${registerOnly ? ' vm-shell--register' : ''}${resetOnly ? ' vm-shell--reset' : ''}${contactOnly ? ' vm-shell--contact' : ''}${vibesOnly ? ' vm-shell--vibes' : ''}`}>
       <header
-        className="vm-header"
+        className={`vm-header${menuOpen ? ' is-open' : ''}`}
         style={{ '--vm-header-bg': `url(${headerBg})` }}
       >
-        <div className="vm-header__inner">
+        {menuOpen ? (
+          <button
+            type="button"
+            className="vm-menu-backdrop"
+            aria-label="Close menu"
+            onClick={() => setMenuOpen(false)}
+          />
+        ) : null}
+        <div className={`vm-header__inner${menuOpen ? ' is-open' : ''}`}>
           <NavLink to="/" className="vm-logo" end aria-label={siteName}>
             <img
               className="vm-logo__img"
@@ -110,7 +141,23 @@ export default function MainLayout() {
               draggable={false}
             />
           </NavLink>
-          <nav className="vm-nav" aria-label="Primary">
+          <button
+            type="button"
+            className={`vm-menu-toggle${menuOpen ? ' is-open' : ''}`}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            aria-controls="vm-primary-nav"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span className="vm-menu-toggle__bar" />
+            <span className="vm-menu-toggle__bar" />
+            <span className="vm-menu-toggle__bar" />
+          </button>
+          <nav
+            id="vm-primary-nav"
+            className={`vm-nav${menuOpen ? ' is-open' : ''}`}
+            aria-label="Primary"
+          >
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -125,6 +172,7 @@ export default function MainLayout() {
                   alt=""
                   draggable={false}
                 />
+                <span className="vm-nav__label">{item.label}</span>
               </NavLink>
             ))}
             {!loading && isAuthenticated ? (
@@ -140,6 +188,7 @@ export default function MainLayout() {
                   alt=""
                   draggable={false}
                 />
+                <span className="vm-nav__label">Log out</span>
               </button>
             ) : null}
           </nav>
@@ -147,7 +196,7 @@ export default function MainLayout() {
       </header>
 
       <main
-        className={`vm-main${wideMain ? ' vm-main--wide' : ''}${dashboardOnly ? ' vm-main--dashboard' : ''}${folderOnly ? ' vm-main--folder' : ''}${marketOnly ? ' vm-main--market' : ''}${trolleyOnly ? ' vm-main--trolley' : ''}${homeOnly ? ' vm-main--home' : ''}${loginOnly ? ' vm-main--login' : ''}${registerOnly ? ' vm-main--register' : ''}${resetOnly ? ' vm-main--reset' : ''}${contactOnly ? ' vm-main--contact' : ''}`}
+        className={`vm-main${wideMain ? ' vm-main--wide' : ''}${dashboardOnly ? ' vm-main--dashboard' : ''}${folderOnly ? ' vm-main--folder' : ''}${marketOnly ? ' vm-main--market' : ''}${trolleyOnly ? ' vm-main--trolley' : ''}${homeOnly ? ' vm-main--home' : ''}${loginOnly ? ' vm-main--login' : ''}${registerOnly ? ' vm-main--register' : ''}${resetOnly ? ' vm-main--reset' : ''}${contactOnly ? ' vm-main--contact' : ''}${vibesOnly ? ' vm-main--vibes' : ''}`}
       >
         <Outlet />
       </main>

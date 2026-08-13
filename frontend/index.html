@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -101,6 +101,16 @@
         40% {
           transform: translateY(-8px) scale(1.08);
           opacity: 1;
+        }
+      }
+
+      @media (max-width: 640px) {
+        #vm-splash .vm-splash__logo {
+          width: min(280px, 86vw);
+        }
+
+        #vm-splash .vm-splash__copy {
+          font-size: 0.84rem;
         }
       }
 

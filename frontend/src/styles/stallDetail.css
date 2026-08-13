@@ -431,16 +431,22 @@
 
 @media (max-width: 768px) {
   .vm-sd__story {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(110px, 180px) 1fr;
+    gap: 12px;
+    padding: 14px;
   }
 
   .vm-sd__portrait {
-    max-width: 220px;
-    margin: 0 auto;
+    max-width: 180px;
   }
 
   .vm-sd__facts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .vm-sd__fact {
+    padding: 10px 8px;
   }
 
   .vm-sd__brand {
@@ -451,15 +457,26 @@
 @media (max-width: 480px) {
   .vm-sd {
     width: min(100% - 16px, 1120px);
-    gap: 22px;
+    gap: 14px;
   }
 
   .vm-sd__stage {
     padding: 6px;
   }
 
-  .vm-sd__goods-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .vm-sd__story {
+    grid-template-columns: minmax(90px, 130px) 1fr;
     gap: 10px;
+    padding: 10px;
+  }
+
+  .vm-sd__facts {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .vm-sd__goods-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 8px;
   }
 }

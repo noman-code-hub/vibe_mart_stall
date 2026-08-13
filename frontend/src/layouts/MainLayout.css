@@ -1,12 +1,18 @@
 .vm-shell {
-  min-height: 163vh;
+  box-sizing: border-box;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   overflow-x: clip;
+  padding-top: calc(88px + env(safe-area-inset-top, 0px));
   background:
     radial-gradient(circle at top left, rgba(212, 160, 23, 0.12), transparent 40%),
     linear-gradient(180deg, #f7f1e6 0%, #efe4d2 45%, #f4efe6 100%);
   color: #1a1008;
+}
+
+.vm-shell.is-open {
+  overflow: visible;
 }
 
 .vm-shell--dashboard {
@@ -29,9 +35,21 @@
   background: #ffffff;
 }
 
+.vm-shell--vibes {
+  min-height: 0;
+  background: #ffffff;
+}
+
+.vm-shell--vibes .vm-footer {
+  margin-top: 0;
+}
+
 .vm-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 40;
   /* Asset is mostly white; lock crop onto the blue strip (~25–45% down the image). */
   background-color: #1657c8;
@@ -142,6 +160,10 @@
   user-select: none;
 }
 
+.vm-nav__label {
+  display: none;
+}
+
 .vm-nav__button,
 .vm-nav__button-link {
   font: inherit;
@@ -162,6 +184,10 @@
 .vm-nav__button:hover,
 .vm-nav__button-link:hover {
   background: #ffe600;
+}
+
+.vm-menu-toggle {
+  display: none;
 }
 
 .vm-main {
@@ -215,6 +241,14 @@
   background: #ffffff;
 }
 
+.vm-main--vibes {
+  max-width: none;
+  width: 100%;
+  flex: 0 0 auto;
+  padding: 0;
+  background: #ffffff;
+}
+
 .vm-main--login {
   max-width: none;
   width: 100%;
@@ -234,17 +268,17 @@
 }
 
 .vm-shell--login {
-  min-height: 163vh;
+  min-height: 100dvh;
   background: #ffffff;
 }
 
 .vm-shell--register {
-  min-height: 163vh;
+  min-height: 100dvh;
   background: #ffffff;
 }
 
 .vm-shell--reset {
-  min-height: 163vh;
+  min-height: 100dvh;
   background: #ffffff;
 }
 
@@ -290,8 +324,9 @@
   margin-top: auto;
   background-color: #1657c8;
   background-image: var(--vm-footer-bg);
-  background-size: cover;
-  background-position: center;
+  /* PNG has white bars top + bottom — zoom into the blue comic strip */
+  background-size: 120% 180%;
+  background-position: center 50%;
   background-repeat: no-repeat;
   color: #fff;
   border-top: none;
@@ -379,25 +414,319 @@
   color: #fff;
 }
 
-@media (max-width: 820px) {
+@media (max-width: 1024px) {
+  .vm-shell {
+    padding-top: calc(68px + env(safe-area-inset-top, 0px));
+  }
+
+  .vm-footer {
+    min-height: 140px;
+  }
+
+  .vm-footer__inner {
+    padding: 18px 16px 14px;
+  }
+
+  .vm-footer__top {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 16px;
+    padding-bottom: 12px;
+  }
+
+  .vm-footer__logo {
+    flex: 0 0 auto;
+    width: 160px;
+    height: 68px;
+  }
+
+  .vm-footer__nav {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px 10px;
+    min-width: 0;
+  }
+
+  .vm-footer__link {
+    font-size: 0.74rem;
+  }
+
+  .vm-footer__bar {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px 16px;
+    padding-top: 10px;
+    font-size: 0.68rem;
+  }
+
+  .vm-header {
+    min-height: 68px;
+    overflow: visible;
+    background-color: #1657c8;
+    /* Zoom into the blue comic strip so white PNG margins do not show */
+    background-size: 180% 900%;
+    background-position: center 33%;
+  }
+
+  .vm-header.is-open {
+    z-index: 90;
+  }
+
+  .vm-menu-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    border: 0;
+    padding: 0;
+    background: rgba(8, 6, 4, 0.45);
+    cursor: pointer;
+  }
+
   .vm-header__inner {
-    height: 76px;
+    position: relative;
+    z-index: 2;
+    min-height: 68px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    overflow: visible;
   }
 
   .vm-logo {
-    display: none;
+    position: relative;
+    left: auto;
+    top: auto;
+    --x: 0;
+    --y: 0;
+    width: min(320px, 72vw);
+    height: 64px;
+    margin: 0 auto;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .vm-logo__img {
+    height: 230%;
+    margin-left: 0;
+    object-position: center;
+  }
+
+  .vm-menu-toggle {
+    display: grid;
+    place-content: center;
+    gap: 5px;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    z-index: 4;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 3px solid #1a1008;
+    border-radius: 10px;
+    background: #ffe600;
+    box-shadow: 2px 2px 0 #1a1008;
+    cursor: pointer;
+    transform: translateY(-50%);
+  }
+
+  .vm-menu-toggle__bar {
+    display: block;
+    width: 22px;
+    height: 3px;
+    margin: 0 auto;
+    border-radius: 2px;
+    background: #1a1008;
+    transition: transform 0.18s ease, opacity 0.18s ease;
+  }
+
+  .vm-menu-toggle.is-open .vm-menu-toggle__bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .vm-menu-toggle.is-open .vm-menu-toggle__bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .vm-menu-toggle.is-open .vm-menu-toggle__bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
   }
 
   .vm-nav {
-    flex-wrap: wrap;
+    display: none;
+    position: fixed;
+    left: auto;
+    right: 10px;
+    top: calc(68px + env(safe-area-inset-top, 0px) + 8px);
+    transform: none;
+    width: auto;
+    max-width: none;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 10px;
+    background: #fffdf8;
+    border: 3px solid #1a1008;
+    border-radius: 14px;
+    box-shadow: 4px 4px 0 #1a1008;
+    z-index: 3;
+    max-height: none;
+    overflow: visible;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .vm-nav::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .vm-nav.is-open {
+    display: flex;
+    z-index: 100;
+  }
+
+  .vm-nav__icon-link {
+    display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 8px;
-    max-width: calc(100% - 24px);
+    width: auto;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+    box-shadow: none;
+    text-decoration: none;
+    color: #1a1008;
+  }
+
+  .vm-nav__icon-link.active {
+    background: transparent;
+    outline: 2px solid #1a1008;
+    outline-offset: 1px;
+    transform: none;
+  }
+
+  .vm-nav__logout {
+    text-align: center;
+    font: inherit;
+  }
+
+  .vm-nav__icon {
+    height: 52px;
+    max-width: 72px;
+    flex: 0 0 auto;
+  }
+
+  .vm-nav__label {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .vm-shell {
+    padding-top: calc(62px + env(safe-area-inset-top, 0px));
+  }
+
+  .vm-header {
+    min-height: 62px;
+  }
+
+  .vm-nav {
+    top: calc(62px + env(safe-area-inset-top, 0px) + 8px);
+  }
+
+  .vm-header__inner {
+    min-height: 62px;
+    height: 62px;
+    padding: 0 10px;
+  }
+
+  .vm-logo {
+    width: min(280px, 74vw);
+    height: 58px;
+  }
+
+  .vm-menu-toggle {
+    right: 10px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .vm-nav {
+    right: 8px;
+    width: auto;
   }
 
   .vm-nav__icon {
     height: 48px;
     max-width: 66px;
+  }
+
+  .vm-footer {
+    min-height: 110px;
+  }
+
+  .vm-footer__inner {
+    padding: 12px 10px 10px;
+  }
+
+  .vm-footer__top {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 10px;
+    padding-bottom: 8px;
+  }
+
+  .vm-footer__logo {
+    flex: 0 0 auto;
+    width: 108px;
+    height: 48px;
+  }
+
+  .vm-footer__logo-img {
+    height: 189%;
+    margin-left: -6%;
+    object-position: left center;
+  }
+
+  .vm-footer__nav {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px 8px;
+    min-width: 0;
+  }
+
+  .vm-footer__link {
+    font-size: 0.62rem;
+  }
+
+  .vm-footer__bar {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    padding-top: 8px;
+    font-size: 0.58rem;
+  }
+
+  .vm-footer__copy,
+  .vm-footer__meta {
+    white-space: nowrap;
   }
 }
 
@@ -415,17 +744,3 @@
   }
 }
 
-@media (max-width: 560px) {
-  .vm-footer__top {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .vm-footer__nav {
-    justify-content: flex-start;
-  }
-
-  .vm-footer__bar {
-    flex-direction: column;
-  }
-}

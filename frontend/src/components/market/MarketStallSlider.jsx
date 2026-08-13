@@ -69,7 +69,8 @@ function StallCard({ stall, onOpen }) {
 export default function MarketStallSlider({ stalls = [], loading = false, onStallOpen }) {
   const railRef = useRef(null)
   const [page, setPage] = useState(0)
-  const pageCount = Math.max(1, Math.ceil(stalls.length / 2))
+  const perPage = 2
+  const pageCount = Math.max(1, Math.ceil(stalls.length / perPage))
 
   const scrollToPage = (nextPage) => {
     const node = railRef.current
