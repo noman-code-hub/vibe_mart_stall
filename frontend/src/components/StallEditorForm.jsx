@@ -216,8 +216,8 @@ export default function StallEditorForm({
     }
   }, [tipsModalOpen])
 
-  const aboutWords = countWords(data.seller.about)
-  const ambitionWords = countWords(data.seller.ambition)
+  const aboutChars = countChars(data.seller.about)
+  const ambitionChars = countChars(data.seller.ambition)
   const isEditingProduct = productModal?.index != null
 
   return (
@@ -338,13 +338,14 @@ export default function StallEditorForm({
           className={`stall-form__field stall-form__field--about stall-form__field--compact${errors.about ? ' stall-form__field--error' : ''}`}
         >
           <span>
-            About you ({aboutWords}/{FIELD_LIMITS.about.maxWords} words)
+            About you ({aboutChars}/{FIELD_LIMITS.about.maxChars} letters)
           </span>
           <textarea
-            rows={2}
+            rows={1}
             value={data.seller.about}
+            maxLength={FIELD_LIMITS.about.maxChars}
             onChange={(e) =>
-              handleWordLimit('about', e.target.value, FIELD_LIMITS.about.maxWords, (v) =>
+              handleCharLimit('about', e.target.value, FIELD_LIMITS.about.maxChars, (v) =>
                 setSellerField('about', v)
               )
             }
@@ -363,13 +364,14 @@ export default function StallEditorForm({
           className={`stall-form__field stall-form__field--ambition stall-form__field--compact${errors.ambition ? ' stall-form__field--error' : ''}`}
         >
           <span>
-            Ambition ({ambitionWords}/{FIELD_LIMITS.ambition.maxWords} words)
+            Ambition ({ambitionChars}/{FIELD_LIMITS.ambition.maxChars} letters)
           </span>
           <textarea
-            rows={2}
+            rows={1}
             value={data.seller.ambition}
+            maxLength={FIELD_LIMITS.ambition.maxChars}
             onChange={(e) =>
-              handleWordLimit('ambition', e.target.value, FIELD_LIMITS.ambition.maxWords, (v) =>
+              handleCharLimit('ambition', e.target.value, FIELD_LIMITS.ambition.maxChars, (v) =>
                 setSellerField('ambition', v)
               )
             }

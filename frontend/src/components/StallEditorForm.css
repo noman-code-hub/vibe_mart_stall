@@ -518,7 +518,9 @@
 /* Tips image buttons — dashboard position lives in DashboardForm.css */
 .stall-form__selfie-tips,
 .stall-form__market-stall-tips {
-  display: inline-block;
+  display: block;
+  width: min(360px, 100%);
+  aspect-ratio: 2006 / 761;
   margin: 8px 0;
   padding: 0;
   border: 0;
@@ -530,8 +532,9 @@
 .stall-form__selfie-tips img,
 .stall-form__market-stall-tips img {
   display: block;
-  width: min(320px, 100%);
-  height: auto;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
   pointer-events: none;
   user-select: none;
 }

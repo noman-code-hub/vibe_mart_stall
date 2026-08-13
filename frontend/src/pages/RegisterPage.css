@@ -59,6 +59,7 @@
 }
 
 .vm-register__input,
+.vm-register__pass-wrap,
 .vm-register__check,
 .vm-register__submit,
 .vm-register__login,
@@ -209,7 +210,53 @@
   -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
 }
 
-.vm-register__input.is-error {
+.vm-register__pass-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.vm-register__pass-wrap .vm-register__input {
+  position: static;
+  left: auto;
+  top: auto;
+  width: 100%;
+  height: 100%;
+  padding-right: 18%;
+}
+
+.vm-register__pass-toggle {
+  position: absolute;
+  right: 1.5%;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 14%;
+  max-width: 36px;
+  height: 78%;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #1a1008;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.vm-register__pass-toggle svg {
+  display: block;
+  width: 72%;
+  height: 72%;
+}
+
+.vm-register__pass-toggle:hover,
+.vm-register__pass-toggle:focus-visible {
+  background: rgba(26, 16, 8, 0.08);
+  outline: none;
+}
+
+.vm-register__input.is-error,
+.vm-register__pass-wrap.is-error .vm-register__input {
   background: rgba(255, 110, 110, 0.35) !important;
   box-shadow: inset 0 0 0 2px #c41e1e !important;
   color: #5c1212;

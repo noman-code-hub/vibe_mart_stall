@@ -52,7 +52,9 @@
 }
 
 .vm-login__input,
+.vm-login__pass-wrap,
 .vm-login__remember,
+.vm-login__forgot,
 .vm-login__submit,
 .vm-login__signup,
 .vm-login__error {
@@ -89,6 +91,13 @@
   align-items: center;
   justify-content: flex-start;
   cursor: pointer;
+}
+
+.vm-login__forgot {
+  --x: 39.6%;
+  --y: 66.4%;
+  --w: 25.8%;
+  --h: 3.6%;
 }
 
 .vm-login__submit {
@@ -131,6 +140,51 @@
   color: #1a1008;
   caret-color: #1a1008;
   font: 600 clamp(0.7rem, 1.5vw, 1rem) / 1.2 'Segoe UI', system-ui, sans-serif;
+}
+
+.vm-login__pass-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.vm-login__pass-wrap .vm-login__input {
+  position: static;
+  left: auto;
+  top: auto;
+  width: 100%;
+  height: 100%;
+  padding-right: 18%;
+}
+
+.vm-login__pass-toggle {
+  position: absolute;
+  right: 1.5%;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 16%;
+  max-width: 36px;
+  height: 78%;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #1a1008;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.vm-login__pass-toggle svg {
+  display: block;
+  width: 72%;
+  height: 72%;
+}
+
+.vm-login__pass-toggle:hover,
+.vm-login__pass-toggle:focus-visible {
+  background: rgba(26, 16, 8, 0.08);
+  outline: none;
 }
 
 .vm-login__input::placeholder {
@@ -185,6 +239,18 @@
 .vm-login__submit:disabled {
   cursor: wait;
   opacity: 0.7;
+}
+
+.vm-login__forgot {
+  display: block;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.vm-login__forgot:hover,
+.vm-login__forgot:focus-visible {
+  background: transparent;
+  outline: none;
 }
 
 .vm-login__signup {

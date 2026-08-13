@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import footerBg from '../assets/d8770035-4dca-4c22-aef3-f2d92299155f.png'
@@ -12,6 +12,7 @@ import iconMarket from '../assets/5 MARKET.png'
 import iconLogin from '../assets/6 LOGIN.png'
 import iconCart from '../assets/7 MY CART.png'
 import iconContact from '../assets/8 CONTACT.png'
+import iconLogout from '../assets/LOG OUT.png'
 import './MainLayout.css'
 
 const NAV = [
@@ -40,8 +41,9 @@ const FOOTER_TRADE = [
 
 export default function MainLayout() {
   const { siteName } = useRuntimeConfig()
-  const { isAuthenticated, loading } = useAuth()
+  const { isAuthenticated, loading, logout } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
   const wideMain =
     location.pathname.startsWith('/market') ||
     location.pathname.startsWith('/sell-smart') ||
@@ -50,6 +52,8 @@ export default function MainLayout() {
     location.pathname.startsWith('/my-trolley') ||
     location.pathname.startsWith('/my-account') ||
     location.pathname.startsWith('/register') ||
+    location.pathname.startsWith('/forgot-password') ||
+    location.pathname.startsWith('/reset-password') ||
     location.pathname.startsWith('/home') ||
     location.pathname === '/' ||
     location.pathname === ''
@@ -72,6 +76,11 @@ export default function MainLayout() {
     location.pathname === '/login' || location.pathname === '/login/'
   const registerOnly =
     location.pathname === '/register' || location.pathname === '/register/'
+  const resetOnly =
+    location.pathname.startsWith('/forgot-password') ||
+    location.pathname.startsWith('/reset-password')
+  const contactOnly =
+    location.pathname === '/contact' || location.pathname === '/contact/'
   const year = new Date().getFullYear()
 
   const navItems = NAV.filter((item) => {
@@ -81,8 +90,13 @@ export default function MainLayout() {
     return true
   })
 
+  const onLogout = async () => {
+    await logout()
+    navigate('/', { replace: true })
+  }
+
   return (
-    <div className={`vm-shell${dashboardOnly ? ' vm-shell--dashboard' : ''}${folderOnly ? ' vm-shell--folder' : ''}${marketOnly ? ' vm-shell--market' : ''}${trolleyOnly ? ' vm-shell--trolley' : ''}${homeOnly ? ' vm-shell--home' : ''}${loginOnly ? ' vm-shell--login' : ''}${registerOnly ? ' vm-shell--register' : ''}`}>
+    <div className={`vm-shell${dashboardOnly ? ' vm-shell--dashboard' : ''}${folderOnly ? ' vm-shell--folder' : ''}${marketOnly ? ' vm-shell--market' : ''}${trolleyOnly ? ' vm-shell--trolley' : ''}${homeOnly ? ' vm-shell--home' : ''}${loginOnly ? ' vm-shell--login' : ''}${registerOnly ? ' vm-shell--register' : ''}${resetOnly ? ' vm-shell--reset' : ''}${contactOnly ? ' vm-shell--contact' : ''}`}>
       <header
         className="vm-header"
         style={{ '--vm-header-bg': `url(${headerBg})` }}
@@ -113,12 +127,27 @@ export default function MainLayout() {
                 />
               </NavLink>
             ))}
+            {!loading && isAuthenticated ? (
+              <button
+                type="button"
+                className="vm-nav__icon-link vm-nav__logout"
+                aria-label="Log out"
+                onClick={onLogout}
+              >
+                <img
+                  className="vm-nav__icon"
+                  src={iconLogout}
+                  alt=""
+                  draggable={false}
+                />
+              </button>
+            ) : null}
           </nav>
         </div>
       </header>
 
       <main
-        className={`vm-main${wideMain ? ' vm-main--wide' : ''}${dashboardOnly ? ' vm-main--dashboard' : ''}${folderOnly ? ' vm-main--folder' : ''}${marketOnly ? ' vm-main--market' : ''}${trolleyOnly ? ' vm-main--trolley' : ''}${homeOnly ? ' vm-main--home' : ''}${loginOnly ? ' vm-main--login' : ''}${registerOnly ? ' vm-main--register' : ''}`}
+        className={`vm-main${wideMain ? ' vm-main--wide' : ''}${dashboardOnly ? ' vm-main--dashboard' : ''}${folderOnly ? ' vm-main--folder' : ''}${marketOnly ? ' vm-main--market' : ''}${trolleyOnly ? ' vm-main--trolley' : ''}${homeOnly ? ' vm-main--home' : ''}${loginOnly ? ' vm-main--login' : ''}${registerOnly ? ' vm-main--register' : ''}${resetOnly ? ' vm-main--reset' : ''}${contactOnly ? ' vm-main--contact' : ''}`}
       >
         <Outlet />
       </main>

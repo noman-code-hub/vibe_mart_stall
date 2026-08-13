@@ -884,7 +884,7 @@
   height: var(--h);
   --x: 82%;
   --y: 49%;
-  --w: 20%;
+  --w: 22%;
   --h: 42%;
   margin: 0;
   border: 0;
@@ -901,10 +901,11 @@
   left: var(--x);
   top: var(--y);
   width: var(--w);
+  aspect-ratio: 2006 / 761;
   height: auto;
   --x: 83%;
   --y: 68%;
-  --w: 20%;
+  --w: 22%;
   margin: 0;
   padding: 0;
   border: 0;
@@ -919,7 +920,8 @@
 #stall-root .app--dashboard .stall-form__selfie-tips img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: fill;
   pointer-events: none;
   user-select: none;
 }
@@ -942,10 +944,11 @@
   left: var(--x);
   top: var(--y);
   width: var(--w);
+  aspect-ratio: 2006 / 761;
   height: auto;
   --x: 83%;
   --y: 47%;
-  --w: 20%;
+  --w: 22%;
   margin: 0;
   padding: 0;
   border: 0;
@@ -959,7 +962,8 @@
 #stall-root .app--dashboard .stall-form__market-stall-tips img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: fill;
   pointer-events: none;
   user-select: none;
 }

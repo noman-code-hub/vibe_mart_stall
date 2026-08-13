@@ -31,6 +31,13 @@ function custom_register_url(): string {
 	return home_url('/register');
 }
 
+/**
+ * Front-end forgot-password URL (React route).
+ */
+function custom_forgot_password_url(): string {
+	return home_url('/forgot-password');
+}
+
 add_filter(
 	'login_url',
 	static function (string $login_url, string $redirect = '', string $force_reauth = ''): string {
@@ -45,6 +52,13 @@ add_filter(
 	'register_url',
 	static function (): string {
 		return custom_register_url();
+	}
+);
+
+add_filter(
+	'lostpassword_url',
+	static function (): string {
+		return custom_forgot_password_url();
 	}
 );
 
@@ -84,6 +98,26 @@ add_action(
 		// Allow cookie logout and password-protected post form.
 		if (in_array($action, array('logout', 'postpass', 'confirmaction'), true)) {
 			return;
+		}
+
+		if (in_array($action, array('lostpassword', 'retrievepassword'), true)) {
+			wp_safe_redirect(custom_forgot_password_url());
+			exit;
+		}
+
+		if (in_array($action, array('rp', 'resetpass'), true)) {
+			$key = isset($_GET['key']) ? sanitize_text_field((string) wp_unslash($_GET['key'])) : '';
+			$login = isset($_GET['login']) ? sanitize_user((string) wp_unslash($_GET['login'])) : '';
+			wp_safe_redirect(
+				add_query_arg(
+					array(
+						'token' => $key,
+						'login' => $login,
+					),
+					home_url('/reset-password')
+				)
+			);
+			exit;
 		}
 
 		// Admins can still reach wp-login.php with ?vibe_mart_wp_login=1 for recovery.

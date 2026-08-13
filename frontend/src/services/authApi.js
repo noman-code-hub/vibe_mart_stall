@@ -33,3 +33,17 @@ export function updateProfile(config, payload) {
     body: payload,
   })
 }
+
+export function requestPasswordReset(config, username) {
+  return apiRequest(config, 'auth/forgot-password', {
+    method: 'POST',
+    body: { username },
+  })
+}
+
+export function resetPassword(config, { login, token, password }) {
+  return apiRequest(config, 'auth/reset-password', {
+    method: 'POST',
+    body: { login, token, password },
+  })
+}

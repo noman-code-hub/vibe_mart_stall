@@ -48,6 +48,8 @@ export default function RegisterPage() {
   const [errorAnchor, setErrorAnchor] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [busy, setBusy] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
@@ -182,32 +184,102 @@ export default function RegisterPage() {
             aria-invalid={Boolean(fieldErrors.email)}
             placeholder="Email"
           />
-          <input
-            className={`vm-register__input vm-register__input--password${fieldErrors.password ? ' is-error' : ''}`}
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={onChange}
-            required
-            minLength={8}
-            autoComplete="new-password"
-            aria-label="Password"
-            aria-invalid={Boolean(fieldErrors.password)}
-            placeholder="Password"
-          />
-          <input
-            className={`vm-register__input vm-register__input--password-confirm${fieldErrors.password_confirm ? ' is-error' : ''}`}
-            type="password"
-            name="password_confirm"
-            value={form.password_confirm}
-            onChange={onChange}
-            required
-            minLength={8}
-            autoComplete="new-password"
-            aria-label="Confirm password"
-            aria-invalid={Boolean(fieldErrors.password_confirm)}
-            placeholder="Confirm password"
-          />
+          <div
+            className={`vm-register__pass-wrap vm-register__input--password${fieldErrors.password ? ' is-error' : ''}`}
+          >
+            <input
+              className="vm-register__input"
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              value={form.password}
+              onChange={onChange}
+              required
+              minLength={8}
+              autoComplete="new-password"
+              aria-label="Password"
+              aria-invalid={Boolean(fieldErrors.password)}
+              placeholder="Password"
+            />
+            <button
+              type="button"
+              className="vm-register__pass-toggle"
+              onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              aria-pressed={showPassword}
+            >
+              {showPassword ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    d="M3 3l18 18M10.6 10.6a2.5 2.5 0 0 0 3.5 3.5M9.5 5.5A10 10 0 0 1 12 5c6 0 10 7 10 7a16 16 0 0 1-3.2 3.8M6.1 6.1C3.8 7.9 2 12 2 12s4 7 10 7c1.4 0 2.7-.3 3.9-.8"
+                  />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"
+                  />
+                  <circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" strokeWidth="2.2" />
+                </svg>
+              )}
+            </button>
+          </div>
+          <div
+            className={`vm-register__pass-wrap vm-register__input--password-confirm${fieldErrors.password_confirm ? ' is-error' : ''}`}
+          >
+            <input
+              className="vm-register__input"
+              type={showPasswordConfirm ? 'text' : 'password'}
+              name="password_confirm"
+              value={form.password_confirm}
+              onChange={onChange}
+              required
+              minLength={8}
+              autoComplete="new-password"
+              aria-label="Confirm password"
+              aria-invalid={Boolean(fieldErrors.password_confirm)}
+              placeholder="Confirm password"
+            />
+            <button
+              type="button"
+              className="vm-register__pass-toggle"
+              onClick={() => setShowPasswordConfirm((prev) => !prev)}
+              aria-label={showPasswordConfirm ? 'Hide password' : 'Show password'}
+              aria-pressed={showPasswordConfirm}
+            >
+              {showPasswordConfirm ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    d="M3 3l18 18M10.6 10.6a2.5 2.5 0 0 0 3.5 3.5M9.5 5.5A10 10 0 0 1 12 5c6 0 10 7 10 7a16 16 0 0 1-3.2 3.8M6.1 6.1C3.8 7.9 2 12 2 12s4 7 10 7c1.4 0 2.7-.3 3.9-.8"
+                  />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"
+                  />
+                  <circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" strokeWidth="2.2" />
+                </svg>
+              )}
+            </button>
+          </div>
 
           <label
             className={`vm-register__check vm-register__check--terms${fieldErrors.terms ? ' is-error' : ''}`}

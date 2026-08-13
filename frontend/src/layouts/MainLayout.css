@@ -112,6 +112,16 @@
   transition: transform 0.15s ease, filter 0.15s ease;
 }
 
+.vm-nav__logout {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
 .vm-nav__icon-link:hover,
 .vm-nav__icon-link.active {
   transform: translateY(-2px);
@@ -230,6 +240,31 @@
 
 .vm-shell--register {
   min-height: 163vh;
+  background: #ffffff;
+}
+
+.vm-shell--reset {
+  min-height: 163vh;
+  background: #ffffff;
+}
+
+.vm-shell--contact {
+  min-height: 0;
+  background: #ffffff;
+}
+
+.vm-main--contact {
+  max-width: none;
+  width: 100%;
+  flex: 0 0 auto;
+  padding: 0;
+  background: #ffffff;
+}
+
+.vm-main--reset {
+  max-width: none;
+  width: 100%;
+  padding: 0;
   background: #ffffff;
 }
 

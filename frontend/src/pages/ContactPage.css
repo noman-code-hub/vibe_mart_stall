@@ -1,20 +1,13 @@
 /* Comic contact form — transparent fields over CONTACT FORM.png */
 
-.vm-main--wide:has(.vm-contact) {
-  max-width: none;
-  padding-left: 0;
-  padding-right: 0;
-  padding-bottom: 0;
-}
-
 .vm-contact {
-  margin: -28px 0 0;
+  margin: 0;
   width: 100%;
   display: grid;
   justify-items: center;
   background: #ffffff;
   box-sizing: border-box;
-  padding: 12px clamp(40px, 10vw, 88px) 16px;
+  padding: 4px clamp(40px, 10vw, 88px) 4px;
 }
 
 .vm-contact__stage {
@@ -204,7 +197,7 @@
 
 @media (max-width: 640px) {
   .vm-contact {
-    padding: 10px clamp(20px, 6vw, 32px) 12px;
+    padding: 4px clamp(20px, 6vw, 32px) 4px;
   }
 
   .vm-contact__input {

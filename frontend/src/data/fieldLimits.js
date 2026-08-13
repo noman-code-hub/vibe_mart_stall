@@ -5,10 +5,10 @@
 export const FIELD_LIMITS = {
   businessName: { maxChars: 28, label: 'characters' },
   sellerName: { maxChars: 22, label: 'characters' },
-  /** Decreased so text stays readable in the Who's Behind panel */
-  about: { maxWords: 20, label: 'words' },
-  /** Decreased for the smaller Ambition panel */
-  ambition: { maxWords: 16, label: 'words' },
+  /** Fits the Who's Behind panel — hard stop at 50 letters */
+  about: { maxChars: 100, label: 'letters' },
+  /** Same cap as About you */
+  ambition: { maxChars: 100, label: 'letters' },
   pitchNumber: { maxChars: 12, label: 'characters' },
   pitchLocation: { maxChars: 20, label: 'characters' },
   memberSince: { maxChars: 14, label: 'characters' },

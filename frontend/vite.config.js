@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import dotenv from 'dotenv'
 import path from 'node:path'
+import { statSync } from 'node:fs'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const frontendRoot = path.dirname(fileURLToPath(import.meta.url))
@@ -10,10 +11,11 @@ const projectRoot = path.resolve(frontendRoot, '..')
 dotenv.config({ path: path.join(frontendRoot, '.env') })
 dotenv.config({ path: path.join(projectRoot, '.env') })
 
-/** Windows-safe dynamic import for absolute paths. */
+/** Windows-safe dynamic import for absolute paths. Bust cache when the file changes. */
 function importDevModule(relativeFromProject) {
   const absolute = path.join(projectRoot, relativeFromProject)
-  return import(pathToFileURL(absolute).href)
+  const mtime = statSync(absolute).mtimeMs
+  return import(`${pathToFileURL(absolute).href}?t=${mtime}`)
 }
 
 /**
@@ -112,6 +114,11 @@ function authDevApi() {
         let relative = ''
         if (urlPath === '/api/vm' || urlPath === '/api/vm/') {
           relative = String(params.get('path') || '').replace(/^\/+|\/+$/g, '')
+          try {
+            relative = decodeURIComponent(relative)
+          } catch {
+            // keep raw path
+          }
         } else if (urlPath.startsWith('/api/vm/v1/')) {
           relative = urlPath.slice('/api/vm/v1/'.length)
         } else if (urlPath.startsWith('/wp-json/vibe-mart/v1/')) {

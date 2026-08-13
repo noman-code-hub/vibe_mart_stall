@@ -13,6 +13,7 @@ import iconMarket from '../assets/5 MARKET.png'
 import iconLogin from '../assets/6 LOGIN.png'
 import iconCart from '../assets/7 MY CART.png'
 import iconContact from '../assets/8 CONTACT.png'
+import iconLogout from '../assets/LOG OUT.png'
 import marketHeader from '../assets/VIBMART POP TOP MARKET.png'
 import loginArt from '../assets/LOG IN CLEAN.png'
 import signUpArt from '../assets/NEW SIGN UP A.png'
@@ -48,6 +49,7 @@ export const STATIC_SITE_IMAGES = [
   iconLogin,
   iconCart,
   iconContact,
+  iconLogout,
   marketHeader,
   loginArt,
   signUpArt,

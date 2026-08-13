@@ -16,8 +16,11 @@ import { readJsonBody } from './readJsonBody.js'
 
 const DATA_DIR = getLocalDataDir()
 const USERS_FILE = path.join(DATA_DIR, 'traders.json')
+const RESET_LOG_FILE = path.join(DATA_DIR, 'password-resets.json')
 const COOKIE_NAME = 'vm_dev_session_v2'
 const AUTH_PREFIX = '/wp-json/vibe-mart/v1/auth'
+const RESET_TTL_MS = 60 * 60 * 1000
+const GENERIC_RESET_MESSAGE = 'If that account exists, we sent reset instructions.'
 
 function sendJson(res, status, body, extraHeaders = {}) {
   res.statusCode = status
@@ -104,16 +107,66 @@ function passwordsMatch(storedHash, salt, password) {
   return timingSafeEqual(next, prev)
 }
 
+function hashToken(token) {
+  return createHash('sha256').update(String(token || '')).digest('hex')
+}
+
+function findUserByLogin(users, identifier) {
+  const raw = String(identifier || '').trim()
+  if (!raw) return null
+  const lower = raw.toLowerCase()
+  return users.find((u) => u.username === raw || String(u.email || '').toLowerCase() === lower) || null
+}
+
+function requestOrigin(req) {
+  const forwardedProto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim()
+  const proto = forwardedProto || (isVercelRuntime() ? 'https' : 'http')
+  const forwardedHost = String(req.headers['x-forwarded-host'] || '').split(',')[0].trim()
+  const host = forwardedHost || String(req.headers.host || '').trim() || 'localhost:5173'
+  return `${proto}://${host}`
+}
+
+async function logPasswordReset(entry) {
+  try {
+    let rows = []
+    try {
+      const raw = await readFile(RESET_LOG_FILE, 'utf8')
+      const data = JSON.parse(raw)
+      rows = Array.isArray(data?.resets) ? data.resets : []
+    } catch {
+      rows = []
+    }
+    rows.push(entry)
+    if (rows.length > 50) rows = rows.slice(-50)
+    await mkdir(DATA_DIR, { recursive: true })
+    await writeFile(RESET_LOG_FILE, JSON.stringify({ resets: rows }, null, 2), 'utf8')
+  } catch (error) {
+    console.warn('[dev auth] could not log password reset', error?.message || error)
+  }
+}
+
 /**
  * @returns {Promise<boolean>} true if this request was handled
  */
-export default async function authDevHandler(req, res) {
-  const urlPath = req.url?.split('?')[0] || ''
+function authRouteFromUrl(reqUrl) {
+  let urlPath = String(reqUrl || '').split('?')[0] || ''
+  try {
+    urlPath = decodeURIComponent(urlPath)
+  } catch {
+    // keep encoded path
+  }
   if (!urlPath.startsWith(AUTH_PREFIX)) {
+    return null
+  }
+  const sliced = urlPath.slice(AUTH_PREFIX.length).replace(/^\/+|\/+$/g, '')
+  return sliced ? `/${sliced}` : '/'
+}
+
+export default async function authDevHandler(req, res) {
+  const route = authRouteFromUrl(req.url)
+  if (!route) {
     return false
   }
-
-  const route = urlPath.slice(AUTH_PREFIX.length).replace(/\/$/, '') || '/'
   const method = (req.method || 'GET').toUpperCase()
 
   try {
@@ -219,6 +272,100 @@ export default async function authDevHandler(req, res) {
 
     if (route === '/logout' && method === 'POST') {
       sendJson(res, 200, { ok: true, nonce: 'dev-nonce' }, { 'Set-Cookie': clearSessionCookie() })
+      return true
+    }
+
+    if (route === '/forgot-password' && method === 'POST') {
+      const body = await readBody(req)
+      const identifier = String(body.username || body.email || '').trim()
+      if (!identifier) {
+        sendJson(res, 400, {
+          code: 'vibe_mart_invalid',
+          message: 'Enter your username or email.',
+        })
+        return true
+      }
+
+      const user = findUserByLogin(users, identifier)
+      const payload = {
+        ok: true,
+        message: GENERIC_RESET_MESSAGE,
+        // Local/Vercel have no SMTP — frontend always shows this hint.
+        dev_notice:
+          'Test host does not send email. If this account exists here, a reset link appears below. Use the same username or email you signed up with on this site.',
+      }
+
+      if (user) {
+        const token = randomBytes(24).toString('hex')
+        user.reset_token_hash = hashToken(token)
+        user.reset_expires = Date.now() + RESET_TTL_MS
+        await saveUsers(users)
+
+        const resetUrl = `${requestOrigin(req)}/reset-password?token=${encodeURIComponent(token)}&login=${encodeURIComponent(user.username)}`
+        payload.reset_url = resetUrl
+        payload.dev_notice = 'Test host has no email. Use this reset link now.'
+        await logPasswordReset({
+          username: user.username,
+          email: user.email,
+          created_at: new Date().toISOString(),
+          expires_at: new Date(user.reset_expires).toISOString(),
+          reset_url: resetUrl,
+        })
+      }
+
+      sendJson(res, 200, payload)
+      return true
+    }
+
+    if (route === '/reset-password' && method === 'POST') {
+      const body = await readBody(req)
+      const login = String(body.login || body.username || '').trim()
+      const token = String(body.token || '').trim()
+      const password = String(body.password || '')
+
+      if (!login || !token) {
+        sendJson(res, 400, {
+          code: 'vibe_mart_invalid',
+          message: 'This reset link is invalid.',
+        })
+        return true
+      }
+      if (password.length < 8) {
+        sendJson(res, 400, {
+          code: 'vibe_mart_invalid',
+          message: 'Password must be at least 8 characters.',
+        })
+        return true
+      }
+
+      const user = findUserByLogin(users, login)
+      const tokenHash = hashToken(token)
+      const valid =
+        user &&
+        user.reset_token_hash &&
+        user.reset_expires > Date.now() &&
+        user.reset_token_hash.length === tokenHash.length &&
+        timingSafeEqual(Buffer.from(user.reset_token_hash, 'utf8'), Buffer.from(tokenHash, 'utf8'))
+
+      if (!valid) {
+        sendJson(res, 400, {
+          code: 'vibe_mart_reset_invalid',
+          message: 'This reset link is invalid or has expired.',
+        })
+        return true
+      }
+
+      const salt = randomBytes(8).toString('hex')
+      user.password_hash = hashPassword(password, salt)
+      user.password_salt = salt
+      user.reset_token_hash = ''
+      user.reset_expires = 0
+      await saveUsers(users)
+
+      sendJson(res, 200, {
+        ok: true,
+        message: 'Password updated. You can log in now.',
+      })
       return true
     }
 

@@ -74,6 +74,24 @@ add_action(
 				),
 			)
 		);
+		register_rest_route(
+			REST_NAMESPACE,
+			'/auth/forgot-password',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => __NAMESPACE__ . '\\auth_forgot_password',
+				'permission_callback' => '__return_true',
+			)
+		);
+		register_rest_route(
+			REST_NAMESPACE,
+			'/auth/reset-password',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => __NAMESPACE__ . '\\auth_reset_password',
+				'permission_callback' => '__return_true',
+			)
+		);
 	}
 );
 
@@ -372,4 +390,106 @@ function auth_update_profile(WP_REST_Request $request): WP_REST_Response|WP_Erro
 	}
 
 	return new WP_REST_Response(user_payload($fresh), 200);
+}
+
+/**
+ * Request a password reset email. Always returns the same success message.
+ */
+function auth_forgot_password(WP_REST_Request $request): WP_REST_Response|WP_Error {
+	$identifier = sanitize_text_field((string) ( $request->get_param('username') ?: $request->get_param('email') ));
+	if ('' === $identifier) {
+		return new WP_Error(
+			'vibe_mart_invalid',
+			__('Enter your username or email.', 'vibe-mart'),
+			array('status' => 400)
+		);
+	}
+
+	$user = is_email($identifier) ? get_user_by('email', $identifier) : get_user_by('login', $identifier);
+	if (! $user instanceof \WP_User && ! is_email($identifier)) {
+		$user = get_user_by('email', $identifier);
+	}
+
+	if ($user instanceof \WP_User) {
+		$key = get_password_reset_key($user);
+		if (! is_wp_error($key)) {
+			$reset_url = add_query_arg(
+				array(
+					'token' => $key,
+					'login' => $user->user_login,
+				),
+				home_url('/reset-password')
+			);
+			$site_name = wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES);
+			$subject = sprintf(
+				/* translators: %s site name */
+				__('[%s] Reset your password', 'vibe-mart'),
+				$site_name
+			);
+			$body = implode(
+				"\n",
+				array(
+					sprintf(__('Hi %s,', 'vibe-mart'), $user->display_name ?: $user->user_login),
+					'',
+					__('You asked to reset your Vibe Mart password. Click the link below (expires in about 1 hour):', 'vibe-mart'),
+					'',
+					$reset_url,
+					'',
+					__('If you did not request this, you can ignore this email.', 'vibe-mart'),
+				)
+			);
+			wp_mail($user->user_email, $subject, $body);
+		}
+	}
+
+	return new WP_REST_Response(
+		array(
+			'ok' => true,
+			'message' => __('If that account exists, we sent reset instructions.', 'vibe-mart'),
+		),
+		200
+	);
+}
+
+/**
+ * Set a new password from a reset token + login.
+ */
+function auth_reset_password(WP_REST_Request $request): WP_REST_Response|WP_Error {
+	$login = sanitize_user((string) ( $request->get_param('login') ?: $request->get_param('username') ));
+	$token = (string) $request->get_param('token');
+	$password = (string) $request->get_param('password');
+
+	if ('' === $login || '' === $token) {
+		return new WP_Error(
+			'vibe_mart_invalid',
+			__('This reset link is invalid.', 'vibe-mart'),
+			array('status' => 400)
+		);
+	}
+	if (strlen($password) < 8) {
+		return new WP_Error(
+			'vibe_mart_invalid',
+			__('Password must be at least 8 characters.', 'vibe-mart'),
+			array('status' => 400)
+		);
+	}
+
+	$user = check_password_reset_key($token, $login);
+	if (is_wp_error($user)) {
+		return new WP_Error(
+			'vibe_mart_reset_invalid',
+			__('This reset link is invalid or has expired.', 'vibe-mart'),
+			array('status' => 400)
+		);
+	}
+
+	reset_password($user, $password);
+
+	return new WP_REST_Response(
+		array(
+			'ok' => true,
+			'message' => __('Password updated. You can log in now.', 'vibe-mart'),
+		),
+		200
+	);
 }
