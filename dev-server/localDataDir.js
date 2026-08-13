@@ -15,7 +15,8 @@ export function isVercelRuntime() {
 
 export function getLocalDataDir() {
   if (isVercelRuntime()) {
-    return path.join('/tmp', 'vibe-mart-local-data')
+    // Bump this folder when wiping Vercel test accounts (old /tmp files stay unused).
+    return path.join('/tmp', 'vibe-mart-local-data-v2')
   }
   return path.join(__dirname, '..', '.local-data')
 }

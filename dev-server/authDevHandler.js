@@ -16,7 +16,7 @@ import { readJsonBody } from './readJsonBody.js'
 
 const DATA_DIR = getLocalDataDir()
 const USERS_FILE = path.join(DATA_DIR, 'traders.json')
-const COOKIE_NAME = 'vm_dev_session'
+const COOKIE_NAME = 'vm_dev_session_v2'
 const AUTH_PREFIX = '/wp-json/vibe-mart/v1/auth'
 
 function sendJson(res, status, body, extraHeaders = {}) {

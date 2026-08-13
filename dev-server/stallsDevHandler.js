@@ -13,7 +13,7 @@ import { readJsonBody } from './readJsonBody.js'
 
 const DATA_DIR = getLocalDataDir()
 const STALLS_FILE = path.join(DATA_DIR, 'stalls.json')
-const COOKIE_NAME = 'vm_dev_session'
+const COOKIE_NAME = 'vm_dev_session_v2'
 const API_PREFIX = '/wp-json/vibe-mart/v1'
 
 function sendJson(res, status, body) {
