@@ -5,6 +5,7 @@ import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import MyStallsPanel from '../components/account/MyStallsPanel.jsx'
 import CreateStallPanel from '../components/account/CreateStallPanel.jsx'
 import AccountProfilePanel from '../components/account/AccountProfilePanel.jsx'
+import TraderProfileView from '../components/account/TraderProfileView.jsx'
 import FolderHub from '../components/account/FolderHub.jsx'
 import ProductsFolder from '../components/account/ProductsFolder.jsx'
 import SelfiesFolder from '../components/account/SelfiesFolder.jsx'
@@ -154,6 +155,7 @@ export default function MyAccountPage() {
       await deleteStall(config, id)
       setStalls((prev) => prev.filter((stall) => stall.id !== id))
       setMessage('Stall deleted.')
+      window.dispatchEvent(new CustomEvent('vm:stalls-changed'))
     } catch (err) {
       setError(err.message)
     }
@@ -233,7 +235,7 @@ export default function MyAccountPage() {
         }
         className="vm-account-panel"
       >
-        {isProfile && <AccountProfilePanel />}
+        {isProfile && (profileComplete ? <TraderProfileView /> : <AccountProfilePanel />)}
 
         {tab === 'folder' && !folderView && <FolderHub />}
 

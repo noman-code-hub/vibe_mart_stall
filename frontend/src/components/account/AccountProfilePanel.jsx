@@ -130,7 +130,7 @@ export default function AccountProfilePanel() {
       }
       if (form.password) payload.password = form.password
       await updateProfile(payload)
-      navigate('/my-account?tab=create', { replace: true })
+      navigate('/my-account?tab=profile', { replace: true })
     } catch (err) {
       setError(err.message || 'Could not save profile.')
     } finally {
@@ -140,7 +140,7 @@ export default function AccountProfilePanel() {
 
   return (
     <section className="vm-account-profile" aria-label="My Account profile">
-      {user?.profile_complete ? <DashboardTraderMenu variant="profile" /> : null}
+  {user?.profile_complete ? <DashboardTraderMenu variant="profile" /> : null}
       <form className="vm-account-profile__stage" onSubmit={onSubmit} noValidate>
         <img
           className="vm-account-profile__art"

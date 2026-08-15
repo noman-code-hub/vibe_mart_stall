@@ -17,6 +17,16 @@
   top: 8px;
 }
 
+/* Profile page — keep pill fully below site header (base uses top: -0.8%) */
+#vibe-mart-root .vm-dash-trader--profile,
+#stall-root .vm-dash-trader--profile {
+  --x: auto;
+  --y: auto;
+  left: auto;
+  right: 16px;
+  top: 28px;
+}
+
 #vibe-mart-root .vm-dash-trader__trigger,
 #stall-root .vm-dash-trader__trigger {
   display: inline-flex;
@@ -61,6 +71,21 @@
   border: 2px solid #1a1008;
   background: #0e5ccb;
   color: #fff;
+  overflow: hidden;
+}
+
+#vibe-mart-root .vm-dash-trader__avatar.has-selfie,
+#stall-root .vm-dash-trader__avatar.has-selfie {
+  background: #dbe4f0;
+}
+
+#vibe-mart-root .vm-dash-trader__selfie,
+#stall-root .vm-dash-trader__selfie {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
 }
 
 #vibe-mart-root .vm-dash-trader__person,

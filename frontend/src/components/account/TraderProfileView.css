@@ -1,0 +1,251 @@
+/* Professional trader profile — clean read-out of saved account data */
+
+.vm-trader-profile {
+  --ink: #1a1f2e;
+  --muted: #5c6578;
+  --line: #e4e7ee;
+  --surface: #ffffff;
+  --page: #f5f6f9;
+  --accent: #0e5ccb;
+  --accent-soft: #e8f0fc;
+  --ok: #0f7a4a;
+  --ok-soft: #e8f6ef;
+  --warn: #9a6b00;
+
+  position: relative;
+  width: min(100%, 920px);
+  margin: 0 auto;
+  padding: 44px 20px 48px;
+  box-sizing: border-box;
+  color: var(--ink);
+  background:
+    linear-gradient(180deg, #eef3fb 0%, var(--page) 28%, #fafbfc 100%);
+}
+
+.vm-trader-profile .vm-dash-trader--profile {
+  z-index: 8;
+}
+
+.vm-trader-profile__head {
+  margin: 0 0 28px;
+  padding: 4px 140px 0 4px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 22px;
+}
+
+.vm-trader-profile__kicker {
+  margin: 0 0 6px;
+  font: 600 0.7rem / 1.2 'Oswald', 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.vm-trader-profile__title {
+  margin: 0 0 8px;
+  font: 600 clamp(1.75rem, 3.5vw, 2.15rem) / 1.15 'Oswald', 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+.vm-trader-profile__lead {
+  margin: 0;
+  max-width: 34rem;
+  font: 400 0.95rem / 1.5 'Segoe UI', system-ui, sans-serif;
+  color: var(--muted);
+}
+
+.vm-trader-profile__grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.vm-trader-profile__panel {
+  margin: 0;
+  padding: 20px 22px 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(26, 31, 46, 0.04);
+}
+
+.vm-trader-profile__panel--personal {
+  grid-row: span 3;
+  border-top: 3px solid var(--accent);
+}
+
+.vm-trader-profile__panel--age,
+.vm-trader-profile__panel--location,
+.vm-trader-profile__panel--terms {
+  border-top: 3px solid var(--ok);
+}
+
+.vm-trader-profile__panel-title {
+  margin: 0 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  font: 600 0.95rem / 1.2 'Oswald', 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.vm-trader-profile__list {
+  margin: 0;
+  display: grid;
+  gap: 0;
+}
+
+.vm-trader-profile__row {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 34%) 1fr;
+  gap: 8px 16px;
+  align-items: baseline;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.vm-trader-profile__row:last-child {
+  border-bottom: 0;
+  padding-bottom: 2px;
+}
+
+.vm-trader-profile__label {
+  margin: 0;
+  font: 600 0.72rem / 1.3 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.vm-trader-profile__value {
+  margin: 0;
+  font: 600 0.95rem / 1.35 'Segoe UI', system-ui, sans-serif;
+  color: var(--ink);
+  word-break: break-word;
+}
+
+.vm-trader-profile__checks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.vm-trader-profile__checks li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font: 600 0.88rem / 1.3 'Segoe UI', system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--page);
+}
+
+.vm-trader-profile__check-mark {
+  display: grid;
+  place-items: center;
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+}
+
+.vm-trader-profile__checks li.is-yes {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+
+.vm-trader-profile__checks li.is-yes .vm-trader-profile__check-mark {
+  background: var(--ok);
+}
+
+.vm-trader-profile__checks li.is-yes .vm-trader-profile__check-mark::after {
+  content: '';
+  width: 0.35rem;
+  height: 0.55rem;
+  margin-top: -1px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.vm-trader-profile__checks li.is-no {
+  color: var(--muted);
+  opacity: 0.85;
+}
+
+.vm-trader-profile__checks li.is-no .vm-trader-profile__check-mark {
+  border: 1.5px solid #b8bfcc;
+  background: #fff;
+}
+
+.vm-trader-profile__actions {
+  display: grid;
+  justify-items: start;
+  margin-top: 24px;
+}
+
+.vm-trader-profile__cta {
+  margin: 0;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font: 600 0.92rem / 1.2 'Oswald', 'Segoe UI', system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(14, 92, 203, 0.25);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.vm-trader-profile__cta:hover {
+  background: #0a4aa8;
+  transform: translateY(-1px);
+}
+
+.vm-trader-profile__cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 720px) {
+  .vm-trader-profile {
+    padding: 36px 14px 36px;
+  }
+
+  .vm-trader-profile__head {
+    padding-right: 0;
+    padding-top: 48px;
+  }
+
+  .vm-trader-profile__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vm-trader-profile__panel--personal {
+    grid-row: auto;
+  }
+
+  .vm-trader-profile__row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .vm-trader-profile__actions {
+    justify-items: stretch;
+  }
+
+  .vm-trader-profile__cta {
+    width: 100%;
+    text-align: center;
+  }
+}

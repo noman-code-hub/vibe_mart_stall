@@ -265,6 +265,11 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
         setSaveMessage(
           `Updated “${updated?.brand_name || data.business_name || 'Untitled stall'}” in your Folder.`
         )
+        window.dispatchEvent(
+          new CustomEvent('vm:stalls-changed', {
+            detail: { seller_photo: updated?.seller_photo || payload.seller_photo || '' },
+          })
+        )
         navigate('/my-account?tab=stalls', { replace: true })
         return
       }
@@ -285,6 +290,11 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
         remaining: Math.max(0, MAX_FREE_STALLS - (currentQuota.count + 1)),
         atLimit: currentQuota.count + 1 >= MAX_FREE_STALLS,
       })
+      window.dispatchEvent(
+        new CustomEvent('vm:stalls-changed', {
+          detail: { seller_photo: created?.seller_photo || payload.seller_photo || '' },
+        })
+      )
       navigate('/my-account?tab=stalls', { replace: true })
     } catch (err) {
       const message = err?.message || 'Could not save stall to Folder.'

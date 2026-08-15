@@ -5,8 +5,8 @@
 export const FIELD_LIMITS = {
   businessName: { maxChars: 28, label: 'characters' },
   sellerName: { maxChars: 22, label: 'characters' },
-  /** Fits the Who's Behind panel — hard stop at 50 letters */
-  about: { maxChars: 100, label: 'letters' },
+  /** Fits the Who's Behind panel — hard stop at 60 letters */
+  about: { maxChars: 60, label: 'letters' },
   /** Fits the ambition panel — hard stop at 50 letters */
   ambition: { maxChars: 50, label: 'letters' },
   pitchNumber: { maxChars: 12, label: 'characters' },
