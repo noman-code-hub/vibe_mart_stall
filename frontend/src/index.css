@@ -4,7 +4,7 @@
  */
 html {
   margin: 0;
-  background: #1657c8;
+  background: #ffffff;
   overflow-x: clip;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
@@ -21,7 +21,7 @@ html::-webkit-scrollbar {
 
 body {
   margin: 0;
-  background: #1657c8;
+  background: #ffffff;
   overflow-x: clip;
   overflow-y: visible;
 }

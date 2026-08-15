@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import DashboardTraderMenu from './DashboardTraderMenu.jsx'
+import { formatDisplayDate } from '../../utils/dateFormat.js'
 import './TraderProfileView.css'
 
 function Row({ label, value }) {
@@ -51,7 +52,7 @@ export default function TraderProfileView() {
         <section className="vm-trader-profile__panel vm-trader-profile__panel--age">
           <h2 className="vm-trader-profile__panel-title">Age verification</h2>
           <dl className="vm-trader-profile__list">
-            <Row label="Date of birth" value={user.date_of_birth} />
+            <Row label="Date of birth" value={formatDisplayDate(user.date_of_birth)} />
             <Row label="Over 17" value={user.over_17 ? 'Yes' : 'No'} />
           </dl>
         </section>

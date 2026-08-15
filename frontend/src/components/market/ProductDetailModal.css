@@ -78,18 +78,28 @@
   --x: 3.5%;
   --y: 4.2%;
   --w: 57%;
-  --h: 54%;
-  left: 3.5%;
-  top: 4.2%;
-  width: 57%;
-  height: 54%;
+  --h: 56%;
+  left: 3.3%;
+  top: 5%;
+  width: 56.9%;
+  height: 65%;
   max-width: 57%;
-  max-height: 54%;
+  max-height: 64.6%;
   display: block;
   overflow: hidden;
   border-radius: 12px;
-  background: #fff;
+  background: transparent;
   z-index: 2;
+  touch-action: none;
+  user-select: none;
+}
+
+.vm-buyer-modal__hero.is-zoomed {
+  cursor: grab;
+}
+
+.vm-buyer-modal__hero.is-zoomed:active {
+  cursor: grabbing;
 }
 
 .vm-buyer-modal__hero-img {
@@ -103,7 +113,15 @@
   object-position: center;
   display: block;
   pointer-events: none;
-  background: #fff;
+  background: transparent;
+  transform-origin: center center;
+  transition: transform 0.15s ease-out;
+  /* Knock out leftover studio-white pixels when PNG transparency is missing */
+  mix-blend-mode: multiply;
+}
+
+.vm-buyer-modal__hero.is-zoomed .vm-buyer-modal__hero-img {
+  transition: none;
 }
 
 .vm-buyer-modal__hero-empty {
@@ -113,6 +131,46 @@
   place-items: center;
   font: 700 clamp(0.7rem, 1.6cqi, 1rem) / 1.2 'Segoe UI', system-ui, sans-serif;
   color: rgba(26, 16, 8, 0.45);
+}
+
+.vm-buyer-modal__zoom {
+  position: absolute;
+  right: 2.5%;
+  bottom: 3%;
+  z-index: 4;
+  display: flex;
+  gap: 0.35rem;
+  pointer-events: auto;
+}
+
+.vm-buyer-modal__zoom-btn {
+  width: clamp(28px, 4.2cqi, 36px);
+  height: clamp(28px, 4.2cqi, 36px);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 2.5px solid #1a1008;
+  border-radius: 8px;
+  background: #ffe600;
+  color: #1a1008;
+  font: 800 clamp(1rem, 2.4cqi, 1.35rem) / 1 'Segoe UI', system-ui, sans-serif;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #1a1008;
+}
+
+.vm-buyer-modal__zoom-btn:hover:not(:disabled) {
+  background: #fff28a;
+}
+
+.vm-buyer-modal__zoom-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+  box-shadow: none;
+}
+
+.vm-buyer-modal__zoom-btn:focus-visible {
+  outline: 2px solid #1a1008;
+  outline-offset: 2px;
 }
 
 .vm-buyer-modal__nav {
@@ -242,14 +300,13 @@
   display: block;
   pointer-events: none;
   background: transparent;
+  mix-blend-mode: multiply;
 }
 
 .vm-buyer-modal__thumb.is-active {
   box-shadow: none;
   outline: none;
 }
-
-/* Right column — name, price, size, condition, description, seller, CTAs */
 .vm-buyer-modal__fit {
   overflow: hidden;
   padding: 0;
@@ -280,7 +337,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 0;
+  padding: 0 0.5%;
   box-sizing: border-box;
   color: #ffe600;
   font-family: Impact, 'Arial Black', sans-serif;
@@ -356,9 +413,9 @@
 }
 
 .vm-buyer-modal__size {
-  --x: 63.3%;
+  --x: 63%;
   --y: 37.8%;
-  --w: 13.9%;
+  --w: 14.5%;
   --h: 4.9%;
   --fit-max: 22;
   --fit-min: 11;
@@ -366,10 +423,11 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 0;
+  padding: 0 0.15em;
+  box-sizing: border-box;
   color: #000;
   font-family: 'Segoe UI', system-ui, sans-serif;
-  font-weight: 700;
+  font-weight: 500;
   font-style: normal;
   line-height: 1;
   text-transform: uppercase;
@@ -378,28 +436,33 @@
 
 .vm-buyer-modal__size .vm-buyer-modal__fit-text {
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 500;
   font-style: normal;
   line-height: 1;
+  letter-spacing: 0;
   -webkit-text-stroke: 0;
   color: #000;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .vm-buyer-modal__condition {
-  --x: 77%;
-  --y: 30.5%;
+  --x: 79%;
+  --y: 37.8%;
   --w: 17.5%;
-  --h: 5.2%;
-  --fit-max: 22;
-  --fit-min: 11;
+  --h: 4.9%;
+  --fit-max: 20;
+  --fit-min: 10;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 0;
+  padding: 0 0.2em;
+  box-sizing: border-box;
   color: #fff;
   font-family: 'Segoe UI', system-ui, sans-serif;
-  font-weight: 700;
+  font-weight: 500;
   font-style: normal;
   line-height: 1;
   text-transform: uppercase;
@@ -407,11 +470,16 @@
 }
 
 .vm-buyer-modal__condition .vm-buyer-modal__fit-text {
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 500;
   font-style: normal;
   line-height: 1;
+  letter-spacing: 0;
   -webkit-text-stroke: 0;
+  color: #fff;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
 }
 
 .vm-buyer-modal__desc {
@@ -419,8 +487,8 @@
   --y: 44.5%;
   --w: 33.3%;
   --h: 10%;
-  --fit-max: 20;
-  --fit-min: 11;
+  --fit-max: 16;
+  --fit-min: 10;
   display: flex;
   align-items: flex-start;
   padding: 0;
@@ -432,7 +500,7 @@
 }
 
 .vm-buyer-modal__desc .vm-buyer-modal__fit-text {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 500;
   font-style: normal;
   line-height: 1.35;

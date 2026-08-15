@@ -15,7 +15,7 @@ if (! defined('ABSPATH')) {
 }
 
 /** Schema version — bump when CREATE TABLE definitions change. */
-const DB_VERSION = '1.3.0';
+const DB_VERSION = '1.4.0';
 
 /**
  * Prefixed table name helper.
@@ -71,6 +71,7 @@ function create_tables(): void {
 		id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		stall_id bigint(20) unsigned NOT NULL,
 		name varchar(191) NOT NULL DEFAULT '',
+		variation varchar(191) NOT NULL DEFAULT '',
 		condition_label varchar(191) NOT NULL DEFAULT '',
 		price varchar(64) NOT NULL DEFAULT '',
 		description text NULL,

@@ -78,7 +78,19 @@
 
 #vibe-mart-root .app--dashboard .app__save-banner--dash-top,
 #stall-root .app--dashboard .app__save-banner--dash-top {
-  position: relative;
+  position: sticky;
+  top: calc(88px + env(safe-area-inset-top, 0px));
+  z-index: 20;
+  width: min(100%, 920px);
+  margin: 0 auto 14px;
+}
+
+@media (max-width: 1024px) {
+  #vibe-mart-root .app--dashboard .app__save-banner--dash-top,
+  #stall-root .app--dashboard .app__save-banner--dash-top {
+    top: calc(68px + env(safe-area-inset-top, 0px));
+    width: min(100% - 16px, 920px);
+  }
 }
 
 #vibe-mart-root .app--dashboard .app__save-banner--error,
@@ -319,6 +331,7 @@
   border: none;
   box-shadow: none;
   padding: 0;
+  overflow: visible;
 }
 
 /* Selfie preview — separate from the upload button */
@@ -387,6 +400,7 @@
   flex-direction: column;
   justify-content: center;
   gap: 0;
+  overflow: visible;
 }
 
 #vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__buttons,
@@ -673,6 +687,63 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Selfie: max size pill matches Upload Photo button width (31%) */
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__max,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__max {
+  position: absolute;
+  left: 0;
+  top: 88%;
+  z-index: 4;
+  order: unset;
+  flex: none;
+  box-sizing: border-box;
+  width: 31%;
+  max-width: 31%;
+  height: auto;
+  margin: 0;
+  padding: 3px 4px;
+  overflow: hidden;
+  clip: auto;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid rgba(14, 92, 203, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #0e5ccb;
+  font-size: clamp(0.5rem, 1.15cqi, 0.68rem);
+  box-shadow: 0 1px 2px rgba(26, 16, 8, 0.08);
+  pointer-events: none;
+}
+
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__max-full,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__max-full {
+  display: none;
+}
+
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__max-short,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__max-short {
+  display: inline;
+}
+
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__error,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__error {
+  display: none !important;
+}
+
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__error-title,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__error-title,
+#vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__error-text,
+#stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__error-text {
+  display: none;
+}
+
+#vibe-mart-root .app--dashboard .image-upload-field--selfie.has-error,
+#stall-root .app--dashboard .image-upload-field--selfie.has-error {
+  overflow: visible;
 }
 
 #vibe-mart-root .app--dashboard .stall-form__field,
@@ -1004,5 +1075,24 @@
     left: 1.6%;
     padding: 0 4px;
     max-width: 52%;
+  }
+
+  #vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__max,
+  #stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__max {
+    width: 31%;
+    max-width: 31%;
+    top: 87%;
+    padding: 2px 3px;
+    font-size: clamp(0.42rem, 2.4vw, 0.58rem);
+  }
+
+  #vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__max-full,
+  #stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__max-full {
+    display: none;
+  }
+
+  #vibe-mart-root .app--dashboard .image-upload-field--selfie .image-upload-field__max-short,
+  #stall-root .app--dashboard .image-upload-field--selfie .image-upload-field__max-short {
+    display: inline;
   }
 }

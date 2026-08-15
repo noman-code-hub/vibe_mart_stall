@@ -55,6 +55,8 @@
   display: block;
   transform: scale(0.92);
   transform-origin: bottom center;
+  background: transparent;
+  mix-blend-mode: multiply;
 }
 
 .placeholder {

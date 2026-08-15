@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import DashboardTraderMenu from './DashboardTraderMenu.jsx'
 import accountArt from '../../assets/ACCOUNT PAGE .png'
+import { formatDisplayDate, isValidDisplayDate, normalizeDisplayDate } from '../../utils/dateFormat.js'
 import './AccountProfilePanel.css'
 
 const INITIAL = {
@@ -43,7 +44,7 @@ export default function AccountProfilePanel() {
       phone: user.phone || '',
       password: '',
       password_confirm: '',
-      date_of_birth: user.date_of_birth || '',
+      date_of_birth: formatDisplayDate(user.date_of_birth) || '',
       over_17: Boolean(user.over_17),
       town: user.town || '',
       county: user.county || '',
@@ -87,6 +88,10 @@ export default function AccountProfilePanel() {
       setError('Date of birth is required.')
       return
     }
+    if (!isValidDisplayDate(form.date_of_birth)) {
+      setError('Date of birth must be day-month-year, e.g. 21-5-1980.')
+      return
+    }
     if (!form.over_17) {
       setError('Please confirm you are over 17.')
       return
@@ -118,7 +123,7 @@ export default function AccountProfilePanel() {
         display_name: form.display_name.trim(),
         email: form.email.trim(),
         phone: form.phone.trim(),
-        date_of_birth: form.date_of_birth,
+        date_of_birth: normalizeDisplayDate(form.date_of_birth),
         over_17: form.over_17,
         town: form.town.trim(),
         county: form.county.trim(),
@@ -244,12 +249,15 @@ export default function AccountProfilePanel() {
 
           <input
             className="vm-account-profile__input vm-account-profile__input--dob"
-            type="date"
+            type="text"
             name="date_of_birth"
             value={form.date_of_birth}
             onChange={onChange}
             required
-            aria-label="Date of birth"
+            inputMode="numeric"
+            autoComplete="bday"
+            placeholder="21-5-1980"
+            aria-label="Date of birth day-month-year"
           />
           <label className="vm-account-profile__check vm-account-profile__check--over17">
             <input

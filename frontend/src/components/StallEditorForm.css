@@ -285,7 +285,27 @@
 .stall-product-modal__input--size {
   --x: 50.3%;
   --y: 28.4%;
-  --w: 39.9%;
+  --w: 18.5%;
+  --h: 4.3%;
+}
+
+.stall-product-modal__size-divider {
+  position: absolute;
+  left: 69.6%;
+  top: 28.4%;
+  width: 2px;
+  height: 4.5%;
+  margin: 0;
+  background: #1a1008;
+  border-radius: 1px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.stall-product-modal__input--condition {
+  --x: 70.5%;
+  --y: 28.4%;
+  --w: 19.7%;
   --h: 4.3%;
 }
 
@@ -370,6 +390,11 @@
   color: #1a1008;
   caret-color: #1a1008;
   font: 600 clamp(0.55rem, 1.5cqi, 1rem) / 1.25 'Segoe UI', system-ui, sans-serif;
+}
+
+.stall-product-modal__input::placeholder {
+  color: rgba(26, 16, 8, 0.4);
+  font-weight: 600;
 }
 
 .stall-product-modal__input--desc {

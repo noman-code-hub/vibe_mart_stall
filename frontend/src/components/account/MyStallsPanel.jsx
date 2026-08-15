@@ -5,19 +5,15 @@ import DashboardTraderMenu from './DashboardTraderMenu.jsx'
 import { getStall } from '../../services/stallApi.js'
 import { stallToMarketStallProps } from '../../services/stallDisplay.js'
 import { useRuntimeConfig } from '../../context/RuntimeConfigContext.jsx'
+import { formatDisplayDate } from '../../utils/dateFormat.js'
+import sendToMarketBtn from '../../assets/send to market button.jpeg'
 import './FolderViews.css'
 
 const MarketStall = lazy(() => import('../MarketStall'))
 
-function formatDate(value) {
-  if (!value) return ''
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return String(value)
-  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
-}
-
 function FolderStallCard({ summary, detail, loadingDetail, onStartEdit, onDelete }) {
   const props = detail ? stallToMarketStallProps(detail) : null
+  const updatedLabel = summary.updated_at ? formatDisplayDate(summary.updated_at) : ''
 
   return (
     <article className="vm-folder__stall">
@@ -26,7 +22,7 @@ function FolderStallCard({ summary, detail, loadingDetail, onStartEdit, onDelete
           <h3 className="vm-folder__stall-title">{summary.brand_name || 'Untitled stall'}</h3>
           <p className="vm-muted vm-folder__stall-meta">
             {summary.product_count || 0} product{(summary.product_count || 0) === 1 ? '' : 's'}
-            {summary.updated_at ? ` · Updated ${formatDate(summary.updated_at)}` : ''}
+            {updatedLabel ? ` · Updated ${updatedLabel}` : ''}
           </p>
         </div>
         <span className={`vm-status vm-status--${summary.status}`}>
@@ -179,15 +175,24 @@ export default function MyStallsPanel({
         <div className="vm-folder__cta">
           <button
             type="button"
-            className="vm-folder__send"
+            className={`vm-folder__send${draftCount === 0 ? ' is-disabled' : ''}${publishBusy ? ' is-busy' : ''}`}
             onClick={onPublishDrafts}
             disabled={publishBusy || draftCount === 0 || busy}
+            aria-label={
+              publishBusy
+                ? 'Sending stalls to the Market'
+                : draftCount > 0
+                  ? `Send my stall to the Market (${draftCount} draft${draftCount === 1 ? '' : 's'})`
+                  : 'All stalls already on the Market'
+            }
           >
-            {publishBusy
-              ? 'Sending…'
-              : draftCount > 0
-                ? `Send my stall to the Market (${draftCount} draft${draftCount === 1 ? '' : 's'})`
-                : 'All stalls already on the Market'}
+            <img
+              className="vm-folder__send-img"
+              src={sendToMarketBtn}
+              alt=""
+              draggable={false}
+            />
+            {publishBusy ? <span className="vm-folder__send-status">Sending…</span> : null}
           </button>
           {draftCount === 0 && (
             <p className="vm-muted vm-folder__cta-hint">

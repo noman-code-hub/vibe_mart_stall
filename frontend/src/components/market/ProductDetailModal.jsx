@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { formatStallPrice } from '../../services/stallDisplay.js'
+import { formatStallPrice, productSizeAndCondition } from '../../services/stallDisplay.js'
 import { useTrolley } from '../../context/TrolleyContext.jsx'
 import buyerArt from '../../assets/BUYER edit.png'
 import './ProductDetailModal.css'
@@ -87,15 +87,38 @@ export default function ProductDetailModal({ product, stall = null, onClose }) {
   const titleId = useId()
   const closeRef = useRef(null)
   const touchStartX = useRef(null)
+  const panRef = useRef({ active: false, startX: 0, startY: 0, originX: 0, originY: 0 })
   const navigate = useNavigate()
   const { addItem } = useTrolley()
   const [activeIndex, setActiveIndex] = useState(0)
   const [entered, setEntered] = useState(false)
   const [trolleyNote, setTrolleyNote] = useState('')
+  const [zoom, setZoom] = useState(1)
+  const [pan, setPan] = useState({ x: 0, y: 0 })
 
   const images = collectProductImages(product)
   const imageCount = images.length
   const name = product?.name || product?.title || 'Product'
+  const ZOOM_MIN = 1
+  const ZOOM_MAX = 3
+  const ZOOM_STEP = 0.5
+
+  const resetZoom = () => {
+    setZoom(1)
+    setPan({ x: 0, y: 0 })
+  }
+
+  const zoomIn = () => {
+    setZoom((value) => Math.min(ZOOM_MAX, Number((value + ZOOM_STEP).toFixed(2))))
+  }
+
+  const zoomOut = () => {
+    setZoom((value) => {
+      const next = Math.max(ZOOM_MIN, Number((value - ZOOM_STEP).toFixed(2)))
+      if (next <= ZOOM_MIN) setPan({ x: 0, y: 0 })
+      return next
+    })
+  }
 
   useEffect(() => {
     if (!product) return undefined
@@ -103,6 +126,7 @@ export default function ProductDetailModal({ product, stall = null, onClose }) {
     setActiveIndex(0)
     setEntered(false)
     setTrolleyNote('')
+    resetZoom()
     const frame = window.requestAnimationFrame(() => setEntered(true))
 
     const onKeyDown = (event) => {
@@ -118,6 +142,18 @@ export default function ProductDetailModal({ product, stall = null, onClose }) {
         event.preventDefault()
         setActiveIndex((index) => (imageCount ? (index + 1) % imageCount : 0))
       }
+      if (event.key === '+' || event.key === '=') {
+        event.preventDefault()
+        setZoom((value) => Math.min(3, Number((value + 0.5).toFixed(2))))
+      }
+      if (event.key === '-' || event.key === '_') {
+        event.preventDefault()
+        setZoom((value) => {
+          const next = Math.max(1, Number((value - 0.5).toFixed(2)))
+          if (next <= 1) setPan({ x: 0, y: 0 })
+          return next
+        })
+      }
     }
     document.addEventListener('keydown', onKeyDown)
     const previousOverflow = document.body.style.overflow
@@ -131,11 +167,14 @@ export default function ProductDetailModal({ product, stall = null, onClose }) {
     }
   }, [product, onClose, imageCount])
 
+  useEffect(() => {
+    resetZoom()
+  }, [activeIndex])
+
   if (!product) return null
 
   const activeImage = images[activeIndex] || images[0] || ''
-  const size = product.variation || product.size || product.label || ''
-  const condition = product.condition || ''
+  const { size, condition } = productSizeAndCondition(product)
   const price = product.price || ''
   const description = product.description || ''
   const canSlide = imageCount > 1
@@ -148,7 +187,9 @@ export default function ProductDetailModal({ product, stall = null, onClose }) {
     ''
   const sellerPhoto =
     stall?.seller_photo || stall?.selfie_url || stall?.seller?.photo || stall?.seller?.selfie || ''
-  const showCondition = Boolean(condition && condition !== size)
+  const canZoomIn = zoom < ZOOM_MAX
+  const canZoomOut = zoom > ZOOM_MIN
+  const isZoomed = zoom > ZOOM_MIN
 
   const goPrev = () => {
     if (!canSlide) return
@@ -161,17 +202,46 @@ export default function ProductDetailModal({ product, stall = null, onClose }) {
   }
 
   const onTouchStart = (event) => {
+    if (isZoomed) return
     touchStartX.current = event.changedTouches?.[0]?.clientX ?? null
   }
 
   const onTouchEnd = (event) => {
-    if (touchStartX.current == null || !canSlide) return
+    if (isZoomed || touchStartX.current == null || !canSlide) return
     const endX = event.changedTouches?.[0]?.clientX ?? touchStartX.current
     const delta = endX - touchStartX.current
     touchStartX.current = null
     if (Math.abs(delta) < 40) return
     if (delta > 0) goPrev()
     else goNext()
+  }
+
+  const onPanStart = (event) => {
+    if (!isZoomed || !activeImage) return
+    event.preventDefault()
+    const point = event.touches?.[0] || event
+    panRef.current = {
+      active: true,
+      startX: point.clientX,
+      startY: point.clientY,
+      originX: pan.x,
+      originY: pan.y,
+    }
+  }
+
+  const onPanMove = (event) => {
+    if (!panRef.current.active) return
+    const point = event.touches?.[0] || event
+    const dx = point.clientX - panRef.current.startX
+    const dy = point.clientY - panRef.current.startY
+    setPan({
+      x: panRef.current.originX + dx,
+      y: panRef.current.originY + dy,
+    })
+  }
+
+  const onPanEnd = () => {
+    panRef.current.active = false
   }
 
   const handleBuy = () => {
@@ -227,9 +297,14 @@ export default function ProductDetailModal({ product, stall = null, onClose }) {
 
           <div className="vm-buyer-modal__fields">
             <div
-              className="vm-buyer-modal__hero"
+              className={`vm-buyer-modal__hero${isZoomed ? ' is-zoomed' : ''}`}
               onTouchStart={onTouchStart}
               onTouchEnd={onTouchEnd}
+              onMouseDown={onPanStart}
+              onMouseMove={onPanMove}
+              onMouseUp={onPanEnd}
+              onMouseLeave={onPanEnd}
+              onTouchMove={onPanMove}
               aria-roledescription="carousel"
               aria-label={`${name} photos`}
             >
@@ -240,10 +315,42 @@ export default function ProductDetailModal({ product, stall = null, onClose }) {
                   alt={`${name} photo ${activeIndex + 1} of ${Math.max(imageCount, 1)}`}
                   className="vm-buyer-modal__hero-img"
                   draggable={false}
+                  style={{
+                    transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                  }}
                 />
               ) : (
                 <span className="vm-buyer-modal__hero-empty">No image</span>
               )}
+
+              {activeImage ? (
+                <div
+                  className="vm-buyer-modal__zoom"
+                  role="group"
+                  aria-label="Zoom controls"
+                  onMouseDown={(event) => event.stopPropagation()}
+                  onTouchStart={(event) => event.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    className="vm-buyer-modal__zoom-btn"
+                    onClick={zoomOut}
+                    disabled={!canZoomOut}
+                    aria-label="Zoom out"
+                  >
+                    −
+                  </button>
+                  <button
+                    type="button"
+                    className="vm-buyer-modal__zoom-btn"
+                    onClick={zoomIn}
+                    disabled={!canZoomIn}
+                    aria-label="Zoom in"
+                  >
+                    +
+                  </button>
+                </div>
+              ) : null}
             </div>
 
             {canSlide ? (
@@ -295,25 +402,28 @@ export default function ProductDetailModal({ product, stall = null, onClose }) {
               </FitText>
             ) : null}
 
-            {size ? (
-              <FitText className="vm-buyer-modal__size" maxPx={22} minPx={11} ready={entered}>
-                {size}
-              </FitText>
-            ) : null}
+            <FitText
+              className="vm-buyer-modal__size"
+              maxPx={22}
+              minPx={11}
+              ready={entered}
+              aria-label={`Size: ${size || 'not set'}`}
+            >
+              {`Size ${size || '—'}`}
+            </FitText>
 
-            {showCondition ? (
-              <FitText
-                className="vm-buyer-modal__condition"
-                maxPx={22}
-                minPx={11}
-                ready={entered}
-              >
-                {condition}
-              </FitText>
-            ) : null}
+            <FitText
+              className="vm-buyer-modal__condition"
+              maxPx={20}
+              minPx={10}
+              ready={entered}
+              aria-label={`Condition: ${condition || 'not set'}`}
+            >
+              {`Condition ${condition || '—'}`}
+            </FitText>
 
             {description ? (
-              <FitText className="vm-buyer-modal__desc" maxPx={20} minPx={11} ready={entered}>
+              <FitText className="vm-buyer-modal__desc" maxPx={16} minPx={10} ready={entered}>
                 {description}
               </FitText>
             ) : null}

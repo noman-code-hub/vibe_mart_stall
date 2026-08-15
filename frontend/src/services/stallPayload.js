@@ -36,7 +36,7 @@ export async function buildStallCreatePayload({ data, selfieFile, productSlots, 
       ).filter(Boolean)
       return {
         name: slot?.name || `Product ${index + 1}`,
-        condition: slot?.variation || '',
+        condition: slot?.condition || '',
         label: slot?.variation || '',
         variation: slot?.variation || '',
         price: slot?.price || '',

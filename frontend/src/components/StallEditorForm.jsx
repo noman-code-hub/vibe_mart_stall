@@ -19,6 +19,7 @@ const emptyProduct = () => ({
   name: '',
   description: '',
   variation: '',
+  condition: '',
   price: '',
   files: emptyProductFiles(),
 })
@@ -36,6 +37,8 @@ export default function StallEditorForm({
   productSlots,
   onProductSlotsChange,
   onClearAll,
+  onBannerError,
+  showInlineFieldErrors = true,
 }) {
   const [errors, setErrors] = useState({})
   const [productModal, setProductModal] = useState(null) // null | { index: number | null }
@@ -47,11 +50,29 @@ export default function StallEditorForm({
   const tipsDialogRef = useRef(null)
   const tipsModalOpen = selfieTipsOpen || marketStallTipsOpen
 
-  const clearError = (key) => setErrors((prev) => ({ ...prev, [key]: '' }))
+  const publishBanner = (field, message) => {
+    onBannerError?.(message ? { message, field } : { message: '', field: field || '' })
+  }
 
-  const setError = (key, message) => setErrors((prev) => ({ ...prev, [key]: message }))
+  const clearError = (key) => {
+    setErrors((prev) => {
+      const next = { ...prev, [key]: '' }
+      const first = Object.entries(next).find(([, value]) => value)
+      if (first) publishBanner(first[0], first[1])
+      else publishBanner(key, '')
+      return next
+    })
+  }
 
-  const resetErrors = () => setErrors({})
+  const setError = (key, message) => {
+    setErrors((prev) => ({ ...prev, [key]: message }))
+    publishBanner(key, message)
+  }
+
+  const resetErrors = () => {
+    setErrors({})
+    publishBanner('', '')
+  }
 
   const setBusinessName = (value) => onDataChange((prev) => ({ ...prev, business_name: value }))
 
@@ -119,6 +140,7 @@ export default function StallEditorForm({
       name: (product.name || '').toUpperCase(),
       description: product.description || '',
       variation: product.variation || '',
+      condition: product.condition || '',
       price: stripPound(product.price || ''),
       files: normalizeProductFiles(product),
     })
@@ -145,6 +167,9 @@ export default function StallEditorForm({
     if (countChars(draft.variation) > FIELD_LIMITS.productVariation.maxChars) {
       nextErrors.variation = `Maximum ${FIELD_LIMITS.productVariation.maxChars} characters.`
     }
+    if (countChars(draft.condition) > FIELD_LIMITS.productCondition.maxChars) {
+      nextErrors.condition = `Maximum ${FIELD_LIMITS.productCondition.maxChars} characters.`
+    }
     if (countChars(draft.price) > FIELD_LIMITS.productPrice.maxChars) {
       nextErrors.price = `Maximum ${FIELD_LIMITS.productPrice.maxChars} characters.`
     }
@@ -157,6 +182,7 @@ export default function StallEditorForm({
       name: draft.name.trim().toUpperCase(),
       description: draft.description.trim(),
       variation: draft.variation.trim(),
+      condition: draft.condition.trim(),
       price: stripPound(draft.price),
       files: normalizeProductFiles(draft),
     }
@@ -240,6 +266,7 @@ export default function StallEditorForm({
         <legend>Business</legend>
         <label
           className={`stall-form__field stall-form__field--business-name${errors.businessName ? ' stall-form__field--error' : ''}`}
+          data-error-field="businessName"
         >
           <span>
             Business name ({countChars(data.business_name)}/{FIELD_LIMITS.businessName.maxChars})
@@ -260,7 +287,7 @@ export default function StallEditorForm({
             aria-invalid={Boolean(errors.businessName)}
             aria-label="Business name"
           />
-          {errors.businessName && (
+          {showInlineFieldErrors && errors.businessName && (
             <span className="stall-form__error" role="alert">
               {errors.businessName}
             </span>
@@ -289,7 +316,7 @@ export default function StallEditorForm({
             aria-invalid={Boolean(errors.sellerName)}
             aria-label="Your name"
           />
-          {errors.sellerName && (
+          {showInlineFieldErrors && errors.sellerName && (
             <span className="stall-form__error" role="alert">
               {errors.sellerName}
             </span>
@@ -300,8 +327,17 @@ export default function StallEditorForm({
           className="image-upload-field--selfie"
           label="Selfie / photo"
           value={selfieFile}
-          onChange={onSelfieChange}
-          onClear={onSelfieClear}
+          onChange={(file) => {
+            onSelfieChange(file)
+            publishBanner('selfie', '')
+          }}
+          onClear={() => {
+            onSelfieClear()
+            publishBanner('selfie', '')
+          }}
+          onError={({ message, field }) => publishBanner(field || 'selfie', message)}
+          showInlineError={showInlineFieldErrors}
+          errorField="selfie"
           removeBg
         />
 
@@ -354,7 +390,7 @@ export default function StallEditorForm({
             aria-invalid={Boolean(errors.about)}
             aria-label="About you"
           />
-          {errors.about && (
+          {showInlineFieldErrors && errors.about && (
             <span className="stall-form__error" role="alert">
               {errors.about}
             </span>
@@ -380,7 +416,7 @@ export default function StallEditorForm({
             aria-invalid={Boolean(errors.ambition)}
             aria-label="Ambition"
           />
-          {errors.ambition && (
+          {showInlineFieldErrors && errors.ambition && (
             <span className="stall-form__error" role="alert">
               {errors.ambition}
             </span>
@@ -410,7 +446,7 @@ export default function StallEditorForm({
               aria-invalid={Boolean(errors.pitchNumber)}
               aria-label="Pitch number"
             />
-            {errors.pitchNumber && (
+            {showInlineFieldErrors && errors.pitchNumber && (
               <span className="stall-form__error" role="alert">
                 {errors.pitchNumber}
               </span>
@@ -438,7 +474,7 @@ export default function StallEditorForm({
               aria-invalid={Boolean(errors.pitchLocation)}
               aria-label="Location"
             />
-            {errors.pitchLocation && (
+            {showInlineFieldErrors && errors.pitchLocation && (
               <span className="stall-form__error" role="alert">
                 {errors.pitchLocation}
               </span>
@@ -459,11 +495,11 @@ export default function StallEditorForm({
                   setPitchField('member_since', v)
                 )
               }
-              placeholder="e.g. May 2024"
+              placeholder="e.g. 21-5-2020"
               aria-invalid={Boolean(errors.memberSince)}
-              aria-label="Member since"
+              aria-label="Member since day-month-year"
             />
-            {errors.memberSince && (
+            {showInlineFieldErrors && errors.memberSince && (
               <span className="stall-form__error" role="alert">
                 {errors.memberSince}
               </span>
@@ -630,7 +666,7 @@ export default function StallEditorForm({
                   />
 
                   <label className="stall-product-modal__sr" htmlFor="stall-product-size">
-                    Size / options
+                    Size
                   </label>
                   <input
                     id="stall-product-size"
@@ -646,8 +682,30 @@ export default function StallEditorForm({
                         FIELD_LIMITS.productVariation.maxChars
                       )
                     }
-                    placeholder=""
+                    placeholder="Size"
                     aria-invalid={Boolean(draftErrors.variation)}
+                  />
+
+                  <label className="stall-product-modal__sr" htmlFor="stall-product-condition">
+                    Condition
+                  </label>
+                  <span className="stall-product-modal__size-divider" aria-hidden="true" />
+                  <input
+                    id="stall-product-condition"
+                    className={`stall-product-modal__input stall-product-modal__input--condition${draftErrors.condition ? ' is-error' : ''}`}
+                    type="text"
+                    value={draft.condition}
+                    maxLength={FIELD_LIMITS.productCondition.maxChars}
+                    onChange={(e) =>
+                      handleDraftCharLimit(
+                        'condition',
+                        'condition',
+                        e.target.value,
+                        FIELD_LIMITS.productCondition.maxChars
+                      )
+                    }
+                    placeholder="Condition"
+                    aria-invalid={Boolean(draftErrors.condition)}
                   />
 
                   <label className="stall-product-modal__sr" htmlFor="stall-product-desc">

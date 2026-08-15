@@ -34,8 +34,8 @@ export const OVERLAY = {
   /* Slightly shorter trader photo so it sits more naturally */
   seller: { left: 61.5, top: 18, width: 19, height: 80 },
 
-  /* Blank middle of right board (below WHO'S BEHIND art) */
-  infoPanel: { left: 80.2, top: 26.5, width: 15, height: 23 },
+  /* Blank middle of right board (below WHO'S BEHIND art, above MY AMBITION) */
+  infoPanel: { left: 80.2, top: 26.5, width: 15, height: 19.5 },
 
   /* Above MY AMBITION graphic */
   ambition: { left: 80.2, top: 52.5, width: 15, height: 13 },

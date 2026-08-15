@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import { getStall } from '../services/stallApi.js'
 import { formatStallPrice, stallToMarketStallProps } from '../services/stallDisplay.js'
+import { formatDisplayDate } from '../utils/dateFormat.js'
 import ProductDetailModal from '../components/market/ProductDetailModal.jsx'
 import StallLoadingScreen from '../components/StallLoadingScreen.jsx'
 import '../styles/stallDetail.css'
@@ -27,9 +28,9 @@ function normalizeProduct(product, index = 0) {
     image_url: images[0] || product.image_url || product.image || '',
     image: images[0] || product.image_url || product.image || '',
     image_urls: images,
-    condition: product.condition || product.label || product.variation || '',
-    label: product.condition || product.label || product.variation || '',
-    variation: product.variation || product.condition || product.label || '',
+    condition: product.condition || '',
+    label: product.variation || product.label || '',
+    variation: product.variation || product.label || '',
     price: product.price || '',
     description: product.description || '',
     images,
@@ -189,7 +190,7 @@ export default function StallDetailPage() {
               </div>
               <div className="vm-sd__fact">
                 <span className="vm-sd__fact-label">Member since</span>
-                <strong>{stall.member_since || '—'}</strong>
+                <strong>{formatDisplayDate(stall.member_since) || stall.member_since || '—'}</strong>
               </div>
               <div className="vm-sd__fact">
                 <span className="vm-sd__fact-label">Products</span>

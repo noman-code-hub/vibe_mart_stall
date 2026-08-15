@@ -86,7 +86,7 @@ export default function StallForm({
             name="member_since"
             value={form.member_since}
             onChange={onChange}
-            placeholder="2024"
+            placeholder="21-5-2020"
           />
         </label>
         <label className="vm-field">

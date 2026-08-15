@@ -134,9 +134,9 @@ function normalizeStall(input, ownerId, existing = null) {
           return {
             id: p.id || index + 1,
             name: String(p.name || ''),
-            condition: String(p.condition || p.label || p.variation || ''),
-            label: String(p.label || p.condition || p.variation || ''),
-            variation: String(p.variation || p.condition || p.label || ''),
+            condition: String(p.condition || ''),
+            label: String(p.label || p.variation || ''),
+            variation: String(p.variation || p.size || p.label || ''),
             price: String(p.price || ''),
             description: String(p.description || ''),
             image_url: String(imageUrls[0] || p.image_url || p.image || ''),

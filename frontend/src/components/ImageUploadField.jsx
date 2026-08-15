@@ -1,7 +1,14 @@
-import { useState } from 'react';
-import { useFileUrl } from '../hooks/useImageAsset';
-import { removeBackground, blobToPngFile } from '../api/removeBackground';
-import './ImageUploadField.css';
+import { useState } from 'react'
+import { useFileUrl } from '../hooks/useImageAsset'
+import { removeBackground, blobToPngFile } from '../api/removeBackground'
+import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
+import './ImageUploadField.css'
+
+function formatMaxSize(bytes) {
+  const n = Number(bytes) || 10 * 1024 * 1024
+  const mb = n / (1024 * 1024)
+  return `${mb >= 10 ? Math.round(mb) : mb.toFixed(1)} MB`
+}
 
 /**
  * A labeled file input with a thumbnail preview and a remove button.
@@ -17,37 +24,48 @@ export default function ImageUploadField({
   onClear,
   removeBg = false,
   className = '',
+  onError,
+  showInlineError = true,
+  errorField = 'upload',
 }) {
-  const previewUrl = useFileUrl(value);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const config = useRuntimeConfig()
+  const previewUrl = useFileUrl(value)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const maxSizeLabel = formatMaxSize(config?.maxUploadBytes)
+
+  const reportError = (message) => {
+    setError(message)
+    onError?.(message ? { message, field: errorField } : { message: '', field: errorField })
+  }
 
   const handleFileChange = async (event) => {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-    if (!file) return;
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
 
-    setError(null);
+    reportError(null)
 
     if (!removeBg) {
-      onChange(file);
-      return;
+      onChange(file)
+      return
     }
 
-    setLoading(true);
+    setLoading(true)
     try {
-      const blob = await removeBackground(file);
-      onChange(blobToPngFile(blob, file.name || 'image'));
+      const blob = await removeBackground(file)
+      onChange(blobToPngFile(blob, file.name || 'image'))
     } catch (err) {
-      setError(err.message || 'Background removal failed.');
+      reportError(err.message || 'Background removal failed.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div
-      className={`image-upload-field${loading ? ' image-upload-field--loading' : ''}${className ? ` ${className}` : ''}`}
+      className={`image-upload-field${loading ? ' image-upload-field--loading' : ''}${error ? ' has-error' : ''}${className ? ` ${className}` : ''}`}
+      data-error-field={errorField}
     >
       <div className="image-upload-field__thumb">
         {loading ? (
@@ -74,17 +92,8 @@ export default function ImageUploadField({
       </div>
       <div className="image-upload-field__controls">
         <span className="image-upload-field__label">{label}</span>
-        {hint && <span className="image-upload-field__hint">{hint}</span>}
-        {error && (
-          <span className="image-upload-field__error" role="alert">
-            {error}
-          </span>
-        )}
-        {loading && (
-          <span className="image-upload-field__hint" aria-live="polite">
-            Removing background…
-          </span>
-        )}
+        {hint ? <span className="image-upload-field__hint">{hint}</span> : null}
+
         <div className="image-upload-field__buttons">
           <label className={`image-upload-field__upload-btn${loading ? ' is-disabled' : ''}`}>
             {loading ? 'Processing…' : 'Upload'}
@@ -102,7 +111,25 @@ export default function ImageUploadField({
             </button>
           )}
         </div>
+
+        {loading && (
+          <span className="image-upload-field__hint" aria-live="polite">
+            Removing background…
+          </span>
+        )}
       </div>
+
+      <span className="image-upload-field__max">
+        <span className="image-upload-field__max-full">Max file size: {maxSizeLabel}</span>
+        <span className="image-upload-field__max-short">Max {maxSizeLabel}</span>
+      </span>
+
+      {showInlineError && error ? (
+        <div className="image-upload-field__error" role="alert">
+          <span className="image-upload-field__error-title">Upload failed</span>
+          <span className="image-upload-field__error-text">{error}</span>
+        </div>
+      ) : null}
     </div>
-  );
+  )
 }

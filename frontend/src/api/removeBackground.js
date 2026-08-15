@@ -115,7 +115,7 @@ export async function removeBackground(file, options = {}) {
 
   const maxBytes = getMaxUploadBytes()
   if (file.size && file.size > maxBytes) {
-    throw new Error(`That image is larger than ${formatBytes(maxBytes)}. Please choose a smaller photo.`)
+    throw new Error(`File too large. Maximum size is ${formatBytes(maxBytes)}.`)
   }
 
   const prepared = await prepareImageForRemoveBg(file)

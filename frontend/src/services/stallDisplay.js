@@ -15,6 +15,22 @@ export function formatStallPrice(price) {
   return amount ? `£${amount}` : ''
 }
 
+/**
+ * Split size vs condition for buyer UI.
+ * Legacy stalls only stored one value (as condition) — treat that as size.
+ */
+export function productSizeAndCondition(product) {
+  const size = String(product?.variation || product?.size || '').trim()
+  const condition = String(product?.condition || '').trim()
+  if (!size && condition) {
+    return { size: condition, condition: '' }
+  }
+  if (size && condition && size === condition) {
+    return { size, condition: '' }
+  }
+  return { size, condition }
+}
+
 export function stallToMarketStallProps(stall) {
   if (!stall) return null
 
@@ -30,12 +46,14 @@ export function stallToMarketStallProps(stall) {
           .map((item) => (typeof item === 'string' ? item : ''))
           .filter(Boolean)
 
+        const { size, condition } = productSizeAndCondition(product)
         return {
           id: product.id ?? index,
           title: product.name || `Product ${index + 1}`,
           name: product.name || '',
-          label: product.condition || product.label || product.variation || '',
-          variation: product.variation || product.condition || product.label || '',
+          label: size,
+          variation: size,
+          condition,
           description: product.description || '',
           image: images[0] || null,
           images,
@@ -88,10 +106,12 @@ export function stallToEditorState(stall) {
         files[index] = url
       })
 
+      const { size, condition } = productSizeAndCondition(product)
       return {
         name: product.name || '',
         description: product.description || '',
-        variation: product.variation || product.condition || product.label || '',
+        variation: size,
+        condition,
         price: product.price || '',
         files,
       }

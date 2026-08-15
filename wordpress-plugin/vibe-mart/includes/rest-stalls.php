@@ -185,10 +185,19 @@ function stall_row_to_array(object $row, bool $with_children = false): array {
 				if ($image_urls && '' === $primary) {
 					$primary = (string) $image_urls[0];
 				}
+				$variation = (string) ( $p->variation ?? '' );
+				$condition = (string) $p->condition_label;
+				/* Legacy rows stored size in condition_label only. */
+				if ( '' === $variation && '' !== $condition ) {
+					$variation = $condition;
+					$condition = '';
+				}
+
 				return array(
 					'id' => (int) $p->id,
 					'name' => (string) $p->name,
-					'condition' => (string) $p->condition_label,
+					'variation' => $variation,
+					'condition' => $condition,
 					'price' => (string) $p->price,
 					'description' => (string) $p->description,
 					'image_url' => $primary,
@@ -284,14 +293,15 @@ function sync_stall_children(int $stall_id, array $payload, bool $force_all = fa
 				array(
 					'stall_id' => $stall_id,
 					'name' => $name,
-					'condition_label' => sanitize_text_field((string) ($product['condition'] ?? $product['label'] ?? $product['variation'] ?? '')),
+					'variation' => sanitize_text_field((string) ($product['variation'] ?? $product['size'] ?? $product['label'] ?? '')),
+					'condition_label' => sanitize_text_field((string) ($product['condition'] ?? '')),
 					'price' => sanitize_text_field((string) ($product['price'] ?? '')),
 					'description' => sanitize_textarea_field((string) ($product['description'] ?? '')),
 					'image_url' => $primary,
 					'image_urls' => $image_urls ? wp_json_encode($image_urls) : null,
 					'sort_order' => (int) $index,
 				),
-				array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%d')
+				array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d')
 			);
 		}
 	}

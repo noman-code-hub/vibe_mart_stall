@@ -1,10 +1,11 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import StallEditorForm from './StallEditorForm'
 import StallLoadingScreen from './StallLoadingScreen'
 import ProductDetailModal from './market/ProductDetailModal.jsx'
 import DashboardTraderMenu from './account/DashboardTraderMenu.jsx'
 import { createEmptyStallData } from '../data/stallData'
+import { FIELD_LIMITS } from '../data/fieldLimits'
 import stallCart from '../assets/stall-cart.png'
 import dashArt from '../assets/MY DASH.png'
 import { useAuth } from '../context/AuthContext.jsx'
@@ -74,12 +75,36 @@ function toFormData(stall) {
   }
 }
 
+/** Prefill trading name + seller name from My Account profile. */
+function formDataFromProfile(user) {
+  const empty = createEmptyStallData()
+  if (!user) return toFormData(empty)
+
+  const tradingName = String(user.display_name || user.username || '')
+    .trim()
+    .slice(0, FIELD_LIMITS.businessName.maxChars)
+  const fullName = [user.first_name, user.last_name]
+    .filter(Boolean)
+    .join(' ')
+    .trim()
+    .slice(0, FIELD_LIMITS.sellerName.maxChars)
+
+  return toFormData({
+    ...empty,
+    business_name: tradingName,
+    seller: {
+      ...empty.seller,
+      name: fullName || tradingName.slice(0, FIELD_LIMITS.sellerName.maxChars),
+    },
+  })
+}
+
 /**
  * Existing stall generator UI — preserved and mounted on Dashboard / Sell Smart.
  * Do not remove features from this component; extend via props/callbacks.
  */
 export default function StallGeneratorApp({ variant = 'default', stallId = null }) {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const config = useRuntimeConfig()
   const navigate = useNavigate()
   const [step, setStep] = useState('edit') // 'edit' | 'loading' | 'finished'
@@ -92,10 +117,31 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
   const [saveMessage, setSaveMessage] = useState('')
   const [saveError, setSaveError] = useState('')
   const [validationErrors, setValidationErrors] = useState([])
+  const [fieldBannerError, setFieldBannerError] = useState('')
+  const [errorField, setErrorField] = useState('')
+  const errorBannerRef = useRef(null)
   const [savedStallId, setSavedStallId] = useState(null)
   const [stallStatus, setStallStatus] = useState('draft')
   const [quota, setQuota] = useState(null)
   const [hydrateBusy, setHydrateBusy] = useState(Boolean(stallId))
+
+  // New stall: auto-fill trading name + your name from profile.
+  useEffect(() => {
+    if (stallId || !user) return
+    setData((prev) => {
+      const fromProfile = formDataFromProfile(user)
+      return {
+        ...prev,
+        business_name: prev.business_name?.trim()
+          ? prev.business_name
+          : fromProfile.business_name,
+        seller: {
+          ...prev.seller,
+          name: prev.seller?.name?.trim() ? prev.seller.name : fromProfile.seller.name,
+        },
+      }
+    })
+  }, [user, stallId])
 
   useEffect(() => {
     if (!stallId) {
@@ -153,12 +199,14 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
   }, [isAuthenticated, config, savedStallId])
 
   const handleClearAll = () => {
-    setData(toFormData(createEmptyStallData()))
+    setData(formDataFromProfile(user))
     setSelfieFile(null)
     setProductSlots([])
     setSelectedProductIndex(null)
     setSaveMessage('')
     setSaveError('')
+    setFieldBannerError('')
+    setErrorField('')
     setValidationErrors([])
     setSavedStallId(null)
     setStallStatus('draft')
@@ -166,6 +214,25 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
       navigate('/my-account?tab=create', { replace: true })
     }
   }
+
+  const handleBannerError = ({ message, field }) => {
+    setFieldBannerError(message || '')
+    setErrorField(field || '')
+    if (message) {
+      setSaveError('')
+    }
+  }
+
+  const topErrorMessage = saveError || fieldBannerError
+  const hasTopErrors = Boolean(topErrorMessage) || validationErrors.length > 0
+
+  useEffect(() => {
+    if (!hasTopErrors) return undefined
+    const frame = window.requestAnimationFrame(() => {
+      errorBannerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [hasTopErrors, topErrorMessage, validationErrors, errorField])
 
   const selfieUrl = useStableFileUrl(selfieFile)
   const productUrl0 = useStableFileUrl(
@@ -197,6 +264,7 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
             images: [],
             description: '',
             variation: '',
+            condition: '',
             label: '',
             price: '',
           }
@@ -212,6 +280,7 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
           name: slot.name ?? '',
           label: slot.variation ?? '',
           variation: slot.variation ?? '',
+          condition: slot.condition ?? '',
           description: slot.description ?? '',
           image: resolvedProductUrls[i] ?? null,
           images: files,
@@ -434,8 +503,9 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
                 images,
                 blobUrls,
                 price: product.price || '',
-                condition: product.variation || product.label || '',
+                condition: product.condition || '',
                 label: product.variation || product.label || '',
+                variation: product.variation || product.label || '',
                 description: product.description || '',
               })
             }}
@@ -482,13 +552,18 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
         </header>
       )}
 
-      {(isDashboard && (saveError || validationErrors.length > 0)) && (
-        <div className="app__save-banner app__save-banner--error app__save-banner--dash-top" role="alert">
+      {(isDashboard && hasTopErrors) && (
+        <div
+          ref={errorBannerRef}
+          className="app__save-banner app__save-banner--error app__save-banner--dash-top"
+          role="alert"
+        >
           <span className="app__save-banner__mark" aria-hidden="true">
             !
           </span>
           <div className="app__save-banner__body">
-            {saveError && <p>{saveError}</p>}
+            <p className="app__save-banner__title">Something needs attention</p>
+            {topErrorMessage && <p>{topErrorMessage}</p>}
             {validationErrors.length > 0 && (
               <ul className="app__validation-list">
                 {validationErrors.map((item) => (
@@ -518,13 +593,14 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
                 : `${quota.remaining} of ${MAX_FREE_STALLS} free stalls remaining.`}
             </p>
           )}
-          {!isDashboard && (saveError || validationErrors.length > 0) && (
-            <div className="app__save-banner app__save-banner--error" role="alert">
+          {!isDashboard && hasTopErrors && (
+            <div ref={errorBannerRef} className="app__save-banner app__save-banner--error" role="alert">
               <span className="app__save-banner__mark" aria-hidden="true">
                 !
               </span>
               <div className="app__save-banner__body">
-                {saveError && <p>{saveError}</p>}
+                <p className="app__save-banner__title">Something needs attention</p>
+                {topErrorMessage && <p>{topErrorMessage}</p>}
                 {validationErrors.length > 0 && (
                   <ul className="app__validation-list">
                     {validationErrors.map((item) => (
@@ -544,6 +620,8 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
             productSlots={productSlots}
             onProductSlotsChange={setProductSlots}
             onClearAll={handleClearAll}
+            onBannerError={handleBannerError}
+            showInlineFieldErrors={!isDashboard}
           />
           <div className="app__generate-row">
             <button
