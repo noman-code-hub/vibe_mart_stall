@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import './DashboardTraderMenu.css'
 
 /**
- * Trader profile pill — person logo + name; Profile / Dashboard / Folder + Log out.
+ * Trader profile pill — person logo + name; Dashboard / Folder + Log out.
  * @param {'dashboard' | 'folder' | 'profile'} [variant]
  */
 export default function DashboardTraderMenu({ variant = 'dashboard' }) {
@@ -48,11 +48,6 @@ export default function DashboardTraderMenu({ variant = 'dashboard' }) {
     navigate('/my-account?tab=create')
   }
 
-  const goProfile = () => {
-    setOpen(false)
-    navigate('/my-account?tab=profile')
-  }
-
   const onLogout = async () => {
     setOpen(false)
     await logout()
@@ -91,11 +86,6 @@ export default function DashboardTraderMenu({ variant = 'dashboard' }) {
 
       {open && (
         <div className="vm-dash-trader__menu" id={menuId} role="menu">
-          {variant !== 'profile' ? (
-            <button type="button" role="menuitem" className="vm-dash-trader__item" onClick={goProfile}>
-              Profile
-            </button>
-          ) : null}
           {variant !== 'dashboard' ? (
             <button
               type="button"

@@ -1,10 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import './ForgotPasswordPage.css'
 
+const PROFILE_PATH = '/my-account?tab=profile'
+const DASHBOARD_PATH = '/my-account?tab=create'
+/** Prevents Strict Mode double-mount from confirming the same link twice. */
+const confirmingKeys = new Set()
+
 export default function ConfirmEmailPage() {
-  const { confirmEmail, isAuthenticated, loading } = useAuth()
+  const { confirmEmail, isAuthenticated, loading, user } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token') || ''
@@ -12,7 +17,8 @@ export default function ConfirmEmailPage() {
 
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [autoTried, setAutoTried] = useState(false)
+  const confirmEmailRef = useRef(confirmEmail)
+  confirmEmailRef.current = confirmEmail
 
   // Pending signup state from register navigate
   const pendingLogin = sessionStorage.getItem('vm_pending_login') || login
@@ -20,36 +26,46 @@ export default function ConfirmEmailPage() {
   const pendingConfirmUrl = sessionStorage.getItem('vm_pending_confirm_url') || ''
   const pendingNotice = sessionStorage.getItem('vm_pending_confirm_notice') || ''
 
-  useEffect(() => {
-    if (!loading && isAuthenticated && !token) {
-      navigate('/my-account?tab=profile', { replace: true })
-    }
-  }, [isAuthenticated, loading, navigate, token])
+  const nextAfterAuth = user?.profile_complete ? DASHBOARD_PATH : PROFILE_PATH
 
+  // After email confirm (logged in), open My Account profile until it is filled.
   useEffect(() => {
-    if (!token || !login || autoTried || loading) return undefined
+    if (!loading && isAuthenticated) {
+      navigate(nextAfterAuth, { replace: true })
+    }
+  }, [isAuthenticated, loading, navigate, nextAfterAuth])
+
+  // Auto-confirm when the email link lands with token + login.
+  useEffect(() => {
+    if (!token || !login || loading || isAuthenticated) return undefined
+
+    const key = `${login}::${token}`
+    if (confirmingKeys.has(key)) return undefined
+    confirmingKeys.add(key)
+
     let cancelled = false
     ;(async () => {
-      setAutoTried(true)
       setBusy(true)
       setError('')
       try {
-        await confirmEmail({ login, token })
+        await confirmEmailRef.current({ login, token })
         sessionStorage.removeItem('vm_pending_login')
         sessionStorage.removeItem('vm_pending_email')
         sessionStorage.removeItem('vm_pending_confirm_url')
         sessionStorage.removeItem('vm_pending_confirm_notice')
-        if (!cancelled) navigate('/my-account?tab=profile', { replace: true })
+        if (!cancelled) navigate(PROFILE_PATH, { replace: true })
       } catch (err) {
+        confirmingKeys.delete(key)
         if (!cancelled) setError(err.message || 'Could not confirm email.')
       } finally {
         if (!cancelled) setBusy(false)
       }
     })()
+
     return () => {
       cancelled = true
     }
-  }, [token, login, autoTried, loading, confirmEmail, navigate])
+  }, [token, login, loading, isAuthenticated, navigate])
 
   const onConfirmClick = async () => {
     if (!pendingConfirmUrl) return
