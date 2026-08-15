@@ -9,10 +9,10 @@ export function priceAmount(price) {
     .trim()
 }
 
-/** Stall face / shopper display — amount with £ on the right (e.g. 6.50£). */
+/** Stall face / shopper display — £ on the left (e.g. £6.50). */
 export function formatStallPrice(price) {
   const amount = priceAmount(price)
-  return amount ? `${amount}£` : ''
+  return amount ? `£${amount}` : ''
 }
 
 export function stallToMarketStallProps(stall) {
@@ -48,7 +48,7 @@ export function stallToMarketStallProps(stall) {
   return {
     businessName: stall.brand_name || '',
     seller: {
-      name: stall.seller?.name || stall.brand_name || '',
+      name: stall.seller?.name || stall.seller_name || stall.brand_name || '',
       about: stall.seller_bio || stall.seller?.about || '',
       ambition: stall.ambition || stall.seller?.ambition || '',
     },
@@ -103,7 +103,7 @@ export function stallToEditorState(stall) {
     data: {
       business_name: stall.brand_name || stall.business_name || '',
       seller: {
-        name: stall.seller?.name || '',
+        name: stall.seller?.name || stall.seller_name || '',
         about: stall.seller_bio || stall.seller?.about || '',
         ambition: stall.ambition || stall.seller?.ambition || '',
       },

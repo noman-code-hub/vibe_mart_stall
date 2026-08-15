@@ -433,6 +433,14 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
         </Suspense>
         <ProductDetailModal
           product={modalProduct}
+          stall={{
+            brand_name: data.business_name || '',
+            seller_photo: selfieUrl || '',
+            seller: {
+              name: data.seller?.name || '',
+              photo: selfieUrl || '',
+            },
+          }}
           onClose={() => {
             modalProduct?.blobUrls?.forEach((url) => URL.revokeObjectURL(url))
             setModalProduct(null)

@@ -94,10 +94,20 @@ function normalizeStall(input, ownerId, existing = null) {
   const statusRaw = String(input.status || existing?.status || 'draft')
   const status = statusRaw === 'published' ? 'published' : 'draft'
 
+  const sellerName = String(
+    input.seller_name ?? input.seller?.name ?? existing?.seller_name ?? existing?.seller?.name ?? ''
+  ).trim()
+
   return {
     id: existing?.id ?? 0,
     owner_id: existing?.owner_id ?? ownerId,
     brand_name: brand,
+    seller_name: sellerName,
+    seller: {
+      name: sellerName,
+      about: String(input.seller_bio ?? input.seller?.about ?? existing?.seller_bio ?? ''),
+      ambition: String(input.ambition ?? input.seller?.ambition ?? existing?.ambition ?? ''),
+    },
     seller_photo: String(input.seller_photo ?? existing?.seller_photo ?? ''),
     seller_bio: String(input.seller_bio ?? input.seller?.about ?? existing?.seller_bio ?? ''),
     ambition: String(input.ambition ?? input.seller?.ambition ?? existing?.ambition ?? ''),
@@ -141,10 +151,17 @@ function normalizeStall(input, ownerId, existing = null) {
 }
 
 function publicStall(stall, withProducts = false) {
+  const sellerName = String(stall.seller_name || stall.seller?.name || '').trim()
   const base = {
     id: stall.id,
     owner_id: stall.owner_id,
     brand_name: stall.brand_name,
+    seller_name: sellerName,
+    seller: {
+      name: sellerName,
+      about: stall.seller_bio || '',
+      ambition: stall.ambition || '',
+    },
     seller_photo: stall.seller_photo,
     seller_bio: stall.seller_bio,
     ambition: stall.ambition,

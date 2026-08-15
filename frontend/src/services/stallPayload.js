@@ -64,6 +64,7 @@ export async function buildStallCreatePayload({ data, selfieFile, productSlots, 
   return {
     brand_name: data?.business_name || '',
     business_name: data?.business_name || '',
+    seller_name: data?.seller?.name || '',
     seller_photo: sellerPhoto,
     seller_bio: data?.seller?.about || '',
     ambition: data?.seller?.ambition || '',

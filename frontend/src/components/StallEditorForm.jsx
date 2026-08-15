@@ -10,6 +10,7 @@ import selfieTipsArt from '../assets/SELFIE PAGE.png'
 import selfieTipsBtn from '../assets/SELFIE TIPS.png'
 import marketStallTipsBtn from '../assets/market-stall-tips-transparent.png'
 import marketStallTipsArt from '../assets/MARKET STALL FLOW.png'
+import addProductArt from '../assets/ADD PRODUCT EDIT.png'
 import './StallEditorForm.css'
 
 const MAX_PRODUCTS = 4
@@ -115,7 +116,7 @@ export default function StallEditorForm({
     const product = productSlots[index]
     if (!product) return
     setDraft({
-      name: product.name || '',
+      name: (product.name || '').toUpperCase(),
       description: product.description || '',
       variation: product.variation || '',
       price: stripPound(product.price || ''),
@@ -138,8 +139,8 @@ export default function StallEditorForm({
     } else if (countChars(draft.name) > FIELD_LIMITS.productName.maxChars) {
       nextErrors.name = `Maximum ${FIELD_LIMITS.productName.maxChars} characters.`
     }
-    if (countWords(draft.description) > FIELD_LIMITS.productDescription.maxWords) {
-      nextErrors.description = `Maximum ${FIELD_LIMITS.productDescription.maxWords} words.`
+    if (countChars(draft.description) > FIELD_LIMITS.productDescription.maxChars) {
+      nextErrors.description = `Maximum ${FIELD_LIMITS.productDescription.maxChars} letters.`
     }
     if (countChars(draft.variation) > FIELD_LIMITS.productVariation.maxChars) {
       nextErrors.variation = `Maximum ${FIELD_LIMITS.productVariation.maxChars} characters.`
@@ -153,7 +154,7 @@ export default function StallEditorForm({
     }
 
     const nextProduct = {
-      name: draft.name.trim(),
+      name: draft.name.trim().toUpperCase(),
       description: draft.description.trim(),
       variation: draft.variation.trim(),
       price: stripPound(draft.price),
@@ -550,40 +551,46 @@ export default function StallEditorForm({
               aria-modal="true"
               aria-labelledby="stall-product-modal-title"
             >
-              <header className="stall-product-modal__header">
-                <div>
-                  <p className="stall-product-modal__eyebrow">Stall product</p>
-                  <h2 id="stall-product-modal-title" className="stall-product-modal__title">
-                    {isEditingProduct
-                      ? `Edit product ${(productModal.index ?? 0) + 1}`
-                      : 'Add product'}
-                  </h2>
-                  <p className="stall-product-modal__hint">
-                    Name and photo show on the stall. Size sits on the tag; description opens on
-                    click.
-                  </p>
-                </div>
+              <h2 id="stall-product-modal-title" className="stall-product-modal__sr">
+                {isEditingProduct
+                  ? `Edit product ${(productModal.index ?? 0) + 1}`
+                  : 'Add product'}
+              </h2>
+
+              <button
+                type="button"
+                className="stall-product-modal__close"
+                onClick={closeProductModal}
+                aria-label="Close"
+              >
+                ×
+              </button>
+
+              {isEditingProduct ? (
                 <button
                   type="button"
-                  className="stall-product-modal__close"
-                  onClick={closeProductModal}
-                  aria-label="Close"
+                  className="stall-product-modal__remove"
+                  onClick={removeProductFromModal}
                 >
-                  ×
+                  Remove
                 </button>
-              </header>
+              ) : null}
 
-              <div className="stall-product-modal__body">
-                <label
-                  className={`stall-product-modal__field${draftErrors.name ? ' is-error' : ''}`}
-                >
-                  <span className="stall-product-modal__label">
-                    Name
-                    <em>
-                      {countChars(draft.name)}/{FIELD_LIMITS.productName.maxChars}
-                    </em>
-                  </span>
+              <div className="stall-product-modal__stage">
+                <img
+                  className="stall-product-modal__art"
+                  src={addProductArt}
+                  alt=""
+                  draggable={false}
+                />
+
+                <div className="stall-product-modal__fields">
+                  <label className="stall-product-modal__sr" htmlFor="stall-product-name">
+                    Product name
+                  </label>
                   <input
+                    id="stall-product-name"
+                    className={`stall-product-modal__input stall-product-modal__input--name${draftErrors.name ? ' is-error' : ''}`}
                     type="text"
                     value={draft.name}
                     maxLength={FIELD_LIMITS.productName.maxChars}
@@ -591,154 +598,105 @@ export default function StallEditorForm({
                       handleDraftCharLimit(
                         'name',
                         'name',
-                        e.target.value,
+                        e.target.value.toUpperCase(),
                         FIELD_LIMITS.productName.maxChars
                       )
                     }
-                    placeholder="e.g. Strawberry Jam"
+                    placeholder=""
                     aria-invalid={Boolean(draftErrors.name)}
                     autoFocus
                   />
-                  {draftErrors.name && (
-                    <span className="stall-product-modal__error" role="alert">
-                      {draftErrors.name}
-                    </span>
-                  )}
-                </label>
 
-                <div className="stall-product-modal__row">
-                  <label
-                    className={`stall-product-modal__field${draftErrors.price ? ' is-error' : ''}`}
-                  >
-                    <span className="stall-product-modal__label">
-                      Price
-                      <em>
-                        {countChars(stripPound(draft.price))}/{FIELD_LIMITS.productPrice.maxChars}
-                      </em>
-                    </span>
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      value={stripPound(draft.price)}
-                      maxLength={FIELD_LIMITS.productPrice.maxChars}
-                      onChange={(e) =>
-                        handleDraftCharLimit(
-                          'price',
-                          'price',
-                          stripPound(e.target.value),
-                          FIELD_LIMITS.productPrice.maxChars
-                        )
-                      }
-                      placeholder="e.g. 6.50"
-                      aria-label="Price"
-                      aria-invalid={Boolean(draftErrors.price)}
-                    />
-                    {draftErrors.price && (
-                      <span className="stall-product-modal__error" role="alert">
-                        {draftErrors.price}
-                      </span>
-                    )}
+                  <label className="stall-product-modal__sr" htmlFor="stall-product-price">
+                    Price
                   </label>
-
-                  <label
-                    className={`stall-product-modal__field${draftErrors.variation ? ' is-error' : ''}`}
-                  >
-                    <span className="stall-product-modal__label">
-                      Size
-                      <em>
-                        {countChars(draft.variation)}/{FIELD_LIMITS.productVariation.maxChars}
-                      </em>
-                    </span>
-                    <input
-                      type="text"
-                      value={draft.variation}
-                      maxLength={FIELD_LIMITS.productVariation.maxChars}
-                      onChange={(e) =>
-                        handleDraftCharLimit(
-                          'variation',
-                          'variation',
-                          e.target.value,
-                          FIELD_LIMITS.productVariation.maxChars
-                        )
-                      }
-                      placeholder="e.g. Medium"
-                      aria-invalid={Boolean(draftErrors.variation)}
-                    />
-                    {draftErrors.variation && (
-                      <span className="stall-product-modal__error" role="alert">
-                        {draftErrors.variation}
-                      </span>
-                    )}
-                  </label>
-                </div>
-
-                <label
-                  className={`stall-product-modal__field stall-product-modal__field--desc${draftErrors.description ? ' is-error' : ''}`}
-                >
-                  <span className="stall-product-modal__label">
-                    Description
-                    <em>
-                      {countWords(draft.description)}/{FIELD_LIMITS.productDescription.maxWords}{' '}
-                      words
-                    </em>
-                  </span>
-                  <textarea
-                    rows={4}
-                    value={draft.description}
+                  <input
+                    id="stall-product-price"
+                    className={`stall-product-modal__input stall-product-modal__input--price${draftErrors.price ? ' is-error' : ''}`}
+                    type="text"
+                    inputMode="decimal"
+                    value={stripPound(draft.price)}
+                    maxLength={FIELD_LIMITS.productPrice.maxChars}
                     onChange={(e) =>
-                      handleDraftWordLimit(
+                      handleDraftCharLimit(
+                        'price',
+                        'price',
+                        stripPound(e.target.value),
+                        FIELD_LIMITS.productPrice.maxChars
+                      )
+                    }
+                    placeholder=""
+                    aria-invalid={Boolean(draftErrors.price)}
+                  />
+
+                  <label className="stall-product-modal__sr" htmlFor="stall-product-size">
+                    Size / options
+                  </label>
+                  <input
+                    id="stall-product-size"
+                    className={`stall-product-modal__input stall-product-modal__input--size${draftErrors.variation ? ' is-error' : ''}`}
+                    type="text"
+                    value={draft.variation}
+                    maxLength={FIELD_LIMITS.productVariation.maxChars}
+                    onChange={(e) =>
+                      handleDraftCharLimit(
+                        'variation',
+                        'variation',
+                        e.target.value,
+                        FIELD_LIMITS.productVariation.maxChars
+                      )
+                    }
+                    placeholder=""
+                    aria-invalid={Boolean(draftErrors.variation)}
+                  />
+
+                  <label className="stall-product-modal__sr" htmlFor="stall-product-desc">
+                    Description
+                  </label>
+                  <textarea
+                    id="stall-product-desc"
+                    className={`stall-product-modal__input stall-product-modal__input--desc${draftErrors.description ? ' is-error' : ''}`}
+                    value={draft.description}
+                    maxLength={FIELD_LIMITS.productDescription.maxChars}
+                    onChange={(e) =>
+                      handleDraftCharLimit(
                         'description',
                         'description',
                         e.target.value,
-                        FIELD_LIMITS.productDescription.maxWords
+                        FIELD_LIMITS.productDescription.maxChars
                       )
                     }
-                    placeholder="Tell shoppers about this product…"
+                    placeholder=""
                     aria-invalid={Boolean(draftErrors.description)}
                   />
-                  {draftErrors.description && (
-                    <span className="stall-product-modal__error" role="alert">
-                      {draftErrors.description}
-                    </span>
-                  )}
-                </label>
 
-                <div className="stall-product-modal__photo">
                   <ProductImageSlots
                     files={draft.files}
                     onChange={(files) => setDraftField('files', normalizeProductFiles({ files }))}
                     removeBg
+                    variant="overlay"
                   />
-                </div>
-              </div>
 
-              <footer className="stall-product-modal__actions">
-                {isEditingProduct && (
-                  <button
-                    type="button"
-                    className="stall-product-modal__remove"
-                    onClick={removeProductFromModal}
-                  >
-                    Remove
-                  </button>
-                )}
-                <div className="stall-product-modal__actions-end">
-                  <button
-                    type="button"
-                    className="stall-product-modal__cancel"
-                    onClick={closeProductModal}
-                  >
-                    Cancel
-                  </button>
+                  {(draftErrors.name ||
+                    draftErrors.price ||
+                    draftErrors.variation ||
+                    draftErrors.description) && (
+                    <p className="stall-product-modal__error" role="alert">
+                      {draftErrors.name ||
+                        draftErrors.price ||
+                        draftErrors.variation ||
+                        draftErrors.description}
+                    </p>
+                  )}
+
                   <button
                     type="button"
                     className="stall-product-modal__save"
                     onClick={saveProductModal}
-                  >
-                    {isEditingProduct ? 'Save changes' : 'Save product'}
-                  </button>
+                    aria-label={isEditingProduct ? 'Save changes' : 'Save product'}
+                  />
                 </div>
-              </footer>
+              </div>
             </div>
           </div>,
           document.getElementById('vibe-mart-root') ||

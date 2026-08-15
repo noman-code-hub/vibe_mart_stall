@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useLayoutEffect, useRef, useState } from 'react'
 import { stallToMarketStallProps } from '../../services/stallDisplay.js'
 import StallLoadingScreen from '../StallLoadingScreen.jsx'
 
@@ -63,36 +63,11 @@ function StallCard({ stall, onOpen }) {
 }
 
 /**
- * Market stall slider — 2 full stalls visible at a time.
+ * Market stall slider — one full stall visible at a time.
  * Each card scales the whole stall (art + text) together so proportions stay correct.
+ * Swipe horizontally to move between stalls.
  */
 export default function MarketStallSlider({ stalls = [], loading = false, onStallOpen }) {
-  const railRef = useRef(null)
-  const [page, setPage] = useState(0)
-  const perPage = 2
-  const pageCount = Math.max(1, Math.ceil(stalls.length / perPage))
-
-  const scrollToPage = (nextPage) => {
-    const node = railRef.current
-    if (!node) return
-    const clamped = Math.max(0, Math.min(nextPage, pageCount - 1))
-    node.scrollTo({ left: node.clientWidth * clamped, behavior: 'smooth' })
-    setPage(clamped)
-  }
-
-  useEffect(() => {
-    const node = railRef.current
-    if (!node || stalls.length === 0) return undefined
-
-    const onScroll = () => {
-      const next = Math.round(node.scrollLeft / Math.max(1, node.clientWidth))
-      setPage(Math.max(0, Math.min(next, pageCount - 1)))
-    }
-
-    node.addEventListener('scroll', onScroll, { passive: true })
-    return () => node.removeEventListener('scroll', onScroll)
-  }, [stalls.length, pageCount])
-
   if (loading) {
     return (
       <div className="vm-market-loading">
@@ -103,30 +78,8 @@ export default function MarketStallSlider({ stalls = [], loading = false, onStal
 
   return (
     <div className="vm-market-slider">
-      <div className="vm-market-slider__chrome">
-        <button
-          type="button"
-          className="vm-btn vm-btn--ghost"
-          onClick={() => scrollToPage(page - 1)}
-          disabled={page <= 0}
-          aria-label="Previous stalls"
-        >
-          ←
-        </button>
-        <button
-          type="button"
-          className="vm-btn vm-btn--ghost"
-          onClick={() => scrollToPage(page + 1)}
-          disabled={page >= pageCount - 1}
-          aria-label="Next stalls"
-        >
-          →
-        </button>
-      </div>
-
       <div
         className="vm-market-rail"
-        ref={railRef}
         tabIndex={0}
         role="region"
         aria-label="Published market stalls"
@@ -135,22 +88,6 @@ export default function MarketStallSlider({ stalls = [], loading = false, onStal
           <StallCard key={stall.id} stall={stall} onOpen={onStallOpen} />
         ))}
       </div>
-
-      {pageCount > 1 && (
-        <div className="vm-market-dots" role="tablist" aria-label="Stall pages">
-          {Array.from({ length: pageCount }, (_, index) => (
-            <button
-              key={index}
-              type="button"
-              role="tab"
-              className={`vm-market-dots__dot${index === page ? ' is-active' : ''}`}
-              aria-label={`Show stalls page ${index + 1}`}
-              aria-selected={index === page}
-              onClick={() => scrollToPage(index)}
-            />
-          ))}
-        </div>
-      )}
     </div>
   )
 }

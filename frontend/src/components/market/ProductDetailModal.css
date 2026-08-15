@@ -1,0 +1,618 @@
+/* Comic buyer product modal — slots tuned to BUYER edit.png */
+
+.vm-buyer-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  box-sizing: border-box;
+  background: rgba(8, 6, 4, 0.72);
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  overflow: auto;
+}
+
+.vm-buyer-modal.is-open {
+  opacity: 1;
+}
+
+.vm-buyer-modal__dialog {
+  position: relative;
+  width: min(860px, 95vw);
+  margin: auto;
+  transform: translateY(10px) scale(0.98);
+  transition: transform 0.18s ease;
+}
+
+.vm-buyer-modal.is-open .vm-buyer-modal__dialog {
+  transform: none;
+}
+
+.vm-buyer-modal__stage {
+  position: relative;
+  width: 100%;
+  display: block;
+  container-type: inline-size;
+}
+
+.vm-buyer-modal__art {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+.vm-buyer-modal__fields {
+  position: absolute;
+  inset: 0;
+}
+
+.vm-buyer-modal__hero,
+.vm-buyer-modal__thumb,
+.vm-buyer-modal__nav,
+.vm-buyer-modal__name,
+.vm-buyer-modal__price,
+.vm-buyer-modal__size,
+.vm-buyer-modal__condition,
+.vm-buyer-modal__desc,
+.vm-buyer-modal__seller-photo,
+.vm-buyer-modal__seller-name,
+.vm-buyer-modal__buy,
+.vm-buyer-modal__trolley,
+.vm-buyer-modal__offer,
+.vm-buyer-modal__note {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Left: main photo — keep inside the art’s left frame only */
+.vm-buyer-modal__hero {
+  --x: 3.5%;
+  --y: 4.2%;
+  --w: 57%;
+  --h: 54%;
+  left: 3.5%;
+  top: 4.2%;
+  width: 57%;
+  height: 54%;
+  max-width: 57%;
+  max-height: 54%;
+  display: block;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #fff;
+  z-index: 2;
+}
+
+.vm-buyer-modal__hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  pointer-events: none;
+  background: #fff;
+}
+
+.vm-buyer-modal__hero-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 700 clamp(0.7rem, 1.6cqi, 1rem) / 1.2 'Segoe UI', system-ui, sans-serif;
+  color: rgba(26, 16, 8, 0.45);
+}
+
+.vm-buyer-modal__nav {
+  --y: 78%;
+  --w: 3%;
+  --h: 12%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  z-index: 3;
+}
+
+.vm-buyer-modal__nav--prev {
+  --x: 1.2%;
+}
+
+.vm-buyer-modal__nav--next {
+  --x: 64.5%;
+}
+
+.vm-buyer-modal__nav:hover {
+  background: rgba(255, 230, 0, 0.18);
+}
+
+/* Six separate thumb boxes — sized to the painted art slots */
+.vm-buyer-modal__thumb {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 2;
+  box-sizing: border-box;
+  box-shadow: none;
+}
+
+.vm-buyer-modal__thumb--1 {
+  --x: 4.1%;
+  --y: 75.5%;
+  --w: 8%;
+  --h: 16%;
+  left: 4.1%;
+  top: 75.5%;
+  width: 8%;
+  height: 16%;
+  max-width: 8%;
+  max-height: 16%;
+}
+
+.vm-buyer-modal__thumb--2 {
+  --x: 13.3%;
+  --y: 75.5%;
+  --w: 8%;
+  --h: 16%;
+  left: 13.3%;
+  top: 75.5%;
+  width: 8%;
+  height: 16%;
+  max-width: 8%;
+  max-height: 16%;
+}
+
+.vm-buyer-modal__thumb--3 {
+  --x: 22.5%;
+  --y: 75.5%;
+  --w: 8%;
+  --h: 16%;
+  left: 22.5%;
+  top: 75.5%;
+  width: 8%;
+  height: 16%;
+  max-width: 8%;
+  max-height: 16%;
+}
+
+.vm-buyer-modal__thumb--4 {
+  --x: 31.7%;
+  --y: 75.5%;
+  --w: 8%;
+  --h: 16%;
+  left: 31.7%;
+  top: 75.5%;
+  width: 8%;
+  height: 16%;
+  max-width: 8%;
+  max-height: 16%;
+}
+
+.vm-buyer-modal__thumb--5 {
+  --x: 40.9%;
+  --y: 75.5%;
+  --w: 8%;
+  --h: 16%;
+  left: 40.9%;
+  top: 75.5%;
+  width: 8%;
+  height: 16%;
+  max-width: 8%;
+  max-height: 16%;
+}
+
+.vm-buyer-modal__thumb--6 {
+  --x: 50.1%;
+  --y: 75.5%;
+  --w: 8%;
+  --h: 16%;
+  left: 50.1%;
+  top: 75.5%;
+  width: 8%;
+  height: 16%;
+  max-width: 8%;
+  max-height: 16%;
+}
+
+.vm-buyer-modal__thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  pointer-events: none;
+  background: transparent;
+}
+
+.vm-buyer-modal__thumb.is-active {
+  box-shadow: none;
+  outline: none;
+}
+
+/* Right column — name, price, size, condition, description, seller, CTAs */
+.vm-buyer-modal__fit {
+  overflow: hidden;
+  padding: 0;
+  font-style: italic;
+  font-weight: 900;
+}
+
+.vm-buyer-modal__fit-text {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  font-style: italic;
+  font-weight: 900;
+  -webkit-text-stroke: 0.6px #1a1008;
+  paint-order: stroke fill;
+}
+
+.vm-buyer-modal__name {
+  --x: 68%;
+  --y: 2%;
+  --w: 25%;
+  --h: 17%;
+  --fit-max: 52;
+  --fit-min: 14;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0;
+  box-sizing: border-box;
+  color: #ffe600;
+  font-family: Impact, 'Arial Black', sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  line-height: 1.05;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  /* Hard comic block shadow (bottom-right) + outline */
+  text-shadow:
+    -2px -2px 0 #1a1008,
+    2px -2px 0 #1a1008,
+    -2px 2px 0 #1a1008,
+    2px 2px 0 #1a1008,
+    0 -2px 0 #1a1008,
+    0 2px 0 #1a1008,
+    -2px 0 0 #1a1008,
+    2px 0 0 #1a1008,
+    3px 3px 0 #1a1008,
+    4px 4px 0 #1a1008,
+    5px 5px 0 #1a1008,
+    6px 6px 0 #1a1008;
+}
+
+.vm-buyer-modal__name .vm-buyer-modal__fit-text {
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1.05;
+  -webkit-text-stroke: 1px #1a1008;
+  paint-order: stroke fill;
+}
+
+.vm-buyer-modal__price {
+  --x: 69%;
+  --y: 22.5%;
+  --w: 23%;
+  --h: 11%;
+  --fit-max: 44;
+  --fit-min: 14;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0;
+  color: #fff;
+  font-family: Impact, 'Arial Black', sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  /* Hard comic block shadow (bottom-right) + outline */
+  text-shadow:
+    -2px -2px 0 #1a1008,
+    2px -2px 0 #1a1008,
+    -2px 2px 0 #1a1008,
+    2px 2px 0 #1a1008,
+    0 -2px 0 #1a1008,
+    0 2px 0 #1a1008,
+    -2px 0 0 #1a1008,
+    2px 0 0 #1a1008,
+    3px 3px 0 #1a1008,
+    4px 4px 0 #1a1008,
+    5px 5px 0 #1a1008,
+    6px 6px 0 #1a1008;
+}
+
+.vm-buyer-modal__price .vm-buyer-modal__fit-text {
+  font-size: 44px;
+  font-weight: 900;
+  line-height: 1;
+  -webkit-text-stroke: 1px #1a1008;
+  paint-order: stroke fill;
+}
+
+.vm-buyer-modal__size {
+  --x: 63.3%;
+  --y: 37.8%;
+  --w: 13.9%;
+  --h: 4.9%;
+  --fit-max: 22;
+  --fit-min: 11;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0;
+  color: #000;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: none;
+}
+
+.vm-buyer-modal__size .vm-buyer-modal__fit-text {
+  font-size: 22px;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1;
+  -webkit-text-stroke: 0;
+  color: #000;
+}
+
+.vm-buyer-modal__condition {
+  --x: 77%;
+  --y: 30.5%;
+  --w: 17.5%;
+  --h: 5.2%;
+  --fit-max: 22;
+  --fit-min: 11;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0;
+  color: #fff;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1;
+  text-transform: uppercase;
+  text-shadow: none;
+}
+
+.vm-buyer-modal__condition .vm-buyer-modal__fit-text {
+  font-size: 22px;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1;
+  -webkit-text-stroke: 0;
+}
+
+.vm-buyer-modal__desc {
+  --x: 63.5%;
+  --y: 44.5%;
+  --w: 33.3%;
+  --h: 10%;
+  --fit-max: 20;
+  --fit-min: 11;
+  display: flex;
+  align-items: flex-start;
+  padding: 0;
+  color: #000;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.35;
+}
+
+.vm-buyer-modal__desc .vm-buyer-modal__fit-text {
+  font-size: 20px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.35;
+  -webkit-text-stroke: 0;
+  color: #000;
+}
+
+.vm-buyer-modal__seller-photo {
+  /* Circle on the left of the yellow “MEET THE SELLER” bar */
+  --x: 64.3%;
+  --y: 57.4%;
+  --w: 8.1%;
+  --h: 11.5%;
+  border-radius: 50%;
+  object-fit: cover;
+  /* Full-length stall selfies — pin to head */
+  object-position: center top;
+  background: transparent;
+  z-index: 3;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.vm-buyer-modal__seller-name {
+  /* Yellow bar space under “MEET THE SELLER”, right of the circle */
+  --x: 74.5%;
+  --y: 62%;
+  --w: 18%;
+  --h: 6.5%;
+  --fit-max: 22;
+  --fit-min: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  color: #fff;
+  font-family: Impact, 'Arial Black', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-shadow:
+    -1.5px -1.5px 0 #000,
+    1.5px -1.5px 0 #000,
+    -1.5px 1.5px 0 #000,
+    1.5px 1.5px 0 #000,
+    0 -1.5px 0 #000,
+    0 1.5px 0 #000,
+    -1.5px 0 0 #000,
+    1.5px 0 0 #000,
+    2.5px 2.5px 0 #000,
+    3.5px 3.5px 0 #000;
+  z-index: 3;
+}
+
+.vm-buyer-modal__seller-name .vm-buyer-modal__fit-text {
+  font-size: 22px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  -webkit-text-stroke: 1.2px #000;
+  paint-order: stroke fill;
+  color: #fff;
+  text-align: center;
+}
+
+.vm-buyer-modal__note {
+  --x: 57.5%;
+  --y: 63%;
+  --w: 37.5%;
+  --h: 3.5%;
+  --fit-max: 14;
+  --fit-min: 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #1a6168;
+  font-family: Impact, 'Arial Black', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  line-height: 1;
+}
+
+.vm-buyer-modal__note .vm-buyer-modal__fit-text {
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1;
+  -webkit-text-stroke: 0.4px #1a1008;
+}
+
+.vm-buyer-modal__buy {
+  --x: 63.3%;
+  --y: 71.3%;
+  --w: 33.6%;
+  --h: 8.5%;
+}
+
+.vm-buyer-modal__trolley {
+  --x: 63.3%;
+  --y: 81.5%;
+  --w: 33.5%;
+  --h: 6.2%;
+}
+
+.vm-buyer-modal__offer {
+  --x: 63.3%;
+  --y: 89.4%;
+  --w: 33.6%;
+  --h: 6%;
+}
+
+.vm-buyer-modal__buy,
+.vm-buyer-modal__trolley,
+.vm-buyer-modal__offer {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.vm-buyer-modal__buy:hover,
+.vm-buyer-modal__trolley:hover,
+.vm-buyer-modal__offer:hover {
+  background: rgba(255, 230, 0, 0.12);
+}
+
+.vm-buyer-modal__close {
+  position: absolute;
+  top: 1.2%;
+  right: 1.2%;
+  z-index: 5;
+  width: clamp(34px, 5cqi, 44px);
+  height: clamp(34px, 5cqi, 44px);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  background: #ffe600;
+  color: #1a1008;
+  font-size: 1.4rem;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  outline: 2px solid #1a1008;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+
+.vm-buyer-modal__close:hover {
+  background: #fff28a;
+}
+
+.vm-buyer-modal__close:focus-visible {
+  outline: 3px solid #025fd7;
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .vm-buyer-modal {
+    padding: 8px;
+    align-items: start;
+  }
+
+  .vm-buyer-modal__dialog {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vm-buyer-modal,
+  .vm-buyer-modal__dialog {
+    transition: none;
+  }
+}

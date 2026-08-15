@@ -1,0 +1,111 @@
+.vm-folder-hub {
+  position: relative;
+  width: min(100%, 920px);
+  margin: 0 auto;
+  padding: 16px 12px 28px;
+  box-sizing: border-box;
+}
+
+.vm-folder-hub__head {
+  margin: 8px 0 18px;
+  text-align: center;
+}
+
+.vm-folder-hub__title {
+  margin: 0 0 6px;
+  font: 400 clamp(1.6rem, 4vw, 2.2rem) / 1 'Bangers', Impact, cursive;
+  letter-spacing: 0.04em;
+}
+
+.vm-folder-hub__copy {
+  margin: 0;
+  color: #5c4a3a;
+  font: 600 0.92rem / 1.35 'Segoe UI', system-ui, sans-serif;
+}
+
+.vm-folder-hub__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.vm-folder-hub__card {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 18px 12px 16px;
+  border: 3px solid #1a1008;
+  border-radius: 16px;
+  background: #fffdf8;
+  box-shadow: 4px 4px 0 #1a1008;
+  cursor: pointer;
+  color: #1a1008;
+  text-align: center;
+  font: inherit;
+}
+
+.vm-folder-hub__card:hover {
+  background: #ffe600;
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 #1a1008;
+}
+
+.vm-folder-hub__card--products {
+  background: #e8f4ff;
+}
+
+.vm-folder-hub__card--selfies {
+  background: #fff0f5;
+}
+
+.vm-folder-hub__card--stalls {
+  background: #fff8e0;
+}
+
+.vm-folder-hub__icon {
+  display: block;
+  width: 72px;
+  height: 60px;
+  line-height: 0;
+}
+
+.vm-folder-hub__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.vm-folder-hub__card-title {
+  font: 400 1.35rem / 1.1 'Bangers', Impact, cursive;
+  letter-spacing: 0.03em;
+}
+
+.vm-folder-hub__card-copy {
+  font: 600 0.78rem / 1.3 'Segoe UI', system-ui, sans-serif;
+  color: #5c4a3a;
+}
+
+.vm-folder-hub__dash {
+  display: block;
+  width: fit-content;
+  margin: 20px auto 0;
+  padding: 10px 16px;
+  border: 3px solid #1a1008;
+  border-radius: 12px;
+  background: #025fd7;
+  color: #fff;
+  font: 400 1.15rem / 1 'Bangers', Impact, cursive;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #1a1008;
+}
+
+.vm-folder-hub__dash:hover {
+  filter: brightness(1.05);
+}
+
+@media (max-width: 720px) {
+  .vm-folder-hub__grid {
+    grid-template-columns: 1fr;
+  }
+}

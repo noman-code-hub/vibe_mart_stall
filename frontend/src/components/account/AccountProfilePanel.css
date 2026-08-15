@@ -1,0 +1,316 @@
+/* Comic ACCOUNT PAGE overlay — slots tuned to ACCOUNT PAGE .png */
+
+.vm-account-profile {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: grid;
+  justify-items: center;
+  background: #ffffff;
+  padding: 8px clamp(24px, 6vw, 72px) 16px;
+}
+
+.vm-account-profile .vm-dash-trader--profile {
+  position: absolute;
+  right: clamp(24px, 6vw, 72px);
+  top: 12px;
+  z-index: 8;
+}
+
+.vm-account-profile__stage {
+  position: relative;
+  width: 100%;
+  max-width: min(1100px, 100%);
+  margin: 0 auto;
+  display: block;
+  container-type: inline-size;
+}
+
+.vm-account-profile__art {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+.vm-account-profile__fields {
+  position: absolute;
+  inset: 0;
+}
+
+.vm-account-profile__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.vm-account-profile__input,
+.vm-account-profile__pass-wrap,
+.vm-account-profile__check,
+.vm-account-profile__stall,
+.vm-account-profile__error {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.vm-account-profile__input--first {
+  --x: 6.6%;
+  --y: 30%;
+  --w: 20.3%;
+  --h: 2.9%;
+}
+
+.vm-account-profile__input--last {
+  --x: 29.4%;
+  --y: 30%;
+  --w: 17.5%;
+  --h: 2.9%;
+}
+
+.vm-account-profile__input--display {
+  --x: 6.6%;
+  --y: 36.5%;
+  --w: 40.4%;
+  --h: 2.9%;
+}
+
+.vm-account-profile__input--username {
+  --x: 6.6%;
+  --y: 42.6%;
+  --w: 40.4%;
+  --h: 2.9%;
+}
+
+.vm-account-profile__input--email {
+  --x: 6.7%;
+  --y: 49%;
+  --w: 40.3%;
+  --h: 2.8%;
+}
+
+.vm-account-profile__input--phone {
+  --x: 6.7%;
+  --y: 55.3%;
+  --w: 40.2%;
+  --h: 2.8%;
+}
+
+.vm-account-profile__input--password {
+  --x: 6.7%;
+  --y: 61.7%;
+  --w: 29.8%;
+  --h: 2.9%;
+}
+
+.vm-account-profile__input--password-confirm {
+  --x: 6.7%;
+  --y: 68.5%;
+  --w: 40.2%;
+  --h: 2.8%;
+}
+
+.vm-account-profile__input--dob {
+  --x: 54.5%;
+  --y: 29.5%;
+  --w: 30%;
+  --h: 3.3%;
+}
+
+.vm-account-profile__check--over17 {
+  --x: 66.8%;
+  --y: 34.4%;
+  --w: 2.3%;
+  --h: 1.5%;
+}
+
+.vm-account-profile__input--town {
+  --x: 54.5%;
+  --y: 46.5%;
+  --w: 39.8%;
+  --h: 2.9%;
+}
+
+.vm-account-profile__input--county {
+  --x: 54.5%;
+  --y: 52.5%;
+  --w: 39.8%;
+  --h: 2.9%;
+}
+
+.vm-account-profile__input--country {
+  --x: 54.5%;
+  --y: 58.4%;
+  --w: 39.8%;
+  --h: 3%;
+}
+
+.vm-account-profile__check--terms {
+  --x: 55.1%;
+  --y: 69.7%;
+  --w: 2.1%;
+  --h: 1.6%;
+}
+
+.vm-account-profile__check--rules {
+  --x: 55.1%;
+  --y: 72.3%;
+  --w: 2.1%;
+  --h: 1.6%;
+}
+
+.vm-account-profile__check--privacy {
+  --x: 55.1%;
+  --y: 75%;
+  --w: 2.1%;
+  --h: 1.6%;
+}
+
+.vm-account-profile__stall {
+  --x: 53%;
+  --y: 91.6%;
+  --w: 41%;
+  --h: 4.5%;
+}
+
+.vm-account-profile__error {
+  --x: 10%;
+  --y: 66.5%;
+  --w: 35%;
+  --h: auto;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(255, 232, 228, 0.96);
+  color: #8a1f1f;
+  font: 700 clamp(0.55rem, 1.3cqi, 0.82rem) / 1.25 'Segoe UI', system-ui, sans-serif;
+}
+
+.vm-account-profile__input {
+  padding: 0 2%;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  appearance: none;
+  -webkit-appearance: none;
+  color: #1a1008;
+  caret-color: #1a1008;
+  font: 600 clamp(0.55rem, 1.4cqi, 0.95rem) / 1.2 'Segoe UI', system-ui, sans-serif;
+}
+
+.vm-account-profile__input:read-only {
+  opacity: 0.85;
+}
+
+.vm-account-profile__input::placeholder {
+  color: rgba(26, 16, 8, 0.4);
+  opacity: 1;
+}
+
+.vm-account-profile__pass-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.vm-account-profile__pass-wrap .vm-account-profile__input {
+  position: static;
+  width: 100%;
+  height: 100%;
+  padding-right: 18%;
+}
+
+.vm-account-profile__pass-toggle {
+  position: absolute;
+  right: 2%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: #1a1008;
+  font: 800 0.65rem / 1 'Segoe UI', system-ui, sans-serif;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.vm-account-profile__check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent !important;
+  border: 1.5px solid #1a1008;
+  border-radius: 2px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.vm-account-profile__check input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  opacity: 0 !important;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* Dark tick sits on the yellow art checkbox when checked */
+.vm-account-profile__check::after {
+  content: '';
+  width: 55%;
+  height: 55%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  background: no-repeat center / contain;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%231a1008' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round' d='M3.2 8.2 6.5 11.4 12.8 4.4'/%3E%3C/svg%3E");
+  transition: opacity 0.12s ease;
+}
+
+.vm-account-profile__check:has(input:checked)::after {
+  opacity: 1;
+}
+
+.vm-account-profile__stall {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.vm-account-profile__stall:hover:not(:disabled) {
+  background: rgba(255, 230, 0, 0.12);
+}
+
+.vm-account-profile__stall:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+@media (max-width: 720px) {
+  .vm-account-profile {
+    padding: 6px clamp(12px, 4vw, 24px) 12px;
+  }
+}

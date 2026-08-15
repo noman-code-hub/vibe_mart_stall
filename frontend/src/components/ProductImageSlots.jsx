@@ -12,12 +12,9 @@ export function emptyProductFiles() {
 export function normalizeProductFiles(product) {
   const next = emptyProductFiles()
   if (Array.isArray(product?.files)) {
-    product.files
-      .filter(Boolean)
-      .slice(0, MAX_PRODUCT_IMAGES)
-      .forEach((file, index) => {
-        next[index] = file
-      })
+    for (let i = 0; i < Math.min(product.files.length, MAX_PRODUCT_IMAGES); i += 1) {
+      next[i] = product.files[i] || null
+    }
     return next
   }
   if (product?.file) {
@@ -56,14 +53,23 @@ function SlotThumb({ file, label, loading }) {
 /**
  * Progressive photo picker — one starter slot, then “Add more image” up to 6.
  * First photo is the stall face image.
+ * variant="overlay" — fixed 6-slot grid for comic art overlays (no chrome).
  */
-export default function ProductImageSlots({ files, onChange, removeBg = true }) {
+export default function ProductImageSlots({
+  files,
+  onChange,
+  removeBg = true,
+  variant = 'default',
+}) {
+  const slots = normalizeProductFiles({ files })
   const packed = packFiles(files)
   const [loadingIndex, setLoadingIndex] = useState(null)
   const [error, setError] = useState('')
   const addMoreInputRef = useRef(null)
+  const isOverlay = variant === 'overlay'
 
-  const commit = (nextPacked) => onChange(toSlots(nextPacked))
+  const commitPacked = (nextPacked) => onChange(toSlots(nextPacked))
+  const commitSlots = (nextSlots) => onChange(normalizeProductFiles({ files: nextSlots }))
 
   const processFile = async (file, targetIndex) => {
     setError('')
@@ -88,9 +94,15 @@ export default function ProductImageSlots({ files, onChange, removeBg = true }) 
     if (!file) return
     const processed = await processFile(file, index)
     if (!processed) return
+    if (isOverlay) {
+      const next = [...slots]
+      next[index] = processed
+      commitSlots(next)
+      return
+    }
     const next = [...packed]
     next[index] = processed
-    commit(next)
+    commitPacked(next)
   }
 
   const handleAddFirst = async (event) => {
@@ -99,7 +111,7 @@ export default function ProductImageSlots({ files, onChange, removeBg = true }) 
     if (!file) return
     const processed = await processFile(file, 0)
     if (!processed) return
-    commit([processed])
+    commitPacked([processed])
   }
 
   const handleAddMore = async (event) => {
@@ -108,15 +120,87 @@ export default function ProductImageSlots({ files, onChange, removeBg = true }) 
     if (!file || packed.length >= MAX_PRODUCT_IMAGES) return
     const processed = await processFile(file, packed.length)
     if (!processed) return
-    commit([...packed, processed])
+    commitPacked([...packed, processed])
+  }
+
+  const handleOverlayPick = async (index, event) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    const processed = await processFile(file, index)
+    if (!processed) return
+    const next = [...slots]
+    next[index] = processed
+    commitSlots(next)
   }
 
   const removeAt = (index) => {
-    commit(packed.filter((_, i) => i !== index))
+    if (isOverlay) {
+      const next = [...slots]
+      next[index] = null
+      commitSlots(next)
+      return
+    }
+    commitPacked(packed.filter((_, i) => i !== index))
   }
 
   const busy = loadingIndex != null
   const canAddMore = packed.length > 0 && packed.length < MAX_PRODUCT_IMAGES
+
+  if (isOverlay) {
+    return (
+      <>
+        {slots.map((file, index) => {
+          const slotBusy = loadingIndex === index
+          const filled = Boolean(file)
+          const n = index + 1
+          return (
+            <div
+              key={index}
+              className={`product-image-slots__slot product-image-slots__slot--overlay product-image-slots__slot--${n}${filled ? ' is-filled' : ''}${index === 0 ? ' is-primary' : ''}`}
+            >
+              <SlotThumb
+                file={file}
+                label={index === 0 ? 'Main product photo' : `Product photo ${n}`}
+                loading={slotBusy}
+              />
+              <label
+                className={`product-image-slots__hit${busy ? ' is-disabled' : ''}`}
+                aria-label={
+                  filled
+                    ? `Replace photo ${n}`
+                    : `Add photo ${n}${index === 0 ? ' (main)' : ''}`
+                }
+              >
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/jpg"
+                  onChange={(event) => handleOverlayPick(index, event)}
+                  disabled={busy}
+                  hidden
+                />
+              </label>
+              {filled && !slotBusy ? (
+                <button
+                  type="button"
+                  className="product-image-slots__remove product-image-slots__remove--overlay"
+                  onClick={() => removeAt(index)}
+                  aria-label={`Remove photo ${n}`}
+                >
+                  ×
+                </button>
+              ) : null}
+            </div>
+          )
+        })}
+        {error ? (
+          <p className="product-image-slots__error product-image-slots__error--overlay" role="alert">
+            {error}
+          </p>
+        ) : null}
+      </>
+    )
+  }
 
   return (
     <div className="product-image-slots">

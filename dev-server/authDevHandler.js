@@ -77,6 +77,18 @@ function publicUser(user) {
     phone: user.phone || '',
     bio: user.bio || '',
     location: user.location || '',
+    first_name: user.first_name || '',
+    last_name: user.last_name || '',
+    date_of_birth: user.date_of_birth || '',
+    over_17: Boolean(user.over_17),
+    town: user.town || '',
+    county: user.county || '',
+    country: user.country || '',
+    terms_accepted: Boolean(user.terms_accepted),
+    selling_rules_accepted: Boolean(user.selling_rules_accepted),
+    privacy_accepted: Boolean(user.privacy_accepted),
+    email_confirmed: user.email_confirmed !== false,
+    profile_complete: Boolean(user.profile_complete),
     nonce: 'dev-nonce',
   }
 }
@@ -223,6 +235,7 @@ export default async function authDevHandler(req, res) {
       }
 
       const salt = randomBytes(8).toString('hex')
+      const confirmToken = randomBytes(24).toString('hex')
       const user = {
         id: users.reduce((max, u) => Math.max(max, u.id), 0) + 1,
         username,
@@ -234,10 +247,34 @@ export default async function authDevHandler(req, res) {
         phone: String(body.phone || '').trim(),
         bio: String(body.bio || '').trim(),
         location: String(body.location || '').trim(),
+        first_name: '',
+        last_name: '',
+        date_of_birth: '',
+        over_17: false,
+        town: '',
+        county: '',
+        country: '',
+        terms_accepted: false,
+        selling_rules_accepted: false,
+        privacy_accepted: false,
+        email_confirmed: false,
+        profile_complete: false,
+        confirm_token_hash: hashToken(confirmToken),
+        confirm_expires: Date.now() + RESET_TTL_MS * 24,
       }
       users.push(user)
       await saveUsers(users)
-      sendJson(res, 201, publicUser(user), { 'Set-Cookie': sessionCookie(user.id, true) })
+
+      const confirmUrl = `${requestOrigin(req)}/confirm-email?token=${encodeURIComponent(confirmToken)}&login=${encodeURIComponent(username)}`
+      sendJson(res, 201, {
+        ok: true,
+        pending_confirmation: true,
+        message: 'Check your email to confirm your account.',
+        login: username,
+        email,
+        confirm_url: confirmUrl,
+        dev_notice: 'Test host has no email. Use this confirmation link now.',
+      })
       return true
     }
 
@@ -266,7 +303,55 @@ export default async function authDevHandler(req, res) {
         return true
       }
 
+      if (user.email_confirmed === false) {
+        sendJson(res, 403, {
+          code: 'vibe_mart_email_unconfirmed',
+          message: 'Please confirm your email before logging in.',
+          login: user.username,
+        })
+        return true
+      }
+
       sendJson(res, 200, publicUser(user), { 'Set-Cookie': sessionCookie(user.id, remember) })
+      return true
+    }
+
+    if (route === '/confirm-email' && method === 'POST') {
+      const body = await readBody(req)
+      const login = String(body.login || body.username || body.email || '').trim()
+      const token = String(body.token || '').trim()
+
+      if (!login || !token) {
+        sendJson(res, 400, {
+          code: 'vibe_mart_invalid',
+          message: 'This confirmation link is invalid.',
+        })
+        return true
+      }
+
+      const user = findUserByLogin(users, login)
+      const tokenHash = hashToken(token)
+      const valid =
+        user &&
+        user.confirm_token_hash &&
+        (!user.confirm_expires || user.confirm_expires > Date.now()) &&
+        user.confirm_token_hash.length === tokenHash.length &&
+        timingSafeEqual(Buffer.from(user.confirm_token_hash, 'utf8'), Buffer.from(tokenHash, 'utf8'))
+
+      if (!valid) {
+        sendJson(res, 400, {
+          code: 'vibe_mart_confirm_invalid',
+          message: 'This confirmation link is invalid or has expired.',
+        })
+        return true
+      }
+
+      user.email_confirmed = true
+      user.confirm_token_hash = ''
+      user.confirm_expires = 0
+      await saveUsers(users)
+
+      sendJson(res, 200, publicUser(user), { 'Set-Cookie': sessionCookie(user.id, true) })
       return true
     }
 
@@ -400,6 +485,63 @@ export default async function authDevHandler(req, res) {
       if (body.phone != null) current.phone = String(body.phone).trim()
       if (body.bio != null) current.bio = String(body.bio).trim()
       if (body.location != null) current.location = String(body.location).trim()
+      if (body.first_name != null) current.first_name = String(body.first_name).trim()
+      if (body.last_name != null) current.last_name = String(body.last_name).trim()
+      if (body.date_of_birth != null) current.date_of_birth = String(body.date_of_birth).trim()
+      if (body.over_17 != null) current.over_17 = Boolean(body.over_17)
+      if (body.town != null) current.town = String(body.town).trim()
+      if (body.county != null) current.county = String(body.county).trim()
+      if (body.country != null) current.country = String(body.country).trim()
+      if (body.terms_accepted != null) current.terms_accepted = Boolean(body.terms_accepted)
+      if (body.selling_rules_accepted != null) {
+        current.selling_rules_accepted = Boolean(body.selling_rules_accepted)
+      }
+      if (body.privacy_accepted != null) current.privacy_accepted = Boolean(body.privacy_accepted)
+
+      if (body.password != null && String(body.password).length > 0) {
+        const nextPassword = String(body.password)
+        if (nextPassword.length < 8) {
+          sendJson(res, 400, {
+            code: 'vibe_mart_invalid',
+            message: 'Password must be at least 8 characters.',
+          })
+          return true
+        }
+        const salt = randomBytes(8).toString('hex')
+        current.password_hash = hashPassword(nextPassword, salt)
+        current.password_salt = salt
+      }
+
+      const locationParts = [current.town, current.county, current.country].filter(Boolean)
+      if (locationParts.length) {
+        current.location = locationParts.join(', ')
+      }
+
+      const requiredOk =
+        Boolean(current.first_name) &&
+        Boolean(current.last_name) &&
+        Boolean(current.display_name) &&
+        Boolean(current.email) &&
+        Boolean(current.phone) &&
+        Boolean(current.date_of_birth) &&
+        Boolean(current.over_17) &&
+        Boolean(current.town) &&
+        Boolean(current.county) &&
+        Boolean(current.country) &&
+        Boolean(current.terms_accepted) &&
+        Boolean(current.selling_rules_accepted) &&
+        Boolean(current.privacy_accepted)
+
+      if (body.profile_complete === true || requiredOk) {
+        if (!requiredOk) {
+          sendJson(res, 400, {
+            code: 'vibe_mart_invalid',
+            message: 'Please complete all required profile fields.',
+          })
+          return true
+        }
+        current.profile_complete = true
+      }
 
       await saveUsers(users)
       sendJson(res, 200, publicUser(current))

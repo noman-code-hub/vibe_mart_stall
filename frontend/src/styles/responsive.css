@@ -34,11 +34,15 @@
 .vm-register,
 .vm-reset,
 .vm-trolley__banner,
-.vm-trolley__body,
-.vm-market-top,
-.vm-market-body {
+.vm-trolley__body {
   padding-left: var(--vm-gutter) !important;
   padding-right: var(--vm-gutter) !important;
+}
+
+.vm-market-top,
+.vm-market-body {
+  padding-left: var(--vm-market-gutter, clamp(12px, 2.5vw, 28px)) !important;
+  padding-right: var(--vm-market-gutter, clamp(12px, 2.5vw, 28px)) !important;
 }
 
 @media (max-width: 1024px) {
@@ -80,7 +84,7 @@
   }
 
   .vm-market-body {
-    padding-top: 18px !important;
+    padding-top: 6px !important;
     padding-bottom: 36px !important;
   }
 

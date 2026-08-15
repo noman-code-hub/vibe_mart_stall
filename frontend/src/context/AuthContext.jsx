@@ -90,7 +90,19 @@ export function AuthProvider({ children }) {
   const register = useCallback(
     async (payload) => {
       const result = await authApi.register(configRef.current, payload)
+      // Pending confirmation — do not treat as logged-in session.
+      if (result?.pending_confirmation) {
+        return result
+      }
       return applyAuthPayload(result)
+    },
+    [applyAuthPayload]
+  )
+
+  const confirmEmail = useCallback(
+    async ({ login, token }) => {
+      const payload = await authApi.confirmEmail(configRef.current, { login, token })
+      return applyAuthPayload(payload)
     },
     [applyAuthPayload]
   )
@@ -121,11 +133,12 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(user),
       login,
       register,
+      confirmEmail,
       logout,
       refresh,
       updateProfile,
     }),
-    [user, loading, login, register, logout, refresh, updateProfile]
+    [user, loading, login, register, confirmEmail, logout, refresh, updateProfile]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

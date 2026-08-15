@@ -5,7 +5,7 @@ import loginArt from '../assets/LOG IN CLEAN.png'
 import './LoginPage.css'
 
 export default function LoginPage() {
-  const { login, isAuthenticated, loading } = useAuth()
+  const { login, isAuthenticated, loading, user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
@@ -25,9 +25,15 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      navigate(redirectTo, { replace: true })
+      const next =
+        user && !user.profile_complete
+          ? '/my-account?tab=profile'
+          : redirectTo === '/my-account' || redirectTo === '/my-account/'
+            ? '/my-account?tab=create'
+            : redirectTo
+      navigate(next, { replace: true })
     }
-  }, [isAuthenticated, loading, navigate, redirectTo])
+  }, [isAuthenticated, loading, navigate, redirectTo, user])
 
   const onChange = (event) => {
     const { name, value, type, checked } = event.target
@@ -39,8 +45,14 @@ export default function LoginPage() {
     setBusy(true)
     setError('')
     try {
-      await login(form.username.trim(), form.password, form.remember)
-      navigate(redirectTo, { replace: true })
+      const user = await login(form.username.trim(), form.password, form.remember)
+      const next =
+        user && !user.profile_complete
+          ? '/my-account?tab=profile'
+          : redirectTo === '/my-account' || redirectTo === '/my-account/'
+            ? '/my-account?tab=create'
+            : redirectTo
+      navigate(next, { replace: true })
     } catch (err) {
       setError(err.message || 'Login failed.')
     } finally {

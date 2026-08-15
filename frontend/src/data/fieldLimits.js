@@ -7,13 +7,13 @@ export const FIELD_LIMITS = {
   sellerName: { maxChars: 22, label: 'characters' },
   /** Fits the Who's Behind panel — hard stop at 50 letters */
   about: { maxChars: 100, label: 'letters' },
-  /** Same cap as About you */
-  ambition: { maxChars: 100, label: 'letters' },
+  /** Fits the ambition panel — hard stop at 50 letters */
+  ambition: { maxChars: 50, label: 'letters' },
   pitchNumber: { maxChars: 12, label: 'characters' },
   pitchLocation: { maxChars: 20, label: 'characters' },
   memberSince: { maxChars: 14, label: 'characters' },
   productName: { maxChars: 26, label: 'characters' },
-  productDescription: { maxWords: 100, label: 'words' },
+  productDescription: { maxChars: 50, label: 'letters' },
   productVariation: { maxChars: 10, label: 'characters' },
   productPrice: { maxChars: 10, label: 'characters' },
 };

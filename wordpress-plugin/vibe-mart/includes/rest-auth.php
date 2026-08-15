@@ -92,6 +92,15 @@ add_action(
 				'permission_callback' => '__return_true',
 			)
 		);
+		register_rest_route(
+			REST_NAMESPACE,
+			'/auth/confirm-email',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => __NAMESPACE__ . '\\auth_confirm_email',
+				'permission_callback' => '__return_true',
+			)
+		);
 	}
 );
 
@@ -134,6 +143,18 @@ function user_payload(\WP_User $user): array {
 		'phone' => (string) get_user_meta($user->ID, 'vm_phone', true),
 		'bio' => (string) get_user_meta($user->ID, 'vm_bio', true),
 		'location' => (string) get_user_meta($user->ID, 'vm_location', true),
+		'first_name' => (string) get_user_meta($user->ID, 'first_name', true),
+		'last_name' => (string) get_user_meta($user->ID, 'last_name', true),
+		'date_of_birth' => (string) get_user_meta($user->ID, 'vm_date_of_birth', true),
+		'over_17' => (string) get_user_meta($user->ID, 'vm_over_17', true) === '1',
+		'town' => (string) get_user_meta($user->ID, 'vm_town', true),
+		'county' => (string) get_user_meta($user->ID, 'vm_county', true),
+		'country' => (string) get_user_meta($user->ID, 'vm_country', true),
+		'terms_accepted' => (string) get_user_meta($user->ID, 'vm_terms_accepted', true) === '1',
+		'selling_rules_accepted' => (string) get_user_meta($user->ID, 'vm_selling_rules_accepted', true) === '1',
+		'privacy_accepted' => (string) get_user_meta($user->ID, 'vm_privacy_accepted', true) === '1',
+		'email_confirmed' => (string) get_user_meta($user->ID, 'vm_email_confirmed', true) !== '0',
+		'profile_complete' => (string) get_user_meta($user->ID, 'vm_profile_complete', true) === '1',
 		'avatar_url' => (string) get_avatar_url(
 			$user->ID,
 			array(
@@ -158,6 +179,10 @@ function save_trader_meta(int $user_id, array $fields): void {
 		'phone' => 'vm_phone',
 		'bio' => 'vm_bio',
 		'location' => 'vm_location',
+		'date_of_birth' => 'vm_date_of_birth',
+		'town' => 'vm_town',
+		'county' => 'vm_county',
+		'country' => 'vm_country',
 	);
 
 	foreach ($map as $request_key => $meta_key) {
@@ -167,11 +192,38 @@ function save_trader_meta(int $user_id, array $fields): void {
 		$value = $fields[ $request_key ];
 		if ('bio' === $request_key) {
 			update_user_meta($user_id, $meta_key, sanitize_textarea_field((string) $value));
-		} elseif ('phone' === $request_key) {
-			update_user_meta($user_id, $meta_key, sanitize_text_field((string) $value));
 		} else {
 			update_user_meta($user_id, $meta_key, sanitize_text_field((string) $value));
 		}
+	}
+
+	if (array_key_exists('first_name', $fields) && null !== $fields['first_name']) {
+		update_user_meta($user_id, 'first_name', sanitize_text_field((string) $fields['first_name']));
+	}
+	if (array_key_exists('last_name', $fields) && null !== $fields['last_name']) {
+		update_user_meta($user_id, 'last_name', sanitize_text_field((string) $fields['last_name']));
+	}
+
+	$bool_map = array(
+		'over_17' => 'vm_over_17',
+		'terms_accepted' => 'vm_terms_accepted',
+		'selling_rules_accepted' => 'vm_selling_rules_accepted',
+		'privacy_accepted' => 'vm_privacy_accepted',
+		'profile_complete' => 'vm_profile_complete',
+	);
+	foreach ($bool_map as $request_key => $meta_key) {
+		if (! array_key_exists($request_key, $fields) || null === $fields[ $request_key ]) {
+			continue;
+		}
+		update_user_meta($user_id, $meta_key, $fields[ $request_key ] ? '1' : '0');
+	}
+
+	$town = (string) get_user_meta($user_id, 'vm_town', true);
+	$county = (string) get_user_meta($user_id, 'vm_county', true);
+	$country = (string) get_user_meta($user_id, 'vm_country', true);
+	$parts = array_filter(array($town, $county, $country));
+	if ($parts) {
+		update_user_meta($user_id, 'vm_location', implode(', ', $parts));
 	}
 
 	update_user_meta($user_id, 'vm_is_trader', '1');
@@ -271,15 +323,46 @@ function auth_register(WP_REST_Request $request): WP_REST_Response|WP_Error {
 		)
 	);
 
-	wp_set_current_user((int) $user_id);
-	wp_set_auth_cookie((int) $user_id, true, is_ssl());
+	$key = wp_generate_password(32, false);
+	update_user_meta((int) $user_id, 'vm_email_confirm_key', $key);
+	update_user_meta((int) $user_id, 'vm_email_confirm_expires', (string) ( time() + DAY_IN_SECONDS ));
+	update_user_meta((int) $user_id, 'vm_email_confirmed', '0');
+	update_user_meta((int) $user_id, 'vm_profile_complete', '0');
 
-	$user = get_user_by('id', $user_id);
-	if (! $user instanceof \WP_User) {
-		return new WP_Error('vibe_mart_register_failed', __('Could not create account.', 'vibe-mart'), array('status' => 500));
-	}
+	$confirm_url = add_query_arg(
+		array(
+			'token' => $key,
+			'login' => $username,
+		),
+		home_url('/confirm-email')
+	);
 
-	return new WP_REST_Response(user_payload($user), 201);
+	$subject = sprintf(__('[%s] Confirm your email', 'vibe-mart'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES));
+	$body = implode(
+		"\n",
+		array(
+			sprintf(__('Hi %s,', 'vibe-mart'), $display ?: $username),
+			'',
+			__('Please confirm your email to finish joining Vibe Mart:', 'vibe-mart'),
+			$confirm_url,
+			'',
+			__('If you did not create this account, you can ignore this email.', 'vibe-mart'),
+		)
+	);
+	wp_mail($email, $subject, $body);
+
+	return new WP_REST_Response(
+		array(
+			'ok' => true,
+			'pending_confirmation' => true,
+			'message' => __('Check your email to confirm your account.', 'vibe-mart'),
+			'login' => $username,
+			'email' => $email,
+			'confirm_url' => $confirm_url,
+			'dev_notice' => __('If email delivery fails locally, use this confirmation link.', 'vibe-mart'),
+		),
+		201
+	);
 }
 
 function auth_login(WP_REST_Request $request): WP_REST_Response|WP_Error {
@@ -321,7 +404,63 @@ function auth_login(WP_REST_Request $request): WP_REST_Response|WP_Error {
 		);
 	}
 
+	if ((string) get_user_meta($user->ID, 'vm_email_confirmed', true) === '0') {
+		wp_logout();
+		return new WP_Error(
+			'vibe_mart_email_unconfirmed',
+			__('Please confirm your email before logging in.', 'vibe-mart'),
+			array(
+				'status' => 403,
+				'login' => $user->user_login,
+			)
+		);
+	}
+
 	wp_set_current_user($user->ID);
+	return new WP_REST_Response(user_payload($user), 200);
+}
+
+function auth_confirm_email(WP_REST_Request $request): WP_REST_Response|WP_Error {
+	$login = sanitize_text_field((string) ( $request->get_param('login') ?: $request->get_param('username') ?: $request->get_param('email') ));
+	$token = sanitize_text_field((string) $request->get_param('token'));
+
+	if ('' === $login || '' === $token) {
+		return new WP_Error(
+			'vibe_mart_invalid',
+			__('This confirmation link is invalid.', 'vibe-mart'),
+			array('status' => 400)
+		);
+	}
+
+	$user = is_email($login) ? get_user_by('email', $login) : get_user_by('login', $login);
+	if (! $user instanceof \WP_User && ! is_email($login)) {
+		$user = get_user_by('email', $login);
+	}
+	if (! $user instanceof \WP_User) {
+		return new WP_Error(
+			'vibe_mart_confirm_invalid',
+			__('This confirmation link is invalid or has expired.', 'vibe-mart'),
+			array('status' => 400)
+		);
+	}
+
+	$stored = (string) get_user_meta($user->ID, 'vm_email_confirm_key', true);
+	$expires = (int) get_user_meta($user->ID, 'vm_email_confirm_expires', true);
+	if ('' === $stored || ! hash_equals($stored, $token) || ( $expires > 0 && $expires < time() )) {
+		return new WP_Error(
+			'vibe_mart_confirm_invalid',
+			__('This confirmation link is invalid or has expired.', 'vibe-mart'),
+			array('status' => 400)
+		);
+	}
+
+	update_user_meta($user->ID, 'vm_email_confirmed', '1');
+	delete_user_meta($user->ID, 'vm_email_confirm_key');
+	delete_user_meta($user->ID, 'vm_email_confirm_expires');
+
+	wp_set_current_user($user->ID);
+	wp_set_auth_cookie($user->ID, true, is_ssl());
+
 	return new WP_REST_Response(user_payload($user), 200);
 }
 
@@ -381,15 +520,66 @@ function auth_update_profile(WP_REST_Request $request): WP_REST_Response|WP_Erro
 			'phone' => $request->get_param('phone'),
 			'bio' => $request->get_param('bio'),
 			'location' => $request->get_param('location'),
+			'first_name' => $request->get_param('first_name'),
+			'last_name' => $request->get_param('last_name'),
+			'date_of_birth' => $request->get_param('date_of_birth'),
+			'over_17' => $request->get_param('over_17'),
+			'town' => $request->get_param('town'),
+			'county' => $request->get_param('county'),
+			'country' => $request->get_param('country'),
+			'terms_accepted' => $request->get_param('terms_accepted'),
+			'selling_rules_accepted' => $request->get_param('selling_rules_accepted'),
+			'privacy_accepted' => $request->get_param('privacy_accepted'),
 		)
 	);
+
+	$password = $request->get_param('password');
+	if (null !== $password && '' !== (string) $password) {
+		if (strlen((string) $password) < 8) {
+			return new WP_Error(
+				'vibe_mart_invalid',
+				__('Password must be at least 8 characters.', 'vibe-mart'),
+				array('status' => 400)
+			);
+		}
+		wp_set_password((string) $password, $user->ID);
+		wp_set_auth_cookie($user->ID, true, is_ssl());
+	}
 
 	$fresh = get_user_by('id', $user->ID);
 	if (! $fresh instanceof \WP_User) {
 		return new WP_Error('vibe_mart_unauthorized', __('Please log in.', 'vibe-mart'), array('status' => 401));
 	}
 
-	return new WP_REST_Response(user_payload($fresh), 200);
+	$payload = user_payload($fresh);
+	$required_ok =
+		$payload['first_name'] &&
+		$payload['last_name'] &&
+		$payload['display_name'] &&
+		$payload['email'] &&
+		$payload['phone'] &&
+		$payload['date_of_birth'] &&
+		$payload['over_17'] &&
+		$payload['town'] &&
+		$payload['county'] &&
+		$payload['country'] &&
+		$payload['terms_accepted'] &&
+		$payload['selling_rules_accepted'] &&
+		$payload['privacy_accepted'];
+
+	if (true === filter_var($request->get_param('profile_complete'), FILTER_VALIDATE_BOOLEAN) || $required_ok) {
+		if (! $required_ok) {
+			return new WP_Error(
+				'vibe_mart_invalid',
+				__('Please complete all required profile fields.', 'vibe-mart'),
+				array('status' => 400)
+			);
+		}
+		update_user_meta($user->ID, 'vm_profile_complete', '1');
+		$fresh = get_user_by('id', $user->ID);
+	}
+
+	return new WP_REST_Response(user_payload($fresh instanceof \WP_User ? $fresh : $user), 200);
 }
 
 /**

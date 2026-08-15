@@ -182,6 +182,91 @@
   }
 }
 
+/* Comic art overlay — each photo box is positioned separately */
+.product-image-slots__slot--overlay {
+  position: absolute;
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+}
+
+.product-image-slots__slot--overlay .product-image-slots__thumb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: auto;
+  border-radius: 0;
+  display: block;
+  overflow: hidden;
+  background: transparent;
+  background-image: none;
+}
+
+.product-image-slots__slot--overlay .product-image-slots__empty {
+  opacity: 0;
+}
+
+.product-image-slots__slot--overlay .product-image-slots__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.product-image-slots__hit {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.product-image-slots__hit.is-disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.product-image-slots__remove--overlay {
+  position: absolute;
+  top: 4%;
+  right: 4%;
+  z-index: 3;
+  flex: none;
+  width: 22%;
+  min-width: 18px;
+  max-width: 28px;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 2px solid #1a1008;
+  border-radius: 999px;
+  background: #ffe600;
+  color: #1a1008;
+  font-size: 0.85rem;
+  line-height: 1;
+  box-shadow: 1px 1px 0 #1a1008;
+}
+
+.product-image-slots__error--overlay {
+  position: absolute;
+  left: 10.6%;
+  top: 82%;
+  width: 78.7%;
+  margin: 0;
+  text-align: center;
+  z-index: 4;
+}
+
 @media (max-width: 420px) {
   .product-image-slots__grid {
     grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));

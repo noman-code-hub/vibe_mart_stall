@@ -4,7 +4,7 @@
  */
 import footerBg from '../assets/d8770035-4dca-4c22-aef3-f2d92299155f.png'
 import headerBg from '../assets/399f487b-9e42-4393-8c24-72bf2418072d.png'
-import brandLogo from '../assets/96b97ec6-2221-44b3-b791-966c3b89491c.png'
+import brandLogo from '../assets/LOGO.png'
 import iconHome from '../assets/1 HOME.png'
 import iconVibes from '../assets/2 VIBES.png'
 import iconSell from '../assets/3 SELL.png'
@@ -70,7 +70,7 @@ export const STATIC_SITE_IMAGES = [
   home4,
   home5,
   home6,
-  '/vibe-mart-logo.png?v=2',
+  '/vibe-mart-logo.png?v=3',
 ]
 
 export function preloadUrl(url) {

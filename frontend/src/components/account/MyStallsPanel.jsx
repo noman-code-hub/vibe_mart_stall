@@ -1,10 +1,11 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import StallLoadingScreen from '../StallLoadingScreen.jsx'
 import DashboardTraderMenu from './DashboardTraderMenu.jsx'
 import { getStall } from '../../services/stallApi.js'
 import { stallToMarketStallProps } from '../../services/stallDisplay.js'
 import { useRuntimeConfig } from '../../context/RuntimeConfigContext.jsx'
+import './FolderViews.css'
 
 const MarketStall = lazy(() => import('../MarketStall'))
 
@@ -73,8 +74,10 @@ export default function MyStallsPanel({
   onPublishDrafts,
   busy = false,
   publishBusy = false,
+  showBackToFolders = false,
 }) {
   const config = useRuntimeConfig()
+  const [, setSearchParams] = useSearchParams()
   const [detailsById, setDetailsById] = useState({})
   const [detailLoading, setDetailLoading] = useState({})
 
@@ -114,6 +117,19 @@ export default function MyStallsPanel({
   return (
     <div className="vm-folder">
       <DashboardTraderMenu variant="folder" />
+
+      {showBackToFolders ? (
+        <div className="vm-folder-view__bar">
+          <button
+            type="button"
+            className="vm-folder-view__back"
+            onClick={() => setSearchParams({ tab: 'folder' })}
+          >
+            ← All folders
+          </button>
+          <h2 className="vm-folder-view__title">Stalls</h2>
+        </div>
+      ) : null}
 
       {loading && <p className="vm-folder__loading vm-muted">Loading…</p>}
 

@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext.jsx'
 import home1 from '../assets/homepage/1.png'
 import home2 from '../assets/homepage/2.png'
 import home3 from '../assets/homepage/3.png'
@@ -18,7 +17,6 @@ const HOME_SECTIONS = [
 
 export default function HomePage() {
   const navigate = useNavigate()
-  const { isAuthenticated, loading } = useAuth()
 
   return (
     <section className="vm-home" aria-label="Home">
@@ -33,25 +31,23 @@ export default function HomePage() {
           />
         ))}
 
-        {!loading && !isAuthenticated ? (
-          <div className="vm-home__cta">
-            <button
-              type="button"
-              className="vm-home__signup"
-              aria-label="Sign up"
-              onClick={() => navigate('/register')}
-            >
-              <img
-                className="vm-home__signup-img"
-                src={signUpBtn}
-                alt=""
-                width={160}
-                height={56}
-                draggable={false}
-              />
-            </button>
-          </div>
-        ) : null}
+        <div className="vm-home__cta">
+          <button
+            type="button"
+            className="vm-home__signup"
+            aria-label="Sign up"
+            onClick={() => navigate('/register')}
+          >
+            <img
+              className="vm-home__signup-img"
+              src={signUpBtn}
+              alt=""
+              width={160}
+              height={56}
+              draggable={false}
+            />
+          </button>
+        </div>
       </div>
     </section>
   )

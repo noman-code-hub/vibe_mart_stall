@@ -4,8 +4,8 @@ import { useAuth } from '../../context/AuthContext.jsx'
 import './DashboardTraderMenu.css'
 
 /**
- * Trader profile pill — person logo + name; Folder/Dashboard + Log out.
- * @param {'dashboard' | 'folder'} [variant]
+ * Trader profile pill — person logo + name; Profile / Dashboard / Folder + Log out.
+ * @param {'dashboard' | 'folder' | 'profile'} [variant]
  */
 export default function DashboardTraderMenu({ variant = 'dashboard' }) {
   const { user, logout } = useAuth()
@@ -40,12 +40,17 @@ export default function DashboardTraderMenu({ variant = 'dashboard' }) {
 
   const goFolder = () => {
     setOpen(false)
-    navigate('/my-account?tab=stalls')
+    navigate('/my-account?tab=folder')
   }
 
   const goDashboard = () => {
     setOpen(false)
     navigate('/my-account?tab=create')
+  }
+
+  const goProfile = () => {
+    setOpen(false)
+    navigate('/my-account?tab=profile')
   }
 
   const onLogout = async () => {
@@ -56,7 +61,7 @@ export default function DashboardTraderMenu({ variant = 'dashboard' }) {
 
   return (
     <div
-      className={`vm-dash-trader${variant === 'folder' ? ' vm-dash-trader--folder' : ''}`}
+      className={`vm-dash-trader${variant === 'folder' ? ' vm-dash-trader--folder' : ''}${variant === 'profile' ? ' vm-dash-trader--profile' : ''}`}
       ref={rootRef}
     >
       <button
@@ -86,7 +91,12 @@ export default function DashboardTraderMenu({ variant = 'dashboard' }) {
 
       {open && (
         <div className="vm-dash-trader__menu" id={menuId} role="menu">
-          {variant === 'folder' ? (
+          {variant !== 'profile' ? (
+            <button type="button" role="menuitem" className="vm-dash-trader__item" onClick={goProfile}>
+              Profile
+            </button>
+          ) : null}
+          {variant !== 'dashboard' ? (
             <button
               type="button"
               role="menuitem"
@@ -95,11 +105,12 @@ export default function DashboardTraderMenu({ variant = 'dashboard' }) {
             >
               Dashboard
             </button>
-          ) : (
+          ) : null}
+          {variant !== 'folder' ? (
             <button type="button" role="menuitem" className="vm-dash-trader__item" onClick={goFolder}>
               Folder
             </button>
-          )}
+          ) : null}
           <button
             type="button"
             role="menuitem"

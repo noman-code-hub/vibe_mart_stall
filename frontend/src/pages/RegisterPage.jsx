@@ -53,7 +53,7 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      navigate('/my-account', { replace: true })
+      navigate('/my-account?tab=profile', { replace: true })
     }
   }, [isAuthenticated, loading, navigate])
 
@@ -127,7 +127,7 @@ export default function RegisterPage() {
 
     setBusy(true)
     try {
-      await register({
+      const result = await register({
         username,
         email,
         password: form.password,
@@ -136,7 +136,19 @@ export default function RegisterPage() {
         phone: '',
         location: '',
       })
-      navigate('/my-account', { replace: true })
+      if (result?.pending_confirmation) {
+        sessionStorage.setItem('vm_pending_login', result.login || username)
+        sessionStorage.setItem('vm_pending_email', result.email || email)
+        if (result.confirm_url) {
+          sessionStorage.setItem('vm_pending_confirm_url', result.confirm_url)
+        }
+        if (result.dev_notice) {
+          sessionStorage.setItem('vm_pending_confirm_notice', result.dev_notice)
+        }
+        navigate('/confirm-email', { replace: true })
+        return
+      }
+      navigate('/my-account?tab=profile', { replace: true })
     } catch (err) {
       applyError(classifyRegisterError(err.message || 'Registration failed.'))
     } finally {

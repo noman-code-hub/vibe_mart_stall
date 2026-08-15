@@ -35,6 +35,11 @@
   background: #ffffff;
 }
 
+.vm-shell--profile {
+  min-height: 0;
+  background: #ffffff;
+}
+
 .vm-shell--vibes {
   min-height: 0;
   background: #ffffff;
@@ -75,32 +80,32 @@
 
 .vm-logo {
   --x: 8%;
-  --y: 8%;
+  --y: 50%;
   position: absolute;
   left: var(--x);
   top: var(--y);
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  width: clamp(300px, 36vw, 500px);
-  height: 100%;
-  overflow: hidden;
+  width: auto;
+  height: auto;
+  max-height: 72px;
+  overflow: visible;
   text-decoration: none;
   z-index: 1;
   line-height: 0;
 }
 
 .vm-logo__img {
-  /* PNG has a large black margin around the burst — overscale + clip so the mark fills the bar. */
   display: block;
-  height: 263%;
+  height: 72px;
   width: auto;
-  max-width: none;
-  max-height: none;
+  max-width: min(200px, 28vw);
+  max-height: 72px;
   object-fit: contain;
   object-position: left center;
   user-select: none;
-  margin-left: -4%;
 }
 
 .vm-nav {
@@ -249,6 +254,14 @@
   background: #ffffff;
 }
 
+.vm-main--profile {
+  max-width: none;
+  width: 100%;
+  flex: 0 0 auto;
+  padding: 0;
+  background: #ffffff;
+}
+
 .vm-main--login {
   max-width: none;
   width: 100%;
@@ -353,22 +366,21 @@
   align-items: center;
   line-height: 0;
   text-decoration: none;
-  width: clamp(220px, 28vw, 360px);
-  height: 110px;
-  overflow: hidden;
+  width: auto;
+  height: auto;
+  max-height: 88px;
+  overflow: visible;
 }
 
 .vm-footer__logo-img {
-  /* Same PNG black margin as header — overscale so the burst reads big. */
   display: block;
-  height: 189%;
+  height: 88px;
   width: auto;
-  max-width: none;
-  max-height: none;
+  max-width: min(220px, 36vw);
+  max-height: 88px;
   object-fit: contain;
   object-position: left center;
   user-select: none;
-  margin-left: -6%;
 }
 
 .vm-footer__logo:hover {
@@ -438,8 +450,15 @@
 
   .vm-footer__logo {
     flex: 0 0 auto;
-    width: 160px;
+    width: auto;
+    height: auto;
+    max-height: 68px;
+  }
+
+  .vm-footer__logo-img {
     height: 68px;
+    max-width: 170px;
+    max-height: 68px;
   }
 
   .vm-footer__nav {
@@ -503,17 +522,21 @@
     position: relative;
     left: auto;
     top: auto;
+    transform: none;
     --x: 0;
     --y: 0;
-    width: min(320px, 72vw);
-    height: 64px;
+    width: auto;
+    height: auto;
+    max-height: 56px;
     margin: 0 auto;
     justify-content: center;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .vm-logo__img {
-    height: 230%;
+    height: 56px;
+    max-width: min(160px, 48vw);
+    max-height: 56px;
     margin-left: 0;
     object-position: center;
   }
@@ -653,8 +676,15 @@
   }
 
   .vm-logo {
-    width: min(280px, 74vw);
-    height: 58px;
+    width: auto;
+    height: auto;
+    max-height: 48px;
+  }
+
+  .vm-logo__img {
+    height: 48px;
+    max-width: min(140px, 46vw);
+    max-height: 48px;
   }
 
   .vm-menu-toggle {
@@ -692,13 +722,16 @@
 
   .vm-footer__logo {
     flex: 0 0 auto;
-    width: 108px;
-    height: 48px;
+    width: auto;
+    height: auto;
+    max-height: 52px;
   }
 
   .vm-footer__logo-img {
-    height: 189%;
-    margin-left: -6%;
+    height: 52px;
+    max-width: 120px;
+    max-height: 52px;
+    margin-left: 0;
     object-position: left center;
   }
 

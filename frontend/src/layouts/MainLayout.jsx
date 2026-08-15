@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import footerBg from '../assets/d8770035-4dca-4c22-aef3-f2d92299155f.png'
 import headerBg from '../assets/399f487b-9e42-4393-8c24-72bf2418072d.png'
-import brandLogo from '../assets/96b97ec6-2221-44b3-b791-966c3b89491c.png'
+import brandLogo from '../assets/LOGO.png'
 import iconHome from '../assets/1 HOME.png'
 import iconVibes from '../assets/2 VIBES.png'
 import iconSell from '../assets/3 SELL.png'
@@ -56,15 +56,19 @@ export default function MainLayout() {
     location.pathname.startsWith('/register') ||
     location.pathname.startsWith('/forgot-password') ||
     location.pathname.startsWith('/reset-password') ||
+    location.pathname.startsWith('/confirm-email') ||
     location.pathname.startsWith('/home') ||
     location.pathname === '/' ||
     location.pathname === ''
   const accountTab = new URLSearchParams(location.search).get('tab')
   const folderOnly =
-    location.pathname.startsWith('/my-account') && accountTab === 'stalls'
-  // Dashboard is the default My Account tab (including bare /my-account).
+    location.pathname.startsWith('/my-account') &&
+    (accountTab === 'folder' || accountTab === 'stalls')
+  const profileOnly =
+    location.pathname.startsWith('/my-account') && accountTab === 'profile'
+  // Dashboard is create tab (default when profile complete and no tab).
   const dashboardOnly =
-    location.pathname.startsWith('/my-account') && !folderOnly
+    location.pathname.startsWith('/my-account') && !folderOnly && !profileOnly
   const marketOnly =
     location.pathname === '/market' || location.pathname === '/market/'
   const trolleyOnly =
@@ -80,7 +84,8 @@ export default function MainLayout() {
     location.pathname === '/register' || location.pathname === '/register/'
   const resetOnly =
     location.pathname.startsWith('/forgot-password') ||
-    location.pathname.startsWith('/reset-password')
+    location.pathname.startsWith('/reset-password') ||
+    location.pathname.startsWith('/confirm-email')
   const contactOnly =
     location.pathname === '/contact' || location.pathname === '/contact/'
   const vibesOnly =
@@ -119,7 +124,7 @@ export default function MainLayout() {
   }
 
   return (
-    <div className={`vm-shell${menuOpen ? ' is-open' : ''}${dashboardOnly ? ' vm-shell--dashboard' : ''}${folderOnly ? ' vm-shell--folder' : ''}${marketOnly ? ' vm-shell--market' : ''}${trolleyOnly ? ' vm-shell--trolley' : ''}${homeOnly ? ' vm-shell--home' : ''}${loginOnly ? ' vm-shell--login' : ''}${registerOnly ? ' vm-shell--register' : ''}${resetOnly ? ' vm-shell--reset' : ''}${contactOnly ? ' vm-shell--contact' : ''}${vibesOnly ? ' vm-shell--vibes' : ''}`}>
+    <div className={`vm-shell${menuOpen ? ' is-open' : ''}${dashboardOnly ? ' vm-shell--dashboard' : ''}${folderOnly ? ' vm-shell--folder' : ''}${profileOnly ? ' vm-shell--profile' : ''}${marketOnly ? ' vm-shell--market' : ''}${trolleyOnly ? ' vm-shell--trolley' : ''}${homeOnly ? ' vm-shell--home' : ''}${loginOnly ? ' vm-shell--login' : ''}${registerOnly ? ' vm-shell--register' : ''}${resetOnly ? ' vm-shell--reset' : ''}${contactOnly ? ' vm-shell--contact' : ''}${vibesOnly ? ' vm-shell--vibes' : ''}`}>
       <header
         className={`vm-header${menuOpen ? ' is-open' : ''}`}
         style={{ '--vm-header-bg': `url(${headerBg})` }}
@@ -196,7 +201,7 @@ export default function MainLayout() {
       </header>
 
       <main
-        className={`vm-main${wideMain ? ' vm-main--wide' : ''}${dashboardOnly ? ' vm-main--dashboard' : ''}${folderOnly ? ' vm-main--folder' : ''}${marketOnly ? ' vm-main--market' : ''}${trolleyOnly ? ' vm-main--trolley' : ''}${homeOnly ? ' vm-main--home' : ''}${loginOnly ? ' vm-main--login' : ''}${registerOnly ? ' vm-main--register' : ''}${resetOnly ? ' vm-main--reset' : ''}${contactOnly ? ' vm-main--contact' : ''}${vibesOnly ? ' vm-main--vibes' : ''}`}
+        className={`vm-main${wideMain ? ' vm-main--wide' : ''}${dashboardOnly ? ' vm-main--dashboard' : ''}${folderOnly ? ' vm-main--folder' : ''}${profileOnly ? ' vm-main--profile' : ''}${marketOnly ? ' vm-main--market' : ''}${trolleyOnly ? ' vm-main--trolley' : ''}${homeOnly ? ' vm-main--home' : ''}${loginOnly ? ' vm-main--login' : ''}${registerOnly ? ' vm-main--register' : ''}${resetOnly ? ' vm-main--reset' : ''}${contactOnly ? ' vm-main--contact' : ''}${vibesOnly ? ' vm-main--vibes' : ''}`}
       >
         <Outlet />
       </main>

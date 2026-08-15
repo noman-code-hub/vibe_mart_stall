@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx'
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx'
+import ConfirmEmailPage from './pages/ConfirmEmailPage.jsx'
 import MyTrolleyPage from './pages/MyTrolleyPage.jsx'
 import ContactPage from './pages/ContactPage.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="register" element={<RegisterPage />} />
           <Route path="forgot-password" element={<ForgotPasswordPage />} />
           <Route path="reset-password" element={<ResetPasswordPage />} />
+          <Route path="confirm-email" element={<ConfirmEmailPage />} />
           <Route path="my-trolley" element={<MyTrolleyPage />} />
           <Route path="contact" element={<ContactPage />} />
           <Route

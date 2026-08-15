@@ -262,12 +262,15 @@
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - 120px);
+  /* Banner + stall — tighter side gutters than other pages */
+  --vm-market-gutter: clamp(12px, 2.5vw, 28px);
+  --vm-market-max: min(1320px, 100%);
 }
 
 .vm-market-top {
   width: 100%;
   margin: 0;
-  padding: 12px clamp(40px, 10vw, 88px) 8px;
+  padding: 12px var(--vm-market-gutter) 8px;
   box-sizing: border-box;
   line-height: 0;
   overflow: hidden;
@@ -279,7 +282,7 @@
 .vm-market-top__img {
   display: block;
   width: 100%;
-  max-width: min(1180px, 100%);
+  max-width: var(--vm-market-max);
   height: auto;
   object-fit: contain;
   object-position: center top;
@@ -288,27 +291,34 @@
 
 .vm-market-body {
   width: 100%;
-  padding: 28px clamp(40px, 10vw, 88px) 56px;
+  padding: 8px var(--vm-market-gutter) 56px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 @media (max-width: 1024px) {
   .vm-market-top {
-    padding: 10px clamp(20px, 4vw, 40px) 8px;
+    padding-top: 10px;
+    padding-bottom: 8px;
   }
 
   .vm-market-body {
-    padding: 20px clamp(20px, 4vw, 40px) 40px;
+    padding-top: 6px;
+    padding-bottom: 40px;
   }
 }
 
 @media (max-width: 640px) {
   .vm-market-top {
-    padding: 8px 14px 6px;
+    padding-top: 8px;
+    padding-bottom: 6px;
   }
 
   .vm-market-body {
-    padding: 16px 14px 32px;
+    padding-top: 4px;
+    padding-bottom: 32px;
   }
 }
 
@@ -316,7 +326,8 @@
   flex: 1 1 auto;
   display: grid;
   place-items: center;
-  padding: 40px 16px 64px;
+  padding-top: 40px;
+  padding-bottom: 64px;
   min-height: min(48vh, 420px);
 }
 
@@ -446,25 +457,6 @@
   color: #6b5847;
 }
 
-.vm-market-slider__chrome {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.vm-market-slider__title {
-  margin: 0;
-  font-size: 1.2rem;
-}
-
-.vm-market-scroll-btns {
-  display: flex;
-  gap: 8px;
-}
-
 .vm-market-loading {
   max-width: 1200px;
   margin: 0 auto;
@@ -472,25 +464,18 @@
 
 .vm-market-slider {
   width: 100%;
-  max-width: 1360px;
+  max-width: min(880px, 100%);
   margin: 0 auto;
-}
-
-.vm-market-slider__chrome {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-bottom: 10px;
 }
 
 .vm-market-rail {
   display: flex;
-  gap: 16px;
+  gap: 0;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: 0;
-  padding: 4px 2px 12px;
+  padding: 0;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
@@ -501,10 +486,10 @@
   display: none;
 }
 
-/* Two stalls visible per slide — equal half-width cards */
+/* One stall visible per slide — full-width card */
 .vm-market-rail__item {
-  flex: 0 0 calc((100% - 16px) / 2);
-  width: calc((100% - 16px) / 2);
+  flex: 0 0 100%;
+  width: 100%;
   scroll-snap-align: start;
 }
 
@@ -535,7 +520,7 @@
   overflow: hidden;
   border-radius: 10px;
   box-shadow: 0 8px 18px rgba(26, 16, 8, 0.16);
-  background: #9a9088;
+  background: #fff;
 }
 
 .vm-market-scale__inner {
@@ -554,37 +539,11 @@
   border-radius: 14px !important;
   box-shadow: none !important;
   overflow: hidden;
+  background: #fff !important;
 }
 
 .vm-market-rail__hit .vm-market-stall {
   pointer-events: none;
-}
-
-.vm-market-dots {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0 8px;
-}
-
-.vm-market-dots__dot {
-  width: 8px;
-  height: 8px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: #c5bab0;
-  cursor: pointer;
-}
-
-.vm-market-dots__dot.is-active {
-  background: #1a1008;
-  transform: scale(1.2);
-}
-
-.vm-market-dots__dot:hover {
-  background: #6b5847;
 }
 
 .vm-market-stall--interactive {
@@ -593,12 +552,12 @@
 
 @media (max-width: 700px) {
   .vm-market-rail {
-    gap: 10px;
+    gap: 0;
   }
 
   .vm-market-rail__item {
-    flex: 0 0 calc((100% - 10px) / 2);
-    width: calc((100% - 10px) / 2);
+    flex: 0 0 100%;
+    width: 100%;
   }
 }
 
@@ -1154,28 +1113,17 @@
   }
 
   .vm-market-rail {
-    gap: 10px;
+    gap: 0;
     padding-inline: 0;
   }
 
   .vm-market-rail__item {
-    flex: 0 0 calc((100% - 10px) / 2);
-    width: calc((100% - 10px) / 2);
+    flex: 0 0 100%;
+    width: 100%;
   }
 
   .vm-market-banner--entrance {
     border-radius: 12px;
-  }
-
-  .vm-market-slider__chrome {
-    justify-content: flex-end;
-  }
-
-  .vm-market-slider__chrome .vm-btn {
-    min-width: 40px;
-    min-height: 36px;
-    padding: 6px 10px;
-    font-size: 0.82rem;
   }
 }
 

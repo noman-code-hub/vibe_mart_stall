@@ -1,44 +1,60 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext.jsx'
 import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import MyStallsPanel from '../components/account/MyStallsPanel.jsx'
 import CreateStallPanel from '../components/account/CreateStallPanel.jsx'
-import { deleteStall, listMyStalls, updateStall } from '../services/stallApi.js'
+import AccountProfilePanel from '../components/account/AccountProfilePanel.jsx'
+import FolderHub from '../components/account/FolderHub.jsx'
+import ProductsFolder from '../components/account/ProductsFolder.jsx'
+import SelfiesFolder from '../components/account/SelfiesFolder.jsx'
+import { deleteStall, getStall, listMyStalls, updateStall } from '../services/stallApi.js'
 import { MAX_FREE_STALLS, STALL_LIMIT_MESSAGE } from '../services/stallPayload.js'
 
-const TABS = [
-  { id: 'stalls', label: 'My stalls' },
-  { id: 'create', label: 'Dashboard' },
-]
-
-const DEFAULT_TAB = 'create'
+const TABS = ['profile', 'create', 'folder']
 
 export default function MyAccountPage() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const config = useRuntimeConfig()
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const initialTab = TABS.some((t) => t.id === searchParams.get('tab'))
-    ? searchParams.get('tab')
-    : DEFAULT_TAB
+  const profileComplete = Boolean(user?.profile_complete)
+  const rawTab = searchParams.get('tab')
+  const folderView = searchParams.get('view') || ''
 
-  const [tab, setTab] = useState(initialTab)
+  const tab = useMemo(() => {
+    if (!profileComplete) return 'profile'
+    if (TABS.includes(rawTab)) return rawTab
+    return 'create'
+  }, [profileComplete, rawTab])
+
   const [stalls, setStalls] = useState([])
+  const [stallDetails, setStallDetails] = useState([])
   const [stallsLoading, setStallsLoading] = useState(false)
+  const [detailsLoading, setDetailsLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    const raw = searchParams.get('tab')
-    const nextTab = TABS.some((t) => t.id === raw) ? raw : DEFAULT_TAB
-    setTab(nextTab)
-    if (raw !== nextTab) {
-      const next = new URLSearchParams(searchParams)
-      next.set('tab', nextTab)
-      setSearchParams(next, { replace: true })
+    if (!user) return
+    const next = new URLSearchParams(searchParams)
+    let changed = false
+
+    if (!profileComplete && rawTab !== 'profile') {
+      next.set('tab', 'profile')
+      next.delete('view')
+      next.delete('stallId')
+      changed = true
+    } else if (profileComplete && (!rawTab || !TABS.includes(rawTab))) {
+      next.set('tab', rawTab === 'stalls' ? 'folder' : 'create')
+      if (rawTab === 'stalls') next.set('view', 'stalls')
+      changed = true
     }
-  }, [searchParams, setSearchParams])
+
+    if (changed) setSearchParams(next, { replace: true })
+  }, [user, profileComplete, rawTab, searchParams, setSearchParams])
 
   const refreshStalls = useCallback(async () => {
     setStallsLoading(true)
@@ -54,18 +70,42 @@ export default function MyAccountPage() {
     }
   }, [config])
 
-  // Load on mount and whenever Folder opens so a newly saved stall appears
-  // without needing a full page refresh.
   useEffect(() => {
-    refreshStalls()
+    if (tab === 'folder' || tab === 'create') {
+      refreshStalls()
+    }
   }, [refreshStalls, tab])
 
-  // Deep-link: /my-account?tab=create&stallId=12 (or legacy ?edit=12)
+  useEffect(() => {
+    if (tab !== 'folder' || (folderView !== 'products' && folderView !== 'selfies')) {
+      return undefined
+    }
+    let cancelled = false
+    ;(async () => {
+      setDetailsLoading(true)
+      try {
+        const details = await Promise.all(
+          stalls.map(async (summary) => {
+            try {
+              return await getStall(config, summary.id)
+            } catch {
+              return null
+            }
+          })
+        )
+        if (!cancelled) setStallDetails(details.filter(Boolean))
+      } finally {
+        if (!cancelled) setDetailsLoading(false)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [tab, folderView, stalls, config])
+
   useEffect(() => {
     const editId = Number(searchParams.get('edit') || 0)
     if (!editId) return undefined
-
-    // Legacy edit links now open Dashboard with that stall loaded.
     const next = new URLSearchParams(searchParams)
     next.delete('edit')
     next.set('tab', 'create')
@@ -73,6 +113,39 @@ export default function MyAccountPage() {
     setSearchParams(next, { replace: true })
     return undefined
   }, [searchParams, setSearchParams])
+
+  const productItems = useMemo(() => {
+    const rows = []
+    for (const stall of stallDetails) {
+      const products = Array.isArray(stall.products) ? stall.products : []
+      for (const product of products) {
+        rows.push({
+          stallId: stall.id,
+          stallName: stall.brand_name || stall.business_name || 'Stall',
+          productId: product.id,
+          name: product.name || product.title || 'Product',
+          price: product.price || '',
+          image:
+            product.image_url ||
+            product.image ||
+            product.photo ||
+            (Array.isArray(product.images) ? product.images[0] : '') ||
+            '',
+        })
+      }
+    }
+    return rows
+  }, [stallDetails])
+
+  const selfieItems = useMemo(() => {
+    return stallDetails
+      .map((stall) => ({
+        stallId: stall.id,
+        stallName: stall.brand_name || stall.business_name || 'Stall',
+        image: stall.seller_photo || stall.selfie_url || '',
+      }))
+      .filter((row) => row.image)
+  }, [stallDetails])
 
   const onDelete = async (id) => {
     if (!window.confirm('Delete this stall? This cannot be undone.')) return
@@ -127,12 +200,13 @@ export default function MyAccountPage() {
   }
 
   const isDashboard = tab === 'create'
-  const isFolder = tab === 'stalls'
+  const isFolder = tab === 'folder'
+  const isProfile = tab === 'profile'
   const dashboardStallId = Number(searchParams.get('stallId') || 0) || null
 
   return (
     <section
-      className={`vm-page vm-account${isDashboard ? ' vm-account--dashboard' : ''}${isFolder ? ' vm-account--folder' : ''}`}
+      className={`vm-page vm-account${isDashboard ? ' vm-account--dashboard' : ''}${isFolder ? ' vm-account--folder' : ''}${isProfile ? ' vm-account--profile' : ''}`}
     >
       {!isDashboard && message && (
         <p className="vm-success" role="status">
@@ -148,10 +222,30 @@ export default function MyAccountPage() {
       <div
         id={`account-panel-${tab}`}
         role="tabpanel"
-        aria-label={isDashboard ? 'Dashboard' : isFolder ? 'Folder' : undefined}
+        aria-label={
+          isProfile
+            ? 'Profile'
+            : isDashboard
+              ? 'Dashboard'
+              : isFolder
+                ? 'Folder'
+                : undefined
+        }
         className="vm-account-panel"
       >
-        {tab === 'stalls' && (
+        {isProfile && <AccountProfilePanel />}
+
+        {tab === 'folder' && !folderView && <FolderHub />}
+
+        {tab === 'folder' && folderView === 'products' && (
+          <ProductsFolder items={productItems} loading={stallsLoading || detailsLoading} />
+        )}
+
+        {tab === 'folder' && folderView === 'selfies' && (
+          <SelfiesFolder items={selfieItems} loading={stallsLoading || detailsLoading} />
+        )}
+
+        {tab === 'folder' && folderView === 'stalls' && (
           <MyStallsPanel
             stalls={stalls}
             loading={stallsLoading}
@@ -160,6 +254,7 @@ export default function MyAccountPage() {
             onPublishDrafts={onPublishDrafts}
             busy={busy}
             publishBusy={busy}
+            showBackToFolders
           />
         )}
 

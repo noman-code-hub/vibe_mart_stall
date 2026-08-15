@@ -14,6 +14,13 @@ export function register(config, payload) {
   })
 }
 
+export function confirmEmail(config, { login, token }) {
+  return apiRequest(config, 'auth/confirm-email', {
+    method: 'POST',
+    body: { login, token },
+  })
+}
+
 export function logout(config) {
   return apiRequest(config, 'auth/logout', { method: 'POST', body: {} })
 }
