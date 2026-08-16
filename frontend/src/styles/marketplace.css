@@ -258,8 +258,6 @@
   max-width: none;
   margin: 0;
   padding: 0;
-  border-radius: 10px;
-  overflow: hidden;
   background-color: #2a221c;
   background-image: url('../assets/market-page-bg.png');
   background-size: 100% auto;
@@ -268,7 +266,7 @@
   background-attachment: scroll;
   display: flex;
   flex-direction: column;
-  min-height: max(calc(100vh - 120px - 36px), calc((100vw - 36px) * 584 / 1024));
+  min-height: max(calc(100vh - 120px), calc(100vw * 584 / 1024));
   /* Banner + stall — tighter side gutters than other pages */
   --vm-market-gutter: clamp(12px, 2.5vw, 28px);
   --vm-market-max: min(1320px, 100%);
