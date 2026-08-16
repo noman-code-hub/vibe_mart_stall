@@ -1,4 +1,5 @@
 import stallCart from '../../assets/stall-cart.png';
+import marketStallArt from '../../assets/new stall.png';
 import { STALL_IMAGE, OVERLAY, overlayStyle, productHitStyle } from './stallImageLayout.js';
 import ProductSlot from './ProductSlot.jsx';
 import StallInfoPanel from './StallInfoPanel.jsx';
@@ -19,7 +20,11 @@ export default function MarketStall({
   selectedProductIndex = null,
   onClose,
   closeRef,
+  /** `market` = public market page only; default keeps stall-cart elsewhere. */
+  variant = 'cart',
 }) {
+  const artSrc = variant === 'market' ? marketStallArt : stallCart;
+
   const slots = Array.from({ length: 4 }, (_, i) => {
     const p = products[i];
     return {
@@ -40,7 +45,7 @@ export default function MarketStall({
   return (
     <div className={`${styles.stall} ${className}`} style={{ aspectRatio: STALL_IMAGE.aspectRatio }}>
       <img
-        src={stallCart}
+        src={artSrc}
         alt=""
         className={styles.stallImage}
         width={STALL_IMAGE.width}

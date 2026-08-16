@@ -222,8 +222,9 @@
 .vm-main--market {
   max-width: none;
   width: 100%;
-  padding: 0;
-  background: #ffffff;
+  padding: clamp(10px, 1.6vw, 18px);
+  box-sizing: border-box;
+  background: #1a1410;
 }
 
 .vm-main--trolley {

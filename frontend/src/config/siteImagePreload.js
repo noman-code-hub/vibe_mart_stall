@@ -14,7 +14,6 @@ import iconLogin from '../assets/6 LOGIN.png'
 import iconCart from '../assets/7 MY CART.png'
 import iconContact from '../assets/8 CONTACT.png'
 import iconLogout from '../assets/LOG OUT.png'
-import marketHeader from '../assets/VIBMART POP TOP MARKET.png'
 import loginArt from '../assets/LOG IN CLEAN.png'
 import signUpArt from '../assets/NEW SIGN UP A.png'
 import contactArt from '../assets/CONTACT FORM.png'
@@ -22,6 +21,8 @@ import trolleyBanner from '../assets/TRAN.png'
 import vibesArt from '../assets/OUR VIBES POP ART EXTRA.png'
 import sellArt from '../assets/SELL.png'
 import stallCart from '../assets/stall-cart.png'
+import marketStallArt from '../assets/new stall.png'
+import marketPageBg from '../assets/market-page-bg.png'
 import dashArt from '../assets/MY DASH.png'
 import selfieTipsArt from '../assets/SELFIE PAGE.png'
 import selfieTipsBtn from '../assets/SELFIE TIPS.png'
@@ -50,7 +51,6 @@ export const STATIC_SITE_IMAGES = [
   iconCart,
   iconContact,
   iconLogout,
-  marketHeader,
   loginArt,
   signUpArt,
   contactArt,
@@ -58,6 +58,8 @@ export const STATIC_SITE_IMAGES = [
   vibesArt,
   sellArt,
   stallCart,
+  marketStallArt,
+  marketPageBg,
   dashArt,
   selfieTipsArt,
   selfieTipsBtn,

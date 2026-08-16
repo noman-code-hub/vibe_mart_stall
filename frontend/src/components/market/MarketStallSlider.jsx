@@ -53,7 +53,7 @@ function StallCard({ stall, onOpen }) {
             }}
           >
             <Suspense fallback={<StallLoadingScreen />}>
-              <MarketStall {...props} className="vm-market-stall" />
+              <MarketStall {...props} variant="market" className="vm-market-stall" />
             </Suspense>
           </div>
         </div>

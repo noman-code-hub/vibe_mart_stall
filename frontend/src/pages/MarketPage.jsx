@@ -4,10 +4,9 @@ import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import { getStall, listMarketplace } from '../services/stallApi.js'
 import MarketStallSlider from '../components/market/MarketStallSlider.jsx'
 import StallFocusModal from '../components/market/StallFocusModal.jsx'
-import marketHeader from '../assets/VIBMART POP TOP MARKET.png'
 
 /**
- * Public marketplace — header art above published stalls.
+ * Public marketplace — published stalls over the market background.
  * Clicking a stall opens a zoomed overlay (no separate detail page).
  */
 export default function MarketPage() {
@@ -137,15 +136,6 @@ export default function MarketPage() {
 
   return (
     <section className={`vm-page vm-page--market${focusStall ? ' is-stall-focus' : ''}`}>
-      <header className="vm-market-top">
-        <img
-          className="vm-market-top__img"
-          src={marketHeader}
-          alt="Vibe Mart market entrance"
-          draggable={false}
-        />
-      </header>
-
       <div
         className={`vm-market-body${!loading && stalls.length === 0 && !error ? ' is-empty' : ''}`}
       >

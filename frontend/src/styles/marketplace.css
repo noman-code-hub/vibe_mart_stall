@@ -258,10 +258,17 @@
   max-width: none;
   margin: 0;
   padding: 0;
-  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #2a221c;
+  background-image: url('../assets/market-page-bg.png');
+  background-size: 100% auto;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 120px);
+  min-height: max(calc(100vh - 120px - 36px), calc((100vw - 36px) * 584 / 1024));
   /* Banner + stall — tighter side gutters than other pages */
   --vm-market-gutter: clamp(12px, 2.5vw, 28px);
   --vm-market-max: min(1320px, 100%);
@@ -291,11 +298,13 @@
 
 .vm-market-body {
   width: 100%;
-  padding: 8px var(--vm-market-gutter) 56px;
+  flex: 1 1 auto;
+  padding: clamp(16px, 2.5vw, 32px) clamp(12px, 2vw, 24px) clamp(16px, 2.5vw, 32px);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
 }
 
 @media (max-width: 1024px) {
@@ -305,8 +314,8 @@
   }
 
   .vm-market-body {
-    padding-top: 6px;
-    padding-bottom: 40px;
+    padding-top: 12px;
+    padding-bottom: 20px;
   }
 }
 
@@ -317,8 +326,8 @@
   }
 
   .vm-market-body {
-    padding-top: 4px;
-    padding-bottom: 32px;
+    padding-top: 10px;
+    padding-bottom: 16px;
   }
 }
 
@@ -464,7 +473,7 @@
 
 .vm-market-slider {
   width: 100%;
-  max-width: min(880px, 100%);
+  max-width: min(1180px, 88%);
   margin: 0 auto;
 }
 
@@ -517,10 +526,10 @@
 .vm-market-scale {
   position: relative;
   width: 100%;
-  overflow: hidden;
-  border-radius: 10px;
-  box-shadow: 0 8px 18px rgba(26, 16, 8, 0.16);
-  background: #fff;
+  overflow: visible;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
 }
 
 .vm-market-scale__inner {
@@ -536,10 +545,10 @@
   width: 100% !important;
   height: 100% !important;
   margin: 0 !important;
-  border-radius: 14px !important;
+  border-radius: 0 !important;
   box-shadow: none !important;
-  overflow: hidden;
-  background: #fff !important;
+  overflow: visible;
+  background: transparent !important;
 }
 
 .vm-market-rail__hit .vm-market-stall {
