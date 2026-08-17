@@ -267,9 +267,9 @@
   display: flex;
   flex-direction: column;
   min-height: max(calc(100vh - 120px), calc(100vw * 584 / 1024));
-  /* Banner + stall — tighter side gutters than other pages */
-  --vm-market-gutter: clamp(12px, 2.5vw, 28px);
-  --vm-market-max: min(1320px, 100%);
+  /* Same stall side space on phone, tablet, laptop, and LCD */
+  --vm-market-gutter: 4.5%;
+  --vm-market-max: 91%;
 }
 
 .vm-market-top {
@@ -297,7 +297,7 @@
 .vm-market-body {
   width: 100%;
   flex: 1 1 auto;
-  padding: clamp(16px, 2.5vw, 32px) clamp(12px, 2vw, 24px) clamp(16px, 2.5vw, 32px);
+  padding: clamp(10px, 2.2vw, 40px) var(--vm-market-gutter) clamp(10px, 2.2vw, 48px);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -473,7 +473,7 @@
 
 .vm-market-slider {
   width: 100%;
-  max-width: min(1320px, 91%);
+  max-width: none;
   margin: 0 auto;
 }
 

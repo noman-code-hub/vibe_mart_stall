@@ -41,8 +41,8 @@
 
 .vm-market-top,
 .vm-market-body {
-  padding-left: var(--vm-market-gutter, clamp(12px, 2.5vw, 28px)) !important;
-  padding-right: var(--vm-market-gutter, clamp(12px, 2.5vw, 28px)) !important;
+  padding-left: var(--vm-market-gutter, 4.5%) !important;
+  padding-right: var(--vm-market-gutter, 4.5%) !important;
 }
 
 @media (max-width: 1024px) {
