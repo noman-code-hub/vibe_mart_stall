@@ -28,7 +28,7 @@
 }
 
 .vm-shell--market {
-  background: #ffffff;
+  background: #2a221c;
 }
 
 .vm-shell--home {
@@ -50,10 +50,11 @@
   right: 0;
   width: 100%;
   z-index: 40;
-  /* Asset is mostly white; lock crop onto the blue strip (~25–45% down the image). */
+  overflow: hidden;
+  /* PNG is mostly white; zoom into the blue comic strip only. */
   background-color: #1657c8;
   background-image: var(--vm-header-bg);
-  background-size: cover;
+  background-size: 140% 1100%;
   background-position: center 32%;
   background-repeat: no-repeat;
   border-bottom: none;
@@ -491,11 +492,11 @@
 
   .vm-header {
     min-height: 68px;
-    overflow: visible;
+    overflow: hidden;
     background-color: #1657c8;
     /* Zoom into the blue comic strip so white PNG margins do not show */
-    background-size: 180% 900%;
-    background-position: center 33%;
+    background-size: 180% 1100%;
+    background-position: center 32%;
   }
 
   .vm-header.is-open {
