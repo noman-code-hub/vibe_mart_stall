@@ -1,12 +1,20 @@
 import { Link, useSearchParams } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext.jsx'
 import DashboardTraderMenu from './DashboardTraderMenu.jsx'
 import './FolderViews.css'
 
 export default function SelfiesFolder({ items = [], loading = false }) {
   const [, setSearchParams] = useSearchParams()
+  const { user } = useAuth()
+
+  const traderName =
+    user?.display_name?.trim() ||
+    user?.username?.trim() ||
+    user?.business_name?.trim() ||
+    'Trader'
 
   return (
-    <div className="vm-folder-view">
+    <div className="vm-folder-view vm-selfies">
       <DashboardTraderMenu variant="folder" />
       <div className="vm-folder-view__bar">
         <button
@@ -23,7 +31,7 @@ export default function SelfiesFolder({ items = [], loading = false }) {
 
       {!loading && items.length === 0 ? (
         <div className="vm-folder-view__empty" role="status">
-          <p>No selfies yet — add one on Dashboard.</p>
+          <p>No selfies yet — add a full-length selfie on Dashboard.</p>
           <Link className="vm-btn vm-btn--primary" to="/my-account?tab=create">
             Open Dashboard
           </Link>
@@ -31,25 +39,15 @@ export default function SelfiesFolder({ items = [], loading = false }) {
       ) : null}
 
       {!loading && items.length > 0 ? (
-        <div className="vm-folder-view__grid">
+        <div className="vm-selfies__stage">
           {items.map((item) => (
-            <article key={item.stallId} className="vm-folder-view__card">
-              <div className="vm-folder-view__thumb vm-folder-view__thumb--round">
-                {item.image ? (
-                  <img src={item.image} alt="" draggable={false} />
-                ) : (
-                  <span className="vm-folder-view__thumb-fallback">No selfie</span>
-                )}
-              </div>
-              <h3 className="vm-folder-view__name">{item.stallName || 'Untitled stall'}</h3>
-              <p className="vm-muted vm-folder-view__meta">Linked through this stall</p>
-              <Link
-                className="vm-btn vm-btn--ghost"
-                to={`/my-account?tab=create&stallId=${item.stallId}`}
-              >
-                Edit in Dashboard
-              </Link>
-            </article>
+            <figure key={item.stallId} className="vm-selfies__full">
+              <img
+                src={item.image}
+                alt={`${traderName} full-length selfie`}
+                draggable={false}
+              />
+            </figure>
           ))}
         </div>
       ) : null}

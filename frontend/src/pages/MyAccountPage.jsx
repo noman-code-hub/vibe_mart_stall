@@ -117,21 +117,35 @@ export default function MyAccountPage() {
 
   const productItems = useMemo(() => {
     const rows = []
+    const pushUrl = (list, value) => {
+      if (typeof value === 'string' && value && !list.includes(value)) list.push(value)
+    }
+
     for (const stall of stallDetails) {
       const products = Array.isArray(stall.products) ? stall.products : []
       for (const product of products) {
+        const images = []
+        if (Array.isArray(product.image_urls)) product.image_urls.forEach((url) => pushUrl(images, url))
+        if (Array.isArray(product.images)) {
+          product.images.forEach((item) => {
+            if (typeof item === 'string') pushUrl(images, item)
+            else if (item?.url) pushUrl(images, item.url)
+            else if (item?.src) pushUrl(images, item.src)
+          })
+        }
+        pushUrl(images, product.image_url)
+        pushUrl(images, product.image)
+        pushUrl(images, product.photo)
+
+        if (!images.length) continue
+
         rows.push({
           stallId: stall.id,
           stallName: stall.brand_name || stall.business_name || 'Stall',
           productId: product.id,
           name: product.name || product.title || 'Product',
           price: product.price || '',
-          image:
-            product.image_url ||
-            product.image ||
-            product.photo ||
-            (Array.isArray(product.images) ? product.images[0] : '') ||
-            '',
+          images,
         })
       }
     }
