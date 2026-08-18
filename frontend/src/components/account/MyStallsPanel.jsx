@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import StallLoadingScreen from '../StallLoadingScreen.jsx'
 import DashboardTraderMenu from './DashboardTraderMenu.jsx'
@@ -11,9 +11,31 @@ import './FolderViews.css'
 
 const MarketStall = lazy(() => import('../MarketStall'))
 
+/** Render at PC stall size, then scale down as one piece so mobile matches desktop. */
+const STALL_DESIGN_WIDTH = 1024
+const STALL_DESIGN_HEIGHT = 576
+
 function FolderStallCard({ summary, detail, loadingDetail, onStartEdit, onDelete }) {
   const props = detail ? stallToMarketStallProps(detail) : null
   const updatedLabel = summary.updated_at ? formatDisplayDate(summary.updated_at) : ''
+  const frameRef = useRef(null)
+  const [scale, setScale] = useState(0.45)
+
+  useLayoutEffect(() => {
+    const node = frameRef.current
+    if (!node || typeof ResizeObserver === 'undefined') return undefined
+
+    const update = () => {
+      const width = node.clientWidth
+      if (!width) return
+      setScale(width / STALL_DESIGN_WIDTH)
+    }
+
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [Boolean(props), loadingDetail])
 
   return (
     <article className="vm-folder__stall">
@@ -33,9 +55,24 @@ function FolderStallCard({ summary, detail, loadingDetail, onStartEdit, onDelete
       <div className="vm-folder__preview">
         {loadingDetail && <StallLoadingScreen />}
         {!loadingDetail && props && (
-          <Suspense fallback={<StallLoadingScreen />}>
-            <MarketStall {...props} className="vm-market-stall vm-folder__cart" />
-          </Suspense>
+          <div
+            className="vm-folder__scale"
+            ref={frameRef}
+            style={{ aspectRatio: `${STALL_DESIGN_WIDTH} / ${STALL_DESIGN_HEIGHT}` }}
+          >
+            <div
+              className="vm-folder__scale-inner"
+              style={{
+                width: STALL_DESIGN_WIDTH,
+                height: STALL_DESIGN_HEIGHT,
+                transform: `scale(${scale})`,
+              }}
+            >
+              <Suspense fallback={<StallLoadingScreen />}>
+                <MarketStall {...props} className="vm-market-stall vm-folder__cart" />
+              </Suspense>
+            </div>
+          </div>
         )}
         {!loadingDetail && !props && (
           <p className="vm-muted">Could not load stall preview.</p>

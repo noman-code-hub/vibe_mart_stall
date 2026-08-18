@@ -1232,9 +1232,9 @@
 .vm-folder {
   position: relative;
   display: grid;
-  gap: 22px;
-  min-height: min(70vh, 640px);
-  padding: 16px 8px 24px;
+  gap: 14px;
+  min-height: 0;
+  padding: 8px 4px 6px;
   background: #ffffff;
 }
 
@@ -1340,15 +1340,29 @@
   width: 100%;
   overflow: hidden;
   border-radius: 12px;
-  background: #f4efe6;
+  background: #ffffff;
+}
+
+.vm-folder__scale {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.vm-folder__scale-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: top left;
 }
 
 .vm-folder__cart {
   max-width: none !important;
   width: 100% !important;
+  height: 100% !important;
   margin: 0 !important;
-  box-shadow: none;
-  border-radius: 0;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }
 
 .vm-folder__stall-actions {
@@ -1363,13 +1377,13 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 20px 0 8px;
+  padding: 6px 0 0;
 }
 
 .vm-folder__send {
   position: relative;
   display: block;
-  width: min(42vw, 220px);
+  width: min(72vw, 420px);
   margin: 0;
   padding: 0;
   border: 0;
@@ -1431,7 +1445,7 @@
 
 @media (max-width: 640px) {
   .vm-folder__send {
-    width: min(48vw, 200px);
+    width: min(86vw, 380px);
   }
 
   .vm-folder__send-status {

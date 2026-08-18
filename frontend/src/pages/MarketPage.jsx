@@ -146,7 +146,12 @@ export default function MarketPage() {
           <p className="vm-market-empty">No published stalls yet.</p>
         ) : (
           <>
-            <MarketStallSlider stalls={stalls} loading={loading} onStallOpen={openStall} />
+            <MarketStallSlider
+              stalls={stalls}
+              loading={loading}
+              onStallOpen={openStall}
+              paused={Boolean(focusStall)}
+            />
             <img
               className="vm-market-rotate"
               src={rotateHint}

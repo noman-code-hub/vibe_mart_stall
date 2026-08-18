@@ -1,4 +1,4 @@
-import { lazy, Suspense, useLayoutEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { stallToMarketStallProps } from '../../services/stallDisplay.js'
 import StallLoadingScreen from '../StallLoadingScreen.jsx'
 
@@ -7,6 +7,7 @@ const MarketStall = lazy(() => import('../MarketStall'))
 /** Native stall art width — cards render at this size then scale down as one piece. */
 const STALL_DESIGN_WIDTH = 1024
 const STALL_DESIGN_HEIGHT = 576
+const AUTO_SLIDE_MS = 4200
 
 function StallCard({ stall, onOpen }) {
   const props = stallToMarketStallProps(stall)
@@ -65,9 +66,52 @@ function StallCard({ stall, onOpen }) {
 /**
  * Market stall slider — one full stall visible at a time.
  * Each card scales the whole stall (art + text) together so proportions stay correct.
- * Swipe horizontally to move between stalls.
+ * Auto-slides between published stalls; swipe still works.
  */
-export default function MarketStallSlider({ stalls = [], loading = false, onStallOpen }) {
+export default function MarketStallSlider({
+  stalls = [],
+  loading = false,
+  onStallOpen,
+  paused = false,
+}) {
+  const railRef = useRef(null)
+  const indexRef = useRef(0)
+  const holdRef = useRef(false)
+
+  useEffect(() => {
+    const rail = railRef.current
+    if (!rail) return undefined
+
+    const syncIndex = () => {
+      const width = rail.clientWidth
+      if (!width) return
+      indexRef.current = Math.round(rail.scrollLeft / width) % Math.max(stalls.length, 1)
+    }
+
+    rail.addEventListener('scroll', syncIndex, { passive: true })
+    return () => rail.removeEventListener('scroll', syncIndex)
+  }, [loading, stalls.length])
+
+  useEffect(() => {
+    if (loading || paused || stalls.length < 2) return undefined
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return undefined
+    }
+
+    const id = window.setInterval(() => {
+      if (holdRef.current) return
+      const rail = railRef.current
+      if (!rail) return
+      const width = rail.clientWidth
+      if (!width) return
+      const next = (indexRef.current + 1) % stalls.length
+      indexRef.current = next
+      rail.scrollTo({ left: next * width, behavior: 'smooth' })
+    }, AUTO_SLIDE_MS)
+
+    return () => window.clearInterval(id)
+  }, [loading, paused, stalls.length])
+
   if (loading) {
     return (
       <div className="vm-market-loading">
@@ -76,13 +120,27 @@ export default function MarketStallSlider({ stalls = [], loading = false, onStal
     )
   }
 
+  const hold = () => {
+    holdRef.current = true
+  }
+  const release = () => {
+    holdRef.current = false
+  }
+
   return (
     <div className="vm-market-slider">
       <div
+        ref={railRef}
         className="vm-market-rail"
         tabIndex={0}
         role="region"
         aria-label="Published market stalls"
+        onPointerEnter={hold}
+        onPointerLeave={release}
+        onFocus={hold}
+        onBlur={release}
+        onTouchStart={hold}
+        onTouchEnd={release}
       >
         {stalls.map((stall) => (
           <StallCard key={stall.id} stall={stall} onOpen={onStallOpen} />

@@ -216,7 +216,7 @@
 
 .vm-main--folder {
   max-width: min(100%, 1600px);
-  padding: 16px clamp(40px, 10vw, 88px) 40px;
+  padding: 8px clamp(16px, 4vw, 36px) 8px;
   background: #ffffff;
 }
 
@@ -780,7 +780,7 @@
   }
 
   .vm-main--folder {
-    padding: 12px clamp(20px, 6vw, 32px) 32px;
+    padding: 8px clamp(10px, 3vw, 16px) 8px;
   }
 }
 
