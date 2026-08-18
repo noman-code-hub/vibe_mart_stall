@@ -258,7 +258,7 @@
   max-width: none;
   margin: 0;
   padding: 0;
-  background-color: #2a221c;
+  background-color: #ffffff;
   background-image: url('../assets/market-page-bg.png');
   background-size: 100% auto;
   background-position: center top;
@@ -475,6 +475,21 @@
   width: 100%;
   max-width: none;
   margin: 0 auto;
+}
+
+.vm-market-rotate {
+  display: none;
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .vm-market-rotate {
+    display: block;
+    width: min(100%, 560px);
+    height: auto;
+    margin: 10px auto 0;
+    pointer-events: none;
+    user-select: none;
+  }
 }
 
 .vm-market-rail {
@@ -1343,24 +1358,18 @@
 }
 
 .vm-folder__cta {
-  position: relative;
-  display: block;
-  width: 100%;
-  min-height: 120px;
-  padding: 8px 0 20px;
+  position: static;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 0 8px;
 }
 
-/* Isolated send button — change --x / --y / --w to move and size it. */
 .vm-folder__send {
-  --x: 31%;
-  --y: 10%;
-  --w: 38%;
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  z-index: 3;
+  position: relative;
   display: block;
-  width: var(--w);
+  width: min(100%, 860px);
   margin: 0;
   padding: 0;
   border: 0;
@@ -1416,21 +1425,13 @@
 }
 
 .vm-folder__cta-hint {
-  position: relative;
-  z-index: 1;
-  margin: 92px 0 0;
+  margin: 0;
   text-align: center;
 }
 
 @media (max-width: 640px) {
   .vm-folder__send {
-    --x: 8%;
-    --y: 8%;
-    --w: 84%;
-  }
-
-  .vm-folder__cta {
-    min-height: 96px;
+    width: min(100%, 100%);
   }
 
   .vm-folder__send-status {

@@ -6,7 +6,7 @@ import { getStall } from '../../services/stallApi.js'
 import { stallToMarketStallProps } from '../../services/stallDisplay.js'
 import { useRuntimeConfig } from '../../context/RuntimeConfigContext.jsx'
 import { formatDisplayDate } from '../../utils/dateFormat.js'
-import sendToMarketBtn from '../../assets/send-to-market-btn.png'
+import sendToMarketBtn from '../../assets/Publication4.png'
 import './FolderViews.css'
 
 const MarketStall = lazy(() => import('../MarketStall'))

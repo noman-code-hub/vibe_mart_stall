@@ -4,6 +4,7 @@ import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import { getStall, listMarketplace } from '../services/stallApi.js'
 import MarketStallSlider from '../components/market/MarketStallSlider.jsx'
 import StallFocusModal from '../components/market/StallFocusModal.jsx'
+import rotateHint from '../assets/ROTATE.png'
 
 /**
  * Public marketplace — published stalls over the market background.
@@ -144,7 +145,14 @@ export default function MarketPage() {
         {!loading && stalls.length === 0 && !error ? (
           <p className="vm-market-empty">No published stalls yet.</p>
         ) : (
-          <MarketStallSlider stalls={stalls} loading={loading} onStallOpen={openStall} />
+          <>
+            <MarketStallSlider stalls={stalls} loading={loading} onStallOpen={openStall} />
+            <img
+              className="vm-market-rotate"
+              src={rotateHint}
+              alt="The best way to view the stalls is to rotate your mobile phone to landscape mode."
+            />
+          </>
         )}
       </div>
 
