@@ -122,6 +122,10 @@
   z-index: 1;
 }
 
+.vm-nav__scroll {
+  display: contents;
+}
+
 .vm-nav__icon-link {
   display: block;
   flex: 0 0 auto;
@@ -501,9 +505,10 @@
 
   .vm-header.is-open {
     z-index: 90;
+    overflow: visible;
   }
 
-  .vm-menu-backdrop {
+.vm-menu-backdrop {
     position: fixed;
     inset: 0;
     z-index: 1;
@@ -525,7 +530,7 @@
     overflow: visible;
   }
 
-  .vm-logo {
+.vm-logo {
     position: relative;
     left: auto;
     top: auto;
@@ -540,7 +545,7 @@
     overflow: visible;
   }
 
-  .vm-logo__img {
+.vm-logo__img {
     height: 56px;
     max-width: min(160px, 48vw);
     max-height: 56px;
@@ -548,7 +553,7 @@
     object-position: center;
   }
 
-  .vm-menu-toggle {
+.vm-menu-toggle {
     display: grid;
     place-content: center;
     gap: 5px;
@@ -567,7 +572,7 @@
     transform: translateY(-50%);
   }
 
-  .vm-menu-toggle__bar {
+.vm-menu-toggle__bar {
     display: block;
     width: 22px;
     height: 3px;
@@ -577,19 +582,19 @@
     transition: transform 0.18s ease, opacity 0.18s ease;
   }
 
-  .vm-menu-toggle.is-open .vm-menu-toggle__bar:nth-child(1) {
+.vm-menu-toggle.is-open .vm-menu-toggle__bar:nth-child(1) {
     transform: translateY(8px) rotate(45deg);
   }
 
-  .vm-menu-toggle.is-open .vm-menu-toggle__bar:nth-child(2) {
+.vm-menu-toggle.is-open .vm-menu-toggle__bar:nth-child(2) {
     opacity: 0;
   }
 
-  .vm-menu-toggle.is-open .vm-menu-toggle__bar:nth-child(3) {
+.vm-menu-toggle.is-open .vm-menu-toggle__bar:nth-child(3) {
     transform: translateY(-8px) rotate(-45deg);
   }
 
-  .vm-nav {
+.vm-nav {
     display: none;
     position: fixed;
     left: auto;
@@ -615,18 +620,18 @@
     -ms-overflow-style: none;
   }
 
-  .vm-nav::-webkit-scrollbar {
+.vm-nav::-webkit-scrollbar {
     display: none;
     width: 0;
     height: 0;
   }
 
-  .vm-nav.is-open {
+.vm-nav.is-open {
     display: flex;
     z-index: 100;
   }
 
-  .vm-nav__icon-link {
+.vm-nav__icon-link {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -640,19 +645,19 @@
     color: #1a1008;
   }
 
-  .vm-nav__icon-link.active {
+.vm-nav__icon-link.active {
     background: transparent;
     outline: 2px solid #1a1008;
     outline-offset: 1px;
     transform: none;
   }
 
-  .vm-nav__logout {
+.vm-nav__logout {
     text-align: center;
     font: inherit;
   }
 
-  .vm-nav__icon {
+.vm-nav__icon {
     height: 52px;
     max-width: 72px;
     flex: 0 0 auto;
@@ -672,7 +677,7 @@
     min-height: 62px;
   }
 
-  .vm-nav {
+.vm-nav {
     top: calc(62px + env(safe-area-inset-top, 0px) + 8px);
   }
 
@@ -682,30 +687,30 @@
     padding: 0 10px;
   }
 
-  .vm-logo {
+.vm-logo {
     width: auto;
     height: auto;
     max-height: 48px;
   }
 
-  .vm-logo__img {
+.vm-logo__img {
     height: 48px;
     max-width: min(140px, 46vw);
     max-height: 48px;
   }
 
-  .vm-menu-toggle {
+.vm-menu-toggle {
     right: 10px;
     width: 36px;
     height: 36px;
   }
 
-  .vm-nav {
+.vm-nav {
     right: 8px;
     width: auto;
   }
 
-  .vm-nav__icon {
+.vm-nav__icon {
     height: 48px;
     max-width: 66px;
   }
@@ -767,6 +772,70 @@
   .vm-footer__copy,
   .vm-footer__meta {
     white-space: nowrap;
+  }
+}
+
+@media (max-width: 1024px) {
+  .vm-shell.is-landscape .vm-header.is-open {
+    overflow: visible;
+    z-index: 90;
+  }
+
+  .vm-shell.is-landscape .vm-nav.is-open {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    justify-content: flex-start;
+    position: fixed;
+    left: auto;
+    right: calc(10px + env(safe-area-inset-right, 0px));
+    top: calc(68px + env(safe-area-inset-top, 0px) + 8px);
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    transform: none;
+    width: auto;
+    max-width: min(46vw, 220px);
+    height: auto;
+    max-height: none;
+    min-height: 0;
+    gap: 0;
+    padding: 8px 4px 8px 8px;
+    overflow: hidden;
+    background: #fffdf8;
+    border: 3px solid #1a1008;
+    border-radius: 14px;
+    box-shadow: 4px 4px 0 #1a1008;
+    z-index: 100;
+  }
+
+  .vm-shell.is-landscape .vm-nav.is-open .vm-nav__scroll {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    min-height: 0;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    padding: 0 0 20px 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .vm-shell.is-landscape .vm-nav.is-open .vm-nav__scroll::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .vm-shell.is-landscape .vm-nav.is-open .vm-nav__icon-link {
+    flex: 0 0 auto;
   }
 }
 

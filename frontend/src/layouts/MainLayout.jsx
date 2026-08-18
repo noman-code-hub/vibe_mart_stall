@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
@@ -46,6 +46,9 @@ export default function MainLayout() {
   const location = useLocation()
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [isLandscape, setIsLandscape] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth > window.innerHeight,
+  )
   const wideMain =
     location.pathname.startsWith('/market') ||
     location.pathname.startsWith('/sell-smart') ||
@@ -103,6 +106,20 @@ export default function MainLayout() {
     setMenuOpen(false)
   }, [location.pathname])
 
+  useLayoutEffect(() => {
+    const sync = () => {
+      const landscape = window.innerWidth > window.innerHeight
+      setIsLandscape(landscape)
+    }
+    sync()
+    window.addEventListener('resize', sync)
+    window.addEventListener('orientationchange', sync)
+    return () => {
+      window.removeEventListener('resize', sync)
+      window.removeEventListener('orientationchange', sync)
+    }
+  }, [])
+
   useEffect(() => {
     if (!menuOpen) return undefined
     const previous = document.body.style.overflow
@@ -124,7 +141,7 @@ export default function MainLayout() {
   }
 
   return (
-    <div className={`vm-shell${menuOpen ? ' is-open' : ''}${dashboardOnly ? ' vm-shell--dashboard' : ''}${folderOnly ? ' vm-shell--folder' : ''}${profileOnly ? ' vm-shell--profile' : ''}${marketOnly ? ' vm-shell--market' : ''}${trolleyOnly ? ' vm-shell--trolley' : ''}${homeOnly ? ' vm-shell--home' : ''}${loginOnly ? ' vm-shell--login' : ''}${registerOnly ? ' vm-shell--register' : ''}${resetOnly ? ' vm-shell--reset' : ''}${contactOnly ? ' vm-shell--contact' : ''}${vibesOnly ? ' vm-shell--vibes' : ''}`}>
+    <div className={`vm-shell${menuOpen ? ' is-open' : ''}${isLandscape ? ' is-landscape' : ' is-portrait'}${dashboardOnly ? ' vm-shell--dashboard' : ''}${folderOnly ? ' vm-shell--folder' : ''}${profileOnly ? ' vm-shell--profile' : ''}${marketOnly ? ' vm-shell--market' : ''}${trolleyOnly ? ' vm-shell--trolley' : ''}${homeOnly ? ' vm-shell--home' : ''}${loginOnly ? ' vm-shell--login' : ''}${registerOnly ? ' vm-shell--register' : ''}${resetOnly ? ' vm-shell--reset' : ''}${contactOnly ? ' vm-shell--contact' : ''}${vibesOnly ? ' vm-shell--vibes' : ''}`}>
       <header
         className={`vm-header${menuOpen ? ' is-open' : ''}`}
         style={{ '--vm-header-bg': `url(${headerBg})` }}
@@ -163,39 +180,41 @@ export default function MainLayout() {
             className={`vm-nav${menuOpen ? ' is-open' : ''}`}
             aria-label="Primary"
           >
-            {navItems.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className="vm-nav__icon-link"
-                aria-label={item.label}
-              >
-                <img
-                  className="vm-nav__icon"
-                  src={item.icon}
-                  alt=""
-                  draggable={false}
-                />
-                <span className="vm-nav__label">{item.label}</span>
-              </NavLink>
-            ))}
-            {!loading && isAuthenticated ? (
-              <button
-                type="button"
-                className="vm-nav__icon-link vm-nav__logout"
-                aria-label="Log out"
-                onClick={onLogout}
-              >
-                <img
-                  className="vm-nav__icon"
-                  src={iconLogout}
-                  alt=""
-                  draggable={false}
-                />
-                <span className="vm-nav__label">Log out</span>
-              </button>
-            ) : null}
+            <div className="vm-nav__scroll">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  className="vm-nav__icon-link"
+                  aria-label={item.label}
+                >
+                  <img
+                    className="vm-nav__icon"
+                    src={item.icon}
+                    alt=""
+                    draggable={false}
+                  />
+                  <span className="vm-nav__label">{item.label}</span>
+                </NavLink>
+              ))}
+              {!loading && isAuthenticated ? (
+                <button
+                  type="button"
+                  className="vm-nav__icon-link vm-nav__logout"
+                  aria-label="Log out"
+                  onClick={onLogout}
+                >
+                  <img
+                    className="vm-nav__icon"
+                    src={iconLogout}
+                    alt=""
+                    draggable={false}
+                  />
+                  <span className="vm-nav__label">Log out</span>
+                </button>
+              ) : null}
+            </div>
           </nav>
         </div>
       </header>
