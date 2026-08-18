@@ -484,9 +484,9 @@
 @media (max-width: 768px) and (orientation: portrait) {
   .vm-market-rotate {
     display: block;
-    width: min(100%, 560px);
+    width: min(42vw, 200px);
     height: auto;
-    margin: 10px auto 0;
+    margin: 8px auto 0;
     pointer-events: none;
     user-select: none;
   }
@@ -1369,7 +1369,7 @@
 .vm-folder__send {
   position: relative;
   display: block;
-  width: min(100%, 860px);
+  width: min(42vw, 220px);
   margin: 0;
   padding: 0;
   border: 0;
@@ -1431,7 +1431,7 @@
 
 @media (max-width: 640px) {
   .vm-folder__send {
-    width: min(100%, 100%);
+    width: min(48vw, 200px);
   }
 
   .vm-folder__send-status {
