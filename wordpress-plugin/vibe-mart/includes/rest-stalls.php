@@ -238,7 +238,7 @@ function stall_normalize_status(mixed $status, string $fallback = 'draft'): stri
  *
  * @param array<string, mixed> $payload
  */
-function sync_stall_children(int $stall_id, array $payload, bool $force_all = false): void {
+function sync_stall_children(int $stall_id, array $payload, bool $force_all = false, int $owner_id = 0): void {
 	global $wpdb;
 
 	$sync_pitch = $force_all
@@ -247,12 +247,15 @@ function sync_stall_children(int $stall_id, array $payload, bool $force_all = fa
 		|| array_key_exists('member_since', $payload);
 
 	if ($sync_pitch) {
+		$pitch_number = $owner_id > 0
+			? assign_trader_pitch_number($owner_id)
+			: sanitize_text_field((string) ($payload['pitch_number'] ?? ''));
 		$wpdb->delete(table('pitches'), array('stall_id' => $stall_id), array('%d'));
 		$wpdb->insert(
 			table('pitches'),
 			array(
 				'stall_id' => $stall_id,
-				'pitch_number' => sanitize_text_field((string) ($payload['pitch_number'] ?? '')),
+				'pitch_number' => $pitch_number,
 				'location' => sanitize_text_field((string) ($payload['pitch_location'] ?? '')),
 				'member_since' => sanitize_text_field((string) ($payload['member_since'] ?? '')),
 			),
@@ -407,7 +410,6 @@ function validate_publish_payload(array $payload, array $seller): ?WP_Error {
 	$bio = trim((string) ($payload['seller_bio'] ?? $seller['about'] ?? ''));
 	$ambition = trim((string) ($payload['ambition'] ?? $seller['ambition'] ?? ''));
 	$photo = trim((string) ($payload['seller_photo'] ?? ''));
-	$pitch_number = trim((string) ($payload['pitch_number'] ?? ''));
 	$pitch_location = trim((string) ($payload['pitch_location'] ?? ''));
 	$products = is_array($payload['products'] ?? null) ? $payload['products'] : array();
 	$badges = is_array($payload['badges'] ?? null) ? $payload['badges'] : array();
@@ -421,9 +423,6 @@ function validate_publish_payload(array $payload, array $seller): ?WP_Error {
 	}
 	if ('' === $ambition) {
 		$missing[] = 'ambition';
-	}
-	if ('' === $pitch_number) {
-		$missing[] = 'pitch number';
 	}
 	if ('' === $pitch_location) {
 		$missing[] = 'pitch location';
@@ -508,7 +507,7 @@ function stall_create(WP_REST_Request $request): WP_REST_Response|WP_Error {
 
 	$id = (int) $wpdb->insert_id;
 	// On create, always write child tables (empty placeholders for pitch are fine).
-	sync_stall_children($id, $payload, true);
+	sync_stall_children($id, $payload, true, $owner_id);
 
 	$row = get_stall_row($id);
 	if (! $row) {
@@ -568,7 +567,7 @@ function stall_update(WP_REST_Request $request): WP_REST_Response|WP_Error {
 		return new WP_Error('vibe_mart_db', __('Could not update stall.', 'vibe-mart'), array('status' => 500));
 	}
 
-	sync_stall_children($id, $payload, false);
+	sync_stall_children($id, $payload, false, (int) $row->owner_id);
 
 	$fresh = get_stall_row($id);
 	if (! $fresh) {

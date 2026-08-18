@@ -14,8 +14,11 @@ import { createHash, randomBytes, timingSafeEqual } from 'node:crypto'
 import { getLocalDataDir, isVercelRuntime } from './localDataDir.js'
 import { readJsonBody } from './readJsonBody.js'
 
+import { assignTraderPitchNumber } from './pitchNumbers.js'
+
 const DATA_DIR = getLocalDataDir()
 const USERS_FILE = path.join(DATA_DIR, 'traders.json')
+const STALLS_FILE = path.join(DATA_DIR, 'stalls.json')
 const RESET_LOG_FILE = path.join(DATA_DIR, 'password-resets.json')
 const COOKIE_NAME = 'vm_dev_session_v2'
 const AUTH_PREFIX = '/wp-json/vibe-mart/v1/auth'
@@ -66,6 +69,25 @@ async function saveUsers(users) {
   await writeFile(USERS_FILE, JSON.stringify({ users }, null, 2), 'utf8')
 }
 
+async function loadStallsSafe() {
+  try {
+    const raw = await readFile(STALLS_FILE, 'utf8')
+    const data = JSON.parse(raw)
+    return Array.isArray(data?.stalls) ? data.stalls : []
+  } catch {
+    return []
+  }
+}
+
+async function ensurePitchNumber(user, users) {
+  if (!user) return user
+  const before = String(user.pitch_number || '').trim()
+  const stalls = await loadStallsSafe()
+  const next = assignTraderPitchNumber(user, stalls, users)
+  if (next && next !== before) await saveUsers(users)
+  return user
+}
+
 function publicUser(user) {
   return {
     id: user.id,
@@ -89,6 +111,7 @@ function publicUser(user) {
     privacy_accepted: Boolean(user.privacy_accepted),
     email_confirmed: user.email_confirmed !== false,
     profile_complete: Boolean(user.profile_complete),
+    pitch_number: user.pitch_number || '',
     nonce: 'dev-nonce',
   }
 }
@@ -192,6 +215,7 @@ export default async function authDevHandler(req, res) {
         sendJson(res, 200, { authenticated: false, user: null, nonce: 'dev-nonce' })
         return true
       }
+      await ensurePitchNumber(current, users)
       const payload = publicUser(current)
       const { nonce, ...user } = payload
       sendJson(res, 200, { authenticated: true, user, nonce })
@@ -259,10 +283,12 @@ export default async function authDevHandler(req, res) {
         privacy_accepted: false,
         email_confirmed: false,
         profile_complete: false,
+        pitch_number: '',
         confirm_token_hash: hashToken(confirmToken),
         confirm_expires: Date.now() + RESET_TTL_MS * 24,
       }
       users.push(user)
+      await ensurePitchNumber(user, users)
       await saveUsers(users)
 
       const confirmUrl = `${requestOrigin(req)}/confirm-email?token=${encodeURIComponent(confirmToken)}&login=${encodeURIComponent(username)}`
@@ -312,7 +338,7 @@ export default async function authDevHandler(req, res) {
         return true
       }
 
-      sendJson(res, 200, publicUser(user), { 'Set-Cookie': sessionCookie(user.id, remember) })
+      sendJson(res, 200, publicUser(await ensurePitchNumber(user, users)), { 'Set-Cookie': sessionCookie(user.id, remember) })
       return true
     }
 
@@ -351,7 +377,7 @@ export default async function authDevHandler(req, res) {
       user.confirm_expires = 0
       await saveUsers(users)
 
-      sendJson(res, 200, publicUser(user), { 'Set-Cookie': sessionCookie(user.id, true) })
+      sendJson(res, 200, publicUser(await ensurePitchNumber(user, users)), { 'Set-Cookie': sessionCookie(user.id, true) })
       return true
     }
 
@@ -459,7 +485,7 @@ export default async function authDevHandler(req, res) {
         sendJson(res, 401, { code: 'vibe_mart_unauthorized', message: 'Please log in.' })
         return true
       }
-      sendJson(res, 200, publicUser(current))
+      sendJson(res, 200, publicUser(await ensurePitchNumber(current, users)))
       return true
     }
 
@@ -544,7 +570,7 @@ export default async function authDevHandler(req, res) {
       }
 
       await saveUsers(users)
-      sendJson(res, 200, publicUser(current))
+      sendJson(res, 200, publicUser(await ensurePitchNumber(current, users)))
       return true
     }
 

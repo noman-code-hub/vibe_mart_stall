@@ -155,6 +155,7 @@ function user_payload(\WP_User $user): array {
 		'privacy_accepted' => (string) get_user_meta($user->ID, 'vm_privacy_accepted', true) === '1',
 		'email_confirmed' => (string) get_user_meta($user->ID, 'vm_email_confirmed', true) !== '0',
 		'profile_complete' => (string) get_user_meta($user->ID, 'vm_profile_complete', true) === '1',
+		'pitch_number' => assign_trader_pitch_number((int) $user->ID),
 		'avatar_url' => (string) get_avatar_url(
 			$user->ID,
 			array(
@@ -328,6 +329,7 @@ function auth_register(WP_REST_Request $request): WP_REST_Response|WP_Error {
 	update_user_meta((int) $user_id, 'vm_email_confirm_expires', (string) ( time() + DAY_IN_SECONDS ));
 	update_user_meta((int) $user_id, 'vm_email_confirmed', '0');
 	update_user_meta((int) $user_id, 'vm_profile_complete', '0');
+	assign_trader_pitch_number((int) $user_id);
 
 	$confirm_url = add_query_arg(
 		array(

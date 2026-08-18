@@ -72,7 +72,7 @@ export const STATIC_SITE_IMAGES = [
   home4,
   home5,
   home6,
-  '/vibe-mart-logo.png?v=3',
+  '/loading-logo.jpeg?v=1',
 ]
 
 export function preloadUrl(url) {

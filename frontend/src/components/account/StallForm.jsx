@@ -66,8 +66,15 @@ export default function StallForm({
           />
         </label>
         <label className="vm-field">
-          Pitch number
-          <input className="vm-input" name="pitch_number" value={form.pitch_number} onChange={onChange} />
+          Pitch number (assigned automatically)
+          <input
+            className="vm-input"
+            name="pitch_number"
+            value={form.pitch_number}
+            readOnly
+            placeholder="VM2026A"
+            title="Assigned automatically when you join"
+          />
         </label>
         <label className="vm-field">
           Pitch location

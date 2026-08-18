@@ -1343,18 +1343,24 @@
 }
 
 .vm-folder__cta {
-  position: static;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 20px 0 8px;
-}
-
-.vm-folder__send {
   position: relative;
   display: block;
-  width: min(100%, 280px);
+  width: 100%;
+  min-height: 120px;
+  padding: 8px 0 20px;
+}
+
+/* Isolated send button — change --x / --y / --w to move and size it. */
+.vm-folder__send {
+  --x: 31%;
+  --y: 10%;
+  --w: 38%;
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  z-index: 3;
+  display: block;
+  width: var(--w);
   margin: 0;
   padding: 0;
   border: 0;
@@ -1410,13 +1416,21 @@
 }
 
 .vm-folder__cta-hint {
-  margin: 0;
+  position: relative;
+  z-index: 1;
+  margin: 92px 0 0;
   text-align: center;
 }
 
 @media (max-width: 640px) {
   .vm-folder__send {
-    width: min(100%, 220px);
+    --x: 8%;
+    --y: 8%;
+    --w: 84%;
+  }
+
+  .vm-folder__cta {
+    min-height: 96px;
   }
 
   .vm-folder__send-status {

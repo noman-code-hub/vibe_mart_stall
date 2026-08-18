@@ -10,9 +10,11 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { getLocalDataDir } from './localDataDir.js'
 import { readJsonBody } from './readJsonBody.js'
+import { assignTraderPitchNumber } from './pitchNumbers.js'
 
 const DATA_DIR = getLocalDataDir()
 const STALLS_FILE = path.join(DATA_DIR, 'stalls.json')
+const USERS_FILE = path.join(DATA_DIR, 'traders.json')
 const COOKIE_NAME = 'vm_dev_session_v2'
 const API_PREFIX = '/wp-json/vibe-mart/v1'
 
@@ -80,6 +82,30 @@ async function loadStalls() {
   }
 }
 
+async function loadUsers() {
+  try {
+    const raw = await readFile(USERS_FILE, 'utf8')
+    const data = JSON.parse(raw)
+    return Array.isArray(data?.users) ? data.users : []
+  } catch {
+    return []
+  }
+}
+
+async function saveUsers(users) {
+  await mkdir(DATA_DIR, { recursive: true })
+  await writeFile(USERS_FILE, JSON.stringify({ users }, null, 2), 'utf8')
+}
+
+async function applyOwnerPitch(stall, stalls, ownerId) {
+  const users = await loadUsers()
+  const user = users.find((item) => Number(item.id) === Number(ownerId))
+  const pitch = assignTraderPitchNumber(user || { id: ownerId }, stalls, users)
+  stall.pitch_number = pitch
+  if (user) await saveUsers(users)
+  return pitch
+}
+
 async function saveStalls(stalls) {
   await mkdir(DATA_DIR, { recursive: true })
   await writeFile(STALLS_FILE, JSON.stringify({ stalls }, null, 2), 'utf8')
@@ -112,7 +138,7 @@ function normalizeStall(input, ownerId, existing = null) {
     seller_bio: String(input.seller_bio ?? input.seller?.about ?? existing?.seller_bio ?? ''),
     ambition: String(input.ambition ?? input.seller?.ambition ?? existing?.ambition ?? ''),
     status,
-    pitch_number: String(input.pitch_number ?? existing?.pitch_number ?? ''),
+    pitch_number: String(existing?.pitch_number ?? ''),
     pitch_location: String(input.pitch_location ?? existing?.pitch_location ?? ''),
     member_since: String(input.member_since ?? existing?.member_since ?? ''),
     badges: Array.isArray(input.badges)
@@ -268,7 +294,6 @@ export default async function stallsDevHandler(req, res) {
         if (!String(body.seller_photo || '').trim()) missing.push('seller photo')
         if (!String(body.seller_bio || seller.about || '').trim()) missing.push('bio')
         if (!String(body.ambition || seller.ambition || '').trim()) missing.push('ambition')
-        if (!String(body.pitch_number || '').trim()) missing.push('pitch number')
         if (!String(body.pitch_location || '').trim()) missing.push('pitch location')
         if (!Array.isArray(body.products) || body.products.length < 1) missing.push('at least one product')
         if (!Array.isArray(body.badges) || body.badges.length < 1) missing.push('trust badge')
@@ -281,6 +306,7 @@ export default async function stallsDevHandler(req, res) {
         }
       }
       const stall = normalizeStall(body, userId)
+      await applyOwnerPitch(stall, stalls, userId)
       if (!stall.brand_name) {
         sendJson(res, 400, { code: 'vibe_mart_invalid', message: 'Brand name is required.' })
         return true
@@ -331,6 +357,7 @@ export default async function stallsDevHandler(req, res) {
         }
         const body = await readBody(req)
         const updated = normalizeStall(body, userId, stall)
+        await applyOwnerPitch(updated, stalls, userId)
         updated.id = stall.id
         updated.product_count = updated.products.length
         stalls[index] = updated

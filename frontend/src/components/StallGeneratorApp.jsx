@@ -96,6 +96,10 @@ function formDataFromProfile(user) {
       ...empty.seller,
       name: fullName || tradingName.slice(0, FIELD_LIMITS.sellerName.maxChars),
     },
+    pitch: {
+      ...empty.pitch,
+      number: String(user.pitch_number || '').trim().slice(0, FIELD_LIMITS.pitchNumber.maxChars),
+    },
   })
 }
 
@@ -126,10 +130,20 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
   const [hydrateBusy, setHydrateBusy] = useState(Boolean(stallId))
 
   // New stall: auto-fill trading name + your name from profile.
+  // Pitch number is always the trader's assigned code (VM2026A, VM2026B, …).
   useEffect(() => {
-    if (stallId || !user) return
+    if (!user) return
     setData((prev) => {
       const fromProfile = formDataFromProfile(user)
+      const assignedPitch = fromProfile.pitch.number
+      const nextPitch = assignedPitch || prev.pitch?.number || ''
+      if (stallId) {
+        if (prev.pitch?.number === nextPitch) return prev
+        return {
+          ...prev,
+          pitch: { ...prev.pitch, number: nextPitch },
+        }
+      }
       return {
         ...prev,
         business_name: prev.business_name?.trim()
@@ -138,6 +152,10 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
         seller: {
           ...prev.seller,
           name: prev.seller?.name?.trim() ? prev.seller.name : fromProfile.seller.name,
+        },
+        pitch: {
+          ...prev.pitch,
+          number: nextPitch,
         },
       }
     })

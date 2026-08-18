@@ -430,27 +430,15 @@ export default function StallEditorForm({
           <label
             className={`stall-form__field stall-form__field--pitch-number${errors.pitchNumber ? ' stall-form__field--error' : ''}`}
           >
-            <span>
-              Pitch number ({countChars(data.pitch.number)}/{FIELD_LIMITS.pitchNumber.maxChars})
-            </span>
+            <span>Pitch number (assigned automatically)</span>
             <input
               type="text"
               value={data.pitch.number}
-              maxLength={FIELD_LIMITS.pitchNumber.maxChars}
-              onChange={(e) =>
-                handleCharLimit('pitchNumber', e.target.value, FIELD_LIMITS.pitchNumber.maxChars, (v) =>
-                  setPitchField('number', v)
-                )
-              }
-              placeholder="e.g. VM 2026 A"
-              aria-invalid={Boolean(errors.pitchNumber)}
+              readOnly
+              placeholder="Assigned automatically"
               aria-label="Pitch number"
+              title="Assigned automatically when you join"
             />
-            {showInlineFieldErrors && errors.pitchNumber && (
-              <span className="stall-form__error" role="alert">
-                {errors.pitchNumber}
-              </span>
-            )}
           </label>
           <label
             className={`stall-form__field stall-form__field--pitch-location${errors.pitchLocation ? ' stall-form__field--error' : ''}`}

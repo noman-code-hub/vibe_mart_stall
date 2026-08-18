@@ -501,6 +501,11 @@
   padding: 0;
 }
 
+#vibe-mart-root .app--dashboard .stall-form__field--pitch-number input[readonly],
+#stall-root .app--dashboard .stall-form__field--pitch-number input[readonly] {
+  cursor: default;
+}
+
 #vibe-mart-root .app--dashboard .stall-form__field--pitch-number,
 #stall-root .app--dashboard .stall-form__field--pitch-number {
   position: absolute;

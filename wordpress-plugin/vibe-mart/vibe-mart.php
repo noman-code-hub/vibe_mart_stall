@@ -30,6 +30,7 @@ define('VIBE_MART_PLUGIN_URL', plugin_dir_url(__FILE__));
 
 require_once VIBE_MART_PLUGIN_DIR . 'includes/settings.php';
 require_once VIBE_MART_PLUGIN_DIR . 'includes/database.php';
+require_once VIBE_MART_PLUGIN_DIR . 'includes/pitch-numbers.php';
 require_once VIBE_MART_PLUGIN_DIR . 'includes/admin.php';
 require_once VIBE_MART_PLUGIN_DIR . 'includes/rest-auth.php';
 require_once VIBE_MART_PLUGIN_DIR . 'includes/auth-redirects.php';
