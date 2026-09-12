@@ -173,11 +173,13 @@ export default function AppSplash() {
         await Promise.all([waitForWindowLoad(), waitForFonts(), waitMinTime(startedAt)])
         if (signal.cancelled) return
 
-        // Mounted UI images + background preload of every main page + market media.
-        await Promise.all([
-          waitForMountedImages(signal),
-          preloadAllSiteImages(configRef.current, signal),
-        ])
+        // Warm the other pages and market media in the background so navigation
+        // stays instant. Deliberately not awaited: that is tens of megabytes of
+        // art, and waiting for it held the splash up for the whole download.
+        preloadAllSiteImages(configRef.current, signal).catch(() => undefined)
+
+        // Only the art actually on screen decides when the splash lifts.
+        await waitForMountedImages(signal)
       } catch {
         // Still dismiss after failures / max wait.
       }

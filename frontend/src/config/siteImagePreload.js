@@ -1,40 +1,44 @@
 /**
  * First-load preload list — static page/layout art + published market media.
- * Splash stays until these finish (failures do not block forever).
+ *
+ * Warmed in the background once the app mounts so later navigation is instant.
+ * The splash does not wait for it. The splash's own logo is left out: it is
+ * already on screen by then, and it lives at the site root in dev but under the
+ * theme directory on WordPress, so preloading it by path only earned a 404.
  */
-import footerBg from '../assets/d8770035-4dca-4c22-aef3-f2d92299155f.png'
-import headerBg from '../assets/399f487b-9e42-4393-8c24-72bf2418072d.png'
-import brandLogo from '../assets/LOGO.png'
-import iconHome from '../assets/1 HOME.png'
-import iconVibes from '../assets/2 VIBES.png'
-import iconSell from '../assets/3 SELL.png'
-import iconAccount from '../assets/4 ACCOUNT.png'
-import iconMarket from '../assets/5 MARKET.png'
-import iconLogin from '../assets/6 LOGIN.png'
-import iconCart from '../assets/7 MY CART.png'
-import iconContact from '../assets/8 CONTACT.png'
-import iconLogout from '../assets/LOG OUT.png'
-import loginArt from '../assets/LOG IN CLEAN.png'
-import signUpArt from '../assets/NEW SIGN UP A.png'
-import contactArt from '../assets/CONTACT FORM.png'
-import trolleyBanner from '../assets/TRAN.png'
-import vibesArt from '../assets/OUR VIBES POP ART EXTRA.png'
-import sellArt from '../assets/SELL.png'
-import stallCart from '../assets/stall-cart.png'
-import marketStallArt from '../assets/new stall.png'
-import marketPageBg from '../assets/market-page-bg.png'
-import dashArt from '../assets/MY DASH.png'
-import selfieTipsArt from '../assets/SELFIE PAGE.png'
-import selfieTipsBtn from '../assets/SELFIE TIPS.png'
-import marketStallTipsBtn from '../assets/market-stall-tips-transparent.png'
-import marketStallTipsArt from '../assets/MARKET STALL FLOW.png'
-import stallTemplateUrl from '../assets/stall-template.jpg'
-import home1 from '../assets/homepage/1.png'
-import home2 from '../assets/homepage/2.png'
-import home3 from '../assets/homepage/3.png'
-import home4 from '../assets/homepage/4.png'
-import home5 from '../assets/homepage/5.png'
-import home6 from '../assets/homepage/6.png'
+import footerBg from '../assets/d8770035-4dca-4c22-aef3-f2d92299155f.webp'
+import headerBg from '../assets/399f487b-9e42-4393-8c24-72bf2418072d.webp'
+import brandLogo from '../assets/LOGO.webp'
+import iconHome from '../assets/1 HOME.webp'
+import iconVibes from '../assets/2 VIBES.webp'
+import iconSell from '../assets/3 SELL.webp'
+import iconAccount from '../assets/4 ACCOUNT.webp'
+import iconMarket from '../assets/5 MARKET.webp'
+import iconLogin from '../assets/6 LOGIN.webp'
+import iconCart from '../assets/7 MY CART.webp'
+import iconContact from '../assets/8 CONTACT.webp'
+import iconLogout from '../assets/LOG OUT.webp'
+import loginArt from '../assets/LOG IN CLEAN.webp'
+import signUpArt from '../assets/NEW SIGN UP A.webp'
+import contactArt from '../assets/CONTACT FORM.webp'
+import trolleyBanner from '../assets/TRAN.webp'
+import vibesArt from '../assets/OUR VIBES POP ART EXTRA.webp'
+import sellArt from '../assets/SELL.webp'
+import stallCart from '../assets/stall-cart.webp'
+import marketStallArt from '../assets/new stall.webp'
+import marketPageBg from '../assets/market-page-bg.webp'
+import dashArt from '../assets/MY DASH.webp'
+import selfieTipsArt from '../assets/SELFIE PAGE.webp'
+import selfieTipsBtn from '../assets/SELFIE TIPS.webp'
+import marketStallTipsBtn from '../assets/market-stall-tips-transparent.webp'
+import marketStallTipsArt from '../assets/MARKET STALL FLOW.webp'
+import stallTemplateUrl from '../assets/stall-template.webp'
+import home1 from '../assets/homepage/1.webp'
+import home2 from '../assets/homepage/2.webp'
+import home3 from '../assets/homepage/3.webp'
+import home4 from '../assets/homepage/4.webp'
+import home5 from '../assets/homepage/5.webp'
+import home6 from '../assets/homepage/6.webp'
 import { listMarketplace } from '../services/stallApi.js'
 
 /** Bundled assets used across main routes + chrome. */
@@ -72,7 +76,6 @@ export const STATIC_SITE_IMAGES = [
   home4,
   home5,
   home6,
-  '/loading-logo.jpeg?v=1',
 ]
 
 export function preloadUrl(url) {

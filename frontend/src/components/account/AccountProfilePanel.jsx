@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import DashboardTraderMenu from './DashboardTraderMenu.jsx'
-import accountArt from '../../assets/ACCOUNT PAGE .png'
+import accountArt from '../../assets/ACCOUNT PAGE .webp'
 import { formatDisplayDate, isValidDisplayDate, normalizeDisplayDate } from '../../utils/dateFormat.js'
 import './AccountProfilePanel.css'
 

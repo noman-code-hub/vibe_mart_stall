@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { CANVAS_WIDTH, CANVAS_HEIGHT, POS } from '../layout/pos';
 import { drawStall } from '../layout/drawStall';
-import stallTemplateUrl from '../assets/stall-template.jpg';
+import stallTemplateUrl from '../assets/stall-template.webp';
 import './StallCanvasPreview.css';
 
 // Loads a URL string (object URL or data-URI) into an HTMLImageElement.

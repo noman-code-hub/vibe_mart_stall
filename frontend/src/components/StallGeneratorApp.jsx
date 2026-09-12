@@ -6,8 +6,8 @@ import ProductDetailModal from './market/ProductDetailModal.jsx'
 import DashboardTraderMenu from './account/DashboardTraderMenu.jsx'
 import { createEmptyStallData } from '../data/stallData'
 import { FIELD_LIMITS } from '../data/fieldLimits'
-import stallCart from '../assets/stall-cart.png'
-import dashArt from '../assets/MY DASH.png'
+import stallCart from '../assets/stall-cart.webp'
+import dashArt from '../assets/MY DASH.webp'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import {
@@ -339,6 +339,7 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
       setQuota(currentQuota)
 
       const payload = await buildStallCreatePayload({
+        config,
         data,
         selfieFile,
         productSlots,

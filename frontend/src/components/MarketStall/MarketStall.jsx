@@ -1,5 +1,5 @@
-import stallCart from '../../assets/stall-cart.png';
-import marketStallArt from '../../assets/new stall.png';
+import stallCart from '../../assets/stall-cart.webp';
+import marketStallArt from '../../assets/new stall.webp';
 import { STALL_IMAGE, OVERLAY, overlayStyle, productHitStyle } from './stallImageLayout.js';
 import ProductSlot from './ProductSlot.jsx';
 import StallInfoPanel from './StallInfoPanel.jsx';

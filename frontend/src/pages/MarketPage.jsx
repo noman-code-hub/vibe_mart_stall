@@ -4,7 +4,7 @@ import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import { getStall, listMarketplace } from '../services/stallApi.js'
 import MarketStallSlider from '../components/market/MarketStallSlider.jsx'
 import StallFocusModal from '../components/market/StallFocusModal.jsx'
-import rotateHint from '../assets/ROTATE.png'
+import rotateHint from '../assets/ROTATE.webp'
 
 /**
  * Public marketplace — published stalls over the market background.

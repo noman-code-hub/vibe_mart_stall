@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import { submitContact } from '../services/contactApi.js'
-import contactArt from '../assets/CONTACT FORM.png'
+import contactArt from '../assets/CONTACT FORM.webp'
 import './ContactPage.css'
 
 const INITIAL = {

@@ -21,6 +21,13 @@ export function confirmEmail(config, { login, token }) {
   })
 }
 
+export function resendConfirmation(config, login) {
+  return apiRequest(config, 'auth/resend-confirmation', {
+    method: 'POST',
+    body: { login },
+  })
+}
+
 export function logout(config) {
   return apiRequest(config, 'auth/logout', { method: 'POST', body: {} })
 }

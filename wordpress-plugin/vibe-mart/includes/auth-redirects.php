@@ -125,6 +125,33 @@ add_action(
 			return;
 		}
 
+		// Only the plain login and register screens belong to the React app.
+		// Any other action is WordPress machinery — interim-login popups, host
+		// auto-login links, security plugins — and must be left alone.
+		if (! in_array($action, array('login', 'register'), true)) {
+			return;
+		}
+
+		// Form submissions are real login attempts, not someone browsing to a page.
+		if ('POST' === strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'))) {
+			return;
+		}
+
+		// Somebody who already has dashboard access is an operator, not a shopper.
+		if (is_user_logged_in() && current_user_can('manage_options')) {
+			return;
+		}
+
+		// A visitor reaches wp-login.php with a bare URL. Unrecognised parameters
+		// mean a one-click sign-in token or similar, which only WordPress and the
+		// plugin that issued it can complete.
+		$expected = array('action', 'redirect_to', 'loggedout', 'reauth', 'wp_lang', 'checkemail', 'registration', 'instance');
+		foreach (array_keys($_GET) as $param) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if (! in_array(sanitize_key((string) $param), $expected, true)) {
+				return;
+			}
+		}
+
 		// Keep default WP login when the destination is wp-admin (site operators).
 		if (isset($_REQUEST['redirect_to'])) {
 			$redirect_to = (string) wp_unslash($_REQUEST['redirect_to']);

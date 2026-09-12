@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
-import loginArt from '../assets/LOG IN CLEAN.png'
+import loginArt from '../assets/LOG IN CLEAN.webp'
 import './LoginPage.css'
 
 export default function LoginPage() {

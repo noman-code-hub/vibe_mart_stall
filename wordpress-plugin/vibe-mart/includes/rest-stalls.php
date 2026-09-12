@@ -27,6 +27,8 @@ if (! defined('ABSPATH')) {
 }
 
 const STALL_MAX_PRODUCTS = 6;
+/** Photos per product slot. */
+const STALL_MAX_PRODUCT_IMAGES = 6;
 const STALL_STATUSES = array('draft', 'published');
 /** Free-tier cap: traders may own at most this many stalls. */
 const STALL_MAX_FREE = 5;
@@ -121,13 +123,23 @@ add_action(
 function stall_row_to_array(object $row, bool $with_children = false): array {
 	global $wpdb;
 
+	$seller_name = (string) ( $row->seller_name ?? '' );
+	$seller_bio = (string) $row->seller_bio;
+	$ambition = (string) $row->ambition;
+
 	$data = array(
 		'id' => (int) $row->id,
 		'owner_id' => (int) $row->owner_id,
 		'brand_name' => (string) $row->brand_name,
+		'seller_name' => $seller_name,
+		'seller' => array(
+			'name' => $seller_name,
+			'about' => $seller_bio,
+			'ambition' => $ambition,
+		),
 		'seller_photo' => (string) $row->seller_photo,
-		'seller_bio' => (string) $row->seller_bio,
-		'ambition' => (string) $row->ambition,
+		'seller_bio' => $seller_bio,
+		'ambition' => $ambition,
 		'status' => (string) $row->status,
 		'created_at' => (string) $row->created_at,
 		'updated_at' => (string) $row->updated_at,
@@ -193,15 +205,20 @@ function stall_row_to_array(object $row, bool $with_children = false): array {
 					$condition = '';
 				}
 
+				$image_urls = array_values(array_slice($image_urls, 0, 6));
+
 				return array(
 					'id' => (int) $p->id,
 					'name' => (string) $p->name,
 					'variation' => $variation,
+					/* Alias kept so the stall preview can read either key. */
+					'label' => $variation,
 					'condition' => $condition,
 					'price' => (string) $p->price,
 					'description' => (string) $p->description,
 					'image_url' => $primary,
-					'image_urls' => array_values(array_slice($image_urls, 0, 6)),
+					'image_urls' => $image_urls,
+					'images' => $image_urls,
 					'sort_order' => (int) $p->sort_order,
 				);
 			},
@@ -273,18 +290,23 @@ function sync_stall_children(int $stall_id, array $payload, bool $force_all = fa
 			}
 			$name = sanitize_text_field((string) ($product['name'] ?? ''));
 			$image_urls = array();
+			$incoming = array();
 			if (! empty($product['image_urls']) && is_array($product['image_urls'])) {
-				foreach (array_slice($product['image_urls'], 0, 6) as $url) {
-					$raw = (string) $url;
-					if ('' === $raw) {
-						continue;
-					}
-					$image_urls[] = str_starts_with($raw, 'data:') ? $raw : esc_url_raw($raw);
+				$incoming = $product['image_urls'];
+			} elseif (! empty($product['images']) && is_array($product['images'])) {
+				$incoming = $product['images'];
+			}
+			foreach (array_slice($incoming, 0, STALL_MAX_PRODUCT_IMAGES) as $url) {
+				$stored = sanitize_image_reference($url, $owner_id);
+				if ('' !== $stored) {
+					$image_urls[] = $stored;
 				}
 			}
-			$legacy = (string) ($product['image_url'] ?? $product['image'] ?? '');
-			if (! $image_urls && '' !== $legacy) {
-				$image_urls[] = str_starts_with($legacy, 'data:') ? $legacy : esc_url_raw($legacy);
+			if (! $image_urls) {
+				$legacy = sanitize_image_reference($product['image_url'] ?? $product['image'] ?? '', $owner_id);
+				if ('' !== $legacy) {
+					$image_urls[] = $legacy;
+				}
 			}
 			$image_urls = array_values(array_filter($image_urls, static fn($url) => '' !== (string) $url));
 			$primary = (string) ($image_urls[0] ?? '');
@@ -401,36 +423,29 @@ function count_owned_stalls(int $owner_id): int {
 }
 
 /**
- * Extra required fields when publishing to the market.
+ * Shared publish gate. A stall only reaches the market with a face, a story,
+ * a pitch location, something to sell and at least one trust badge.
  *
- * @param array<string, mixed> $payload
- * @param array<string, mixed> $seller
+ * @param array<string, mixed> $fields Resolved values, already merged with any stored row.
  */
-function validate_publish_payload(array $payload, array $seller): ?WP_Error {
-	$bio = trim((string) ($payload['seller_bio'] ?? $seller['about'] ?? ''));
-	$ambition = trim((string) ($payload['ambition'] ?? $seller['ambition'] ?? ''));
-	$photo = trim((string) ($payload['seller_photo'] ?? ''));
-	$pitch_location = trim((string) ($payload['pitch_location'] ?? ''));
-	$products = is_array($payload['products'] ?? null) ? $payload['products'] : array();
-	$badges = is_array($payload['badges'] ?? null) ? $payload['badges'] : array();
-
+function validate_publish_fields(array $fields): ?WP_Error {
 	$missing = array();
-	if ('' === $photo) {
+	if ('' === trim((string) ($fields['seller_photo'] ?? ''))) {
 		$missing[] = 'seller photo';
 	}
-	if ('' === $bio) {
+	if ('' === trim((string) ($fields['seller_bio'] ?? ''))) {
 		$missing[] = 'bio';
 	}
-	if ('' === $ambition) {
+	if ('' === trim((string) ($fields['ambition'] ?? ''))) {
 		$missing[] = 'ambition';
 	}
-	if ('' === $pitch_location) {
+	if ('' === trim((string) ($fields['pitch_location'] ?? ''))) {
 		$missing[] = 'pitch location';
 	}
-	if (count($products) < 1) {
+	if ((int) ($fields['product_count'] ?? 0) < 1) {
 		$missing[] = 'at least one product';
 	}
-	if (count($badges) < 1) {
+	if ((int) ($fields['badge_count'] ?? 0) < 1) {
 		$missing[] = 'trust badge';
 	}
 
@@ -447,6 +462,66 @@ function validate_publish_payload(array $payload, array $seller): ?WP_Error {
 	}
 
 	return null;
+}
+
+/**
+ * Extra required fields when publishing a brand new stall.
+ *
+ * @param array<string, mixed> $payload
+ * @param array<string, mixed> $seller
+ */
+function validate_publish_payload(array $payload, array $seller): ?WP_Error {
+	$products = is_array($payload['products'] ?? null) ? $payload['products'] : array();
+	$badges = is_array($payload['badges'] ?? null) ? $payload['badges'] : array();
+
+	return validate_publish_fields(
+		array(
+			'seller_photo' => (string) ($payload['seller_photo'] ?? ''),
+			'seller_bio' => (string) ($payload['seller_bio'] ?? $seller['about'] ?? ''),
+			'ambition' => (string) ($payload['ambition'] ?? $seller['ambition'] ?? ''),
+			'pitch_location' => (string) ($payload['pitch_location'] ?? ''),
+			'product_count' => count($products),
+			'badge_count' => count($badges),
+		)
+	);
+}
+
+/**
+ * Publish gate for an edit. A partial update may only carry { status: published },
+ * so anything the payload omits is read back from the stored stall.
+ *
+ * @param array<string, mixed> $payload
+ */
+function validate_publish_update(object $row, array $payload): ?WP_Error {
+	$stored = stall_row_to_array($row, true);
+	$seller = is_array($payload['seller'] ?? null) ? $payload['seller'] : array();
+
+	$pick = static function (array $keys, string $stored_value) use ($payload) {
+		foreach ($keys as $key) {
+			if (array_key_exists($key, $payload) && '' !== trim((string) $payload[$key])) {
+				return (string) $payload[$key];
+			}
+		}
+		return $stored_value;
+	};
+
+	$products = is_array($payload['products'] ?? null)
+		? count($payload['products'])
+		: count((array) $stored['products']);
+	$badges = is_array($payload['badges'] ?? null)
+		? count($payload['badges'])
+		: count((array) $stored['badges']);
+
+	return validate_publish_fields(
+		array(
+			'seller_photo' => $pick(array('seller_photo'), (string) $stored['seller_photo']),
+			'seller_bio' => $pick(array('seller_bio'), (string) ($seller['about'] ?? $stored['seller_bio'])),
+			'ambition' => $pick(array('ambition'), (string) ($seller['ambition'] ?? $stored['ambition'])),
+			'pitch_location' => $pick(array('pitch_location'), (string) $stored['pitch_location']),
+			'product_count' => $products,
+			'badge_count' => $badges,
+		)
+	);
 }
 
 function stall_create(WP_REST_Request $request): WP_REST_Response|WP_Error {
@@ -474,23 +549,30 @@ function stall_create(WP_REST_Request $request): WP_REST_Response|WP_Error {
 	$seller = is_array($payload['seller'] ?? null) ? $payload['seller'] : array();
 	$brand = sanitize_text_field((string) ($payload['brand_name'] ?? $payload['business_name'] ?? ''));
 	if ('' === $brand) {
-		$brand = __('Untitled stall', 'vibe-mart');
+		return new WP_Error(
+			'vibe_mart_invalid',
+			__('Brand name is required.', 'vibe-mart'),
+			array('status' => 400)
+		);
 	}
 
 	$status = stall_normalize_status($payload['status'] ?? 'draft');
-	// Fields are optional for drafts and published stalls alike.
+	if ('published' === $status) {
+		$invalid = validate_publish_payload($payload, $seller);
+		if ($invalid instanceof WP_Error) {
+			return $invalid;
+		}
+	}
 
-	// Prefer long media / data-URL strings without aggressive URL sanitizing when data: is used.
-	$seller_photo_raw = (string) ($payload['seller_photo'] ?? '');
-	$seller_photo = str_starts_with($seller_photo_raw, 'data:')
-		? $seller_photo_raw
-		: esc_url_raw($seller_photo_raw);
+	/* Data-URL photos become media library attachments; only the URL is stored. */
+	$seller_photo = sanitize_image_reference($payload['seller_photo'] ?? '', $owner_id);
 
 	$ok = $wpdb->insert(
 		table('stalls'),
 		array(
 			'owner_id' => $owner_id,
 			'brand_name' => $brand,
+			'seller_name' => sanitize_text_field((string) ($payload['seller_name'] ?? $seller['name'] ?? '')),
 			'seller_photo' => $seller_photo,
 			'seller_bio' => sanitize_textarea_field((string) ($payload['seller_bio'] ?? $seller['about'] ?? '')),
 			'ambition' => sanitize_textarea_field((string) ($payload['ambition'] ?? $seller['ambition'] ?? '')),
@@ -498,7 +580,7 @@ function stall_create(WP_REST_Request $request): WP_REST_Response|WP_Error {
 			'created_at' => current_time('mysql'),
 			'updated_at' => current_time('mysql'),
 		),
-		array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
+		array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
 	);
 
 	if (! $ok) {
@@ -539,27 +621,39 @@ function stall_update(WP_REST_Request $request): WP_REST_Response|WP_Error {
 	$seller = is_array($payload['seller'] ?? null) ? $payload['seller'] : array();
 	$update = array('updated_at' => current_time('mysql'));
 
-  if (isset($payload['brand_name']) || isset($payload['business_name'])) {
+	if (isset($payload['status'])) {
+		$next_status = stall_normalize_status($payload['status'], (string) $row->status);
+		if ('published' === $next_status) {
+			$invalid = validate_publish_update($row, $payload);
+			if ($invalid instanceof WP_Error) {
+				return $invalid;
+			}
+		}
+		$update['status'] = $next_status;
+	}
+
+	if (isset($payload['brand_name']) || isset($payload['business_name'])) {
 		$brand = sanitize_text_field((string) ($payload['brand_name'] ?? $payload['business_name']));
 		if ('' === $brand) {
-			$brand = __('Untitled stall', 'vibe-mart');
+			return new WP_Error(
+				'vibe_mart_invalid',
+				__('Brand name is required.', 'vibe-mart'),
+				array('status' => 400)
+			);
 		}
 		$update['brand_name'] = $brand;
 	}
+	if (isset($payload['seller_name']) || isset($seller['name'])) {
+		$update['seller_name'] = sanitize_text_field((string) ($payload['seller_name'] ?? $seller['name'] ?? ''));
+	}
 	if (array_key_exists('seller_photo', $payload)) {
-		$seller_photo_raw = (string) $payload['seller_photo'];
-		$update['seller_photo'] = str_starts_with($seller_photo_raw, 'data:')
-			? $seller_photo_raw
-			: esc_url_raw($seller_photo_raw);
+		$update['seller_photo'] = sanitize_image_reference($payload['seller_photo'], (int) $row->owner_id);
 	}
 	if (isset($payload['seller_bio']) || isset($seller['about'])) {
 		$update['seller_bio'] = sanitize_textarea_field((string) ($payload['seller_bio'] ?? $seller['about'] ?? ''));
 	}
 	if (isset($payload['ambition']) || isset($seller['ambition'])) {
 		$update['ambition'] = sanitize_textarea_field((string) ($payload['ambition'] ?? $seller['ambition'] ?? ''));
-	}
-	if (isset($payload['status'])) {
-		$update['status'] = stall_normalize_status($payload['status'], (string) $row->status);
 	}
 
 	$result = $wpdb->update(table('stalls'), $update, array('id' => $id));

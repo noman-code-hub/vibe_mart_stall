@@ -1,4 +1,4 @@
-import sellArt from '../assets/SELL.png'
+import sellArt from '../assets/SELL.webp'
 import './SellSmartPage.css'
 
 /**

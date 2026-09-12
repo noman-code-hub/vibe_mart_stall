@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
-import signUpArt from '../assets/NEW SIGN UP A.png'
+import signUpArt from '../assets/NEW SIGN UP A.webp'
 import './RegisterPage.css'
 
 const INITIAL = {
@@ -139,11 +139,10 @@ export default function RegisterPage() {
       if (result?.pending_confirmation) {
         sessionStorage.setItem('vm_pending_login', result.login || username)
         sessionStorage.setItem('vm_pending_email', result.email || email)
+        sessionStorage.removeItem('vm_pending_confirm_url')
+        sessionStorage.removeItem('vm_pending_confirm_notice')
         if (result.confirm_url) {
           sessionStorage.setItem('vm_pending_confirm_url', result.confirm_url)
-        }
-        if (result.dev_notice) {
-          sessionStorage.setItem('vm_pending_confirm_notice', result.dev_notice)
         }
         navigate('/confirm-email', { replace: true })
         return

@@ -1,4 +1,4 @@
-import marketHero from '../../assets/5 MARKET.png'
+import marketHero from '../../assets/5 MARKET.webp'
 
 /**
  * Marketplace entrance banner — large hero with Vibe Mart splash.

@@ -11,8 +11,9 @@ WordPress Theme  ──loads──▶  hashed JS/CSS in assets/app/
         ▼
 WordPress Plugin REST  (/wp-json/vibe-mart/v1/…)
         │
-        ├── Auth (WP users + cookies)
+        ├── Auth (WP users + cookies + wp_mail confirmation)
         ├── Stalls / Products / Badges / Pitches (custom tables)
+        ├── Uploads (WordPress media library)
         └── remove.bg proxy (API key server-side)
 ```
 
@@ -72,6 +73,8 @@ wordpress-plugin/vibe-mart/
     ├── database.php          # vm_stalls, vm_products, vm_badges, vm_pitches
     ├── rest-auth.php
     ├── rest-stalls.php
+    ├── rest-uploads.php       # media library uploads
+    ├── rest-contact.php
     └── rest-remove-bg.php
 ```
 
@@ -92,10 +95,10 @@ wordpress-plugin/vibe-mart/
 ## Database schema
 
 ### `wp_vm_stalls`
-`id`, `owner_id`, `brand_name`, `seller_photo`, `seller_bio`, `ambition`, `status` (`draft`|`published`), `created_at`, `updated_at`
+`id`, `owner_id`, `brand_name`, `seller_name`, `seller_photo`, `seller_bio`, `ambition`, `status` (`draft`|`published`), `created_at`, `updated_at`
 
 ### `wp_vm_products` (max 6 per stall in API)
-`id`, `stall_id`, `name`, `condition_label`, `price`, `description`, `image_url`, `sort_order`
+`id`, `stall_id`, `name`, `variation`, `condition_label`, `price`, `description`, `image_url`, `image_urls`, `sort_order`
 
 ### `wp_vm_badges`
 `id`, `stall_id`, `label`
@@ -104,6 +107,10 @@ wordpress-plugin/vibe-mart/
 `id`, `stall_id` (unique), `pitch_number`, `location`, `member_since`
 
 Authentication uses **WordPress users** (no custom users table).
+
+Image columns hold a media library URL. They are `LONGTEXT` only so that a
+legacy base64 data-URL row cannot be silently truncated at 64 KB; new saves go
+through the media library instead.
 
 ## REST API (`/wp-json/vibe-mart/v1`)
 
@@ -120,7 +127,9 @@ Authentication uses **WordPress users** (no custom users table).
 | GET | `/stalls/{id}` | public if published |
 | PUT | `/stalls/{id}` | owner |
 | DELETE | `/stalls/{id}` | owner |
+| POST | `/uploads` | logged-in |
 | POST | `/remove-background` | nonce |
+| POST | `/contact` | nonce |
 
 ## Build instructions
 

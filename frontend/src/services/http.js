@@ -26,7 +26,15 @@ function buildApiUrl(restBase, path) {
 }
 
 export async function apiRequest(config, path, options = {}) {
-  const url = buildApiUrl(config.restBase, path)
+  const method = String(options.method || 'GET').toUpperCase()
+  let url = buildApiUrl(config.restBase, path)
+
+  // Reads carry a unique token so no browser, host or edge cache can replay an
+  // older answer — a stale "no stalls" reply looks identical to a real one.
+  if (method === 'GET') {
+    url += `${url.includes('?') ? '&' : '?'}_vm=${Date.now()}`
+  }
+
   const headers = {
     Accept: 'application/json',
     ...(options.body && !(options.body instanceof FormData)
@@ -38,6 +46,7 @@ export async function apiRequest(config, path, options = {}) {
 
   const response = await fetch(url, {
     credentials: 'same-origin',
+    cache: 'no-store',
     ...options,
     headers,
     body:

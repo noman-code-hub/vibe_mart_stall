@@ -1,4 +1,4 @@
-import vibesArt from '../assets/OUR VIBES POP ART EXTRA.png'
+import vibesArt from '../assets/OUR VIBES POP ART EXTRA.webp'
 import './OurVibesPage.css'
 
 export default function OurVibesPage() {

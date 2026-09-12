@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { formatStallPrice, productSizeAndCondition } from '../../services/stallDisplay.js'
 import { useTrolley } from '../../context/TrolleyContext.jsx'
-import buyerArt from '../../assets/BUYER edit.png'
+import buyerArt from '../../assets/BUYER edit.webp'
 import './ProductDetailModal.css'
 
 function collectProductImages(product) {

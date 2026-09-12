@@ -6,11 +6,11 @@ import ProductImageSlots, {
   normalizeProductFiles,
 } from './ProductImageSlots'
 import { FIELD_LIMITS, countWords, countChars } from '../data/fieldLimits'
-import selfieTipsArt from '../assets/SELFIE PAGE.png'
-import selfieTipsBtn from '../assets/SELFIE TIPS.png'
-import marketStallTipsBtn from '../assets/market-stall-tips-transparent.png'
-import marketStallTipsArt from '../assets/MARKET STALL FLOW.png'
-import addProductArt from '../assets/ADD PRODUCT EDIT.png'
+import selfieTipsArt from '../assets/SELFIE PAGE.webp'
+import selfieTipsBtn from '../assets/SELFIE TIPS.webp'
+import marketStallTipsBtn from '../assets/market-stall-tips-transparent.webp'
+import marketStallTipsArt from '../assets/MARKET STALL FLOW.webp'
+import addProductArt from '../assets/ADD PRODUCT EDIT.webp'
 import './StallEditorForm.css'
 
 const MAX_PRODUCTS = 4

@@ -1,3 +1,5 @@
+import { uploadImage } from './uploadApi.js'
+
 /** Free-tier max stalls per trader (mirrors plugin STALL_MAX_FREE). */
 export const MAX_FREE_STALLS = 5
 
@@ -19,11 +21,31 @@ export function fileToDataUrl(source) {
 }
 
 /**
+ * Turn one image into something storable.
+ *
+ * Files are uploaded so the stall record only carries a URL. Backends without an
+ * upload route (the local mock API) fall back to an inline data URL.
+ */
+async function toStorableImage(config, source) {
+  if (!source) return ''
+  if (typeof source === 'string') return source
+
+  const uploaded = await uploadImage(config, source)
+  return uploaded || fileToDataUrl(source)
+}
+
+/**
  * Build API payload from Stall Generator form state.
  * Quantity = product slot count; trust badges derived from rating / reviews (+ optional labels).
  */
-export async function buildStallCreatePayload({ data, selfieFile, productSlots, status = 'published' }) {
-  const sellerPhoto = await fileToDataUrl(selfieFile)
+export async function buildStallCreatePayload({
+  config,
+  data,
+  selfieFile,
+  productSlots,
+  status = 'published',
+}) {
+  const sellerPhoto = await toStorableImage(config, selfieFile)
   const products = await Promise.all(
     (productSlots || []).map(async (slot, index) => {
       const files = Array.isArray(slot?.files)
@@ -32,7 +54,7 @@ export async function buildStallCreatePayload({ data, selfieFile, productSlots, 
           ? [slot.file]
           : []
       const image_urls = (
-        await Promise.all(files.map((file) => fileToDataUrl(file)))
+        await Promise.all(files.map((file) => toStorableImage(config, file)))
       ).filter(Boolean)
       return {
         name: slot?.name || `Product ${index + 1}`,

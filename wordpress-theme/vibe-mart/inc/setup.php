@@ -44,3 +44,29 @@ add_filter(
 	},
 	99
 );
+
+/**
+ * Answer SPA deep links with 200 instead of 404.
+ *
+ * Routes like /market and /my-account belong to React Router, but WordPress has
+ * no post or page behind them, so handle_404() flags the request and the tab
+ * reads "Page not found" while search engines see a 404. The flag is cleared
+ * before the status line and document title are produced, so the shell is served
+ * as an ordinary page.
+ */
+add_action(
+	'template_redirect',
+	static function (): void {
+		if (is_admin() || is_feed() || is_robots() || ! is_404()) {
+			return;
+		}
+
+		global $wp_query;
+		if ($wp_query instanceof WP_Query) {
+			$wp_query->is_404 = false;
+		}
+
+		status_header(200);
+	},
+	1
+);

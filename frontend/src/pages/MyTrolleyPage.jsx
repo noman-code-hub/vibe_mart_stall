@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useTrolley } from '../context/TrolleyContext.jsx'
 import { formatStallPrice } from '../services/stallDisplay.js'
-import trolleyBanner from '../assets/TRAN.png'
+import trolleyBanner from '../assets/TRAN.webp'
 import './MyTrolleyPage.css'
 
 export default function MyTrolleyPage() {

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
+import { resendConfirmation } from '../services/authApi.js'
 import './ForgotPasswordPage.css'
 
 const PROFILE_PATH = '/my-account?tab=profile'
@@ -10,6 +12,7 @@ const confirmingKeys = new Set()
 
 export default function ConfirmEmailPage() {
   const { confirmEmail, isAuthenticated, loading, user } = useAuth()
+  const config = useRuntimeConfig()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token') || ''
@@ -17,14 +20,21 @@ export default function ConfirmEmailPage() {
 
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [resendBusy, setResendBusy] = useState(false)
+  const [resendMessage, setResendMessage] = useState('')
   const confirmEmailRef = useRef(confirmEmail)
   confirmEmailRef.current = confirmEmail
 
   // Pending signup state from register navigate
   const pendingLogin = sessionStorage.getItem('vm_pending_login') || login
   const pendingEmail = sessionStorage.getItem('vm_pending_email') || ''
-  const pendingConfirmUrl = sessionStorage.getItem('vm_pending_confirm_url') || ''
-  const pendingNotice = sessionStorage.getItem('vm_pending_confirm_notice') || ''
+
+  // Local dev has no mail server, so the throwaway API there hands the link back
+  // directly. Compiled out of production builds — live, the emailed link is the
+  // only way in, which is what proves the address belongs to the signup.
+  const devConfirmUrl = import.meta.env.DEV
+    ? sessionStorage.getItem('vm_pending_confirm_url') || ''
+    : ''
 
   const nextAfterAuth = user?.profile_complete ? DASHBOARD_PATH : PROFILE_PATH
 
@@ -67,9 +77,19 @@ export default function ConfirmEmailPage() {
     }
   }, [token, login, loading, isAuthenticated, navigate])
 
-  const onConfirmClick = async () => {
-    if (!pendingConfirmUrl) return
-    window.location.href = pendingConfirmUrl
+  const onResend = async () => {
+    if (!pendingLogin) return
+    setResendBusy(true)
+    setResendMessage('')
+    setError('')
+    try {
+      const result = await resendConfirmation(config, pendingLogin)
+      setResendMessage(result?.message || 'A new confirmation link is on its way.')
+    } catch (err) {
+      setError(err.message || 'Could not send a new confirmation link.')
+    } finally {
+      setResendBusy(false)
+    }
   }
 
   return (
@@ -95,26 +115,27 @@ export default function ConfirmEmailPage() {
           </p>
         ) : null}
 
-        {pendingNotice || pendingConfirmUrl ? (
-          <p className="vm-reset__alert vm-reset__alert--dev">
-            {pendingNotice || 'Test host has no email. Use this confirmation link now.'}
-            {pendingConfirmUrl ? (
-              <>
-                {' '}
-                <a href={pendingConfirmUrl}>Open confirmation link</a>
-              </>
-            ) : null}
+        {resendMessage ? (
+          <p className="vm-reset__alert vm-reset__alert--ok" role="status">
+            {resendMessage}
           </p>
         ) : null}
 
-        {pendingConfirmUrl ? (
+        {devConfirmUrl ? (
+          <p className="vm-reset__alert vm-reset__alert--dev">
+            Local development only.{' '}
+            <a href={devConfirmUrl}>Open confirmation link</a>
+          </p>
+        ) : null}
+
+        {!token && pendingLogin ? (
           <button
             type="button"
             className="vm-reset__submit"
-            onClick={onConfirmClick}
-            disabled={busy}
+            onClick={onResend}
+            disabled={busy || resendBusy}
           >
-            Confirm email
+            {resendBusy ? 'Sending…' : 'Resend confirmation email'}
           </button>
         ) : null}
 

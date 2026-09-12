@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom'
-import home1 from '../assets/homepage/1.png'
-import home2 from '../assets/homepage/2.png'
-import home3 from '../assets/homepage/3.png'
-import home4 from '../assets/homepage/4.png'
-import home5 from '../assets/homepage/5.png'
-import signUpBtn from '../assets/homepage/6.png'
+import home1 from '../assets/homepage/1.webp'
+import home2 from '../assets/homepage/2.webp'
+import home3 from '../assets/homepage/3.webp'
+import home4 from '../assets/homepage/4.webp'
+import home5 from '../assets/homepage/5.webp'
+import signUpBtn from '../assets/homepage/6.webp'
 import './HomePage.css'
 
 const HOME_SECTIONS = [

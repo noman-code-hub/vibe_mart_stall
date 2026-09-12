@@ -15,7 +15,7 @@ if (! defined('ABSPATH')) {
 }
 
 /** Schema version — bump when CREATE TABLE definitions change. */
-const DB_VERSION = '1.4.0';
+const DB_VERSION = '1.5.0';
 
 /**
  * Prefixed table name helper.
@@ -46,13 +46,15 @@ function create_tables(): void {
 
 	/*
 	 * Stalls — one row per market stall, linked to owner (wp_users.ID).
-	 * seller_photo is TEXT so data-URLs / long media URLs fit.
+	 * seller_photo normally holds a media library URL. It stays LONGTEXT so a
+	 * legacy base64 data-URL row cannot be silently truncated at 64 KB.
 	 */
 	$sql_stalls = "CREATE TABLE {$stalls} (
 		id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		owner_id bigint(20) unsigned NOT NULL,
 		brand_name varchar(191) NOT NULL DEFAULT '',
-		seller_photo text NULL,
+		seller_name varchar(191) NOT NULL DEFAULT '',
+		seller_photo longtext NULL,
 		seller_bio text NULL,
 		ambition text NULL,
 		status varchar(32) NOT NULL DEFAULT 'draft',
@@ -75,7 +77,7 @@ function create_tables(): void {
 		condition_label varchar(191) NOT NULL DEFAULT '',
 		price varchar(64) NOT NULL DEFAULT '',
 		description text NULL,
-		image_url text NULL,
+		image_url longtext NULL,
 		image_urls longtext NULL,
 		sort_order tinyint(3) unsigned NOT NULL DEFAULT 0,
 		PRIMARY KEY  (id),

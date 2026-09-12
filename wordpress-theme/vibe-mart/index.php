@@ -5,7 +5,15 @@
  * @package VibeMartTheme
  */
 
-$vibe_mart_splash_logo = trailingslashit( get_template_directory_uri() ) . 'assets/vibe-mart-logo.png';
+/*
+ * Splash art is read from the build output so it tracks frontend/public/ on every
+ * `npm run build:wp`, instead of being a separate copy that drifts out of date.
+ */
+$vibe_mart_splash_logo = add_query_arg(
+	'v',
+	VIBE_MART_THEME_VERSION,
+	trailingslashit( get_template_directory_uri() ) . 'assets/app/loading-logo.webp'
+);
 
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -40,14 +48,14 @@ $vibe_mart_splash_logo = trailingslashit( get_template_directory_uri() ) . 'asse
 		#vm-splash .vm-splash__card {
 			display: grid;
 			justify-items: center;
-			gap: 4px;
-			width: min(440px, 100%);
+			gap: 16px;
+			width: min(820px, 100%);
 			text-align: center;
 		}
 
 		#vm-splash .vm-splash__logo {
 			display: block;
-			width: min(380px, 84vw);
+			width: min(760px, 92vw);
 			height: auto;
 			object-fit: contain;
 			margin: 0;
@@ -84,15 +92,6 @@ $vibe_mart_splash_logo = trailingslashit( get_template_directory_uri() ) . 'asse
 			background: #025fd7;
 		}
 
-		#vm-splash .vm-splash__copy {
-			margin: 6px 0 0;
-			font-family: system-ui, sans-serif;
-			font-size: 0.92rem;
-			font-weight: 700;
-			letter-spacing: 0.04em;
-			color: #1a1008;
-		}
-
 		@keyframes vm-splash-dot {
 			0%,
 			80%,
@@ -103,6 +102,12 @@ $vibe_mart_splash_logo = trailingslashit( get_template_directory_uri() ) . 'asse
 			40% {
 				transform: translateY(-8px) scale(1.08);
 				opacity: 1;
+			}
+		}
+
+		@media (max-width: 640px) {
+			#vm-splash .vm-splash__logo {
+				width: min(420px, 92vw);
 			}
 		}
 
@@ -129,10 +134,10 @@ $vibe_mart_splash_logo = trailingslashit( get_template_directory_uri() ) . 'asse
 	<div class="vm-splash__card">
 		<img
 			class="vm-splash__logo"
-			src="<?php echo esc_url( $vibe_mart_splash_logo . '?v=2' ); ?>"
+			src="<?php echo esc_url( $vibe_mart_splash_logo ); ?>"
 			alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>"
 			width="380"
-			height="168"
+			height="253"
 			decoding="async"
 		/>
 		<div class="vm-splash__dots" aria-hidden="true">
@@ -140,7 +145,6 @@ $vibe_mart_splash_logo = trailingslashit( get_template_directory_uri() ) . 'asse
 			<span class="vm-splash__dot"></span>
 			<span class="vm-splash__dot"></span>
 		</div>
-		<p class="vm-splash__copy">Opening the market…</p>
 	</div>
 </div>
 <div id="vibe-mart-root"></div>
@@ -152,5 +156,32 @@ if (! function_exists('vibe_mart_theme_manifest') || null === vibe_mart_theme_ma
 }
 ?>
 <?php wp_footer(); ?>
+<script>
+	/*
+	 * Hide leftover plugin markup.
+	 *
+	 * The React root is the entire page, but plugins still print comparison
+	 * bars, wishlist widgets and modal shells into wp_body_open/wp_footer.
+	 * Their stylesheets are dequeued, so that markup would otherwise pile up
+	 * unstyled at the bottom of every page.
+	 *
+	 * This is a classic script, so it runs during parsing — before the deferred
+	 * module bundle mounts React. Only server-rendered nodes are touched; the
+	 * overlays the app later portals into document.body are added afterwards
+	 * and are left alone.
+	 */
+	(function () {
+		var keep = { 'vibe-mart-root': 1, 'vm-splash': 1, 'wpadminbar': 1 };
+		var skip = { SCRIPT: 1, STYLE: 1, LINK: 1, NOSCRIPT: 1, TEMPLATE: 1 };
+		var nodes = Array.prototype.slice.call(document.body.children);
+
+		for (var i = 0; i < nodes.length; i++) {
+			var el = nodes[i];
+			if (skip[el.tagName] || (el.id && keep[el.id])) continue;
+			el.setAttribute('data-vm-hidden', '');
+			el.style.setProperty('display', 'none', 'important');
+		}
+	})();
+</script>
 </body>
 </html>

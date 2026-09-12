@@ -19,6 +19,37 @@ if (! defined('ABSPATH')) {
 	exit;
 }
 
+/*
+ * Keep nonces valid for the rest of the request after signing a user in or out.
+ *
+ * wp_set_auth_cookie() only queues a Set-Cookie header; it never touches
+ * $_COOKIE. wp_create_nonce() hashes in wp_get_session_token(), which reads the
+ * logged-in cookie out of $_COOKIE, so a nonce minted immediately after login is
+ * built from an empty session token. The browser then sends the real token on
+ * the next call, the hashes disagree, and every follow-up request dies with
+ * "Cookie check failed" (HTTP 403) even though the user is genuinely logged in.
+ *
+ * Mirroring the cookie into $_COOKIE means the fresh nonce we hand back in
+ * user_payload() is built from the same token the browser will send.
+ */
+add_action(
+	'set_logged_in_cookie',
+	static function ($logged_in_cookie): void {
+		if (defined('LOGGED_IN_COOKIE')) {
+			$_COOKIE[ LOGGED_IN_COOKIE ] = $logged_in_cookie;
+		}
+	}
+);
+
+add_action(
+	'clear_auth_cookie',
+	static function (): void {
+		if (defined('LOGGED_IN_COOKIE')) {
+			unset($_COOKIE[ LOGGED_IN_COOKIE ]);
+		}
+	}
+);
+
 add_action(
 	'rest_api_init',
 	static function (): void {
@@ -98,6 +129,15 @@ add_action(
 			array(
 				'methods' => WP_REST_Server::CREATABLE,
 				'callback' => __NAMESPACE__ . '\\auth_confirm_email',
+				'permission_callback' => '__return_true',
+			)
+		);
+		register_rest_route(
+			REST_NAMESPACE,
+			'/auth/resend-confirmation',
+			array(
+				'methods' => WP_REST_Server::CREATABLE,
+				'callback' => __NAMESPACE__ . '\\auth_resend_confirmation',
 				'permission_callback' => '__return_true',
 			)
 		);
@@ -324,34 +364,21 @@ function auth_register(WP_REST_Request $request): WP_REST_Response|WP_Error {
 		)
 	);
 
-	$key = wp_generate_password(32, false);
-	update_user_meta((int) $user_id, 'vm_email_confirm_key', $key);
-	update_user_meta((int) $user_id, 'vm_email_confirm_expires', (string) ( time() + DAY_IN_SECONDS ));
-	update_user_meta((int) $user_id, 'vm_email_confirmed', '0');
 	update_user_meta((int) $user_id, 'vm_profile_complete', '0');
 	assign_trader_pitch_number((int) $user_id);
 
-	$confirm_url = add_query_arg(
-		array(
-			'token' => $key,
-			'login' => $username,
-		),
-		home_url('/confirm-email')
-	);
+	// No delivered email means the address was never proven, so the signup does
+	// not stand — the account is removed and the address stays free to retry.
+	if (! send_confirmation_email((int) $user_id)) {
+		require_once ABSPATH . 'wp-admin/includes/user.php';
+		wp_delete_user((int) $user_id);
 
-	$subject = sprintf(__('[%s] Confirm your email', 'vibe-mart'), wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES));
-	$body = implode(
-		"\n",
-		array(
-			sprintf(__('Hi %s,', 'vibe-mart'), $display ?: $username),
-			'',
-			__('Please confirm your email to finish joining Vibe Mart:', 'vibe-mart'),
-			$confirm_url,
-			'',
-			__('If you did not create this account, you can ignore this email.', 'vibe-mart'),
-		)
-	);
-	wp_mail($email, $subject, $body);
+		return new WP_Error(
+			'vibe_mart_mail_failed',
+			__('We could not send your confirmation email, so your account was not created. Check the address and try again.', 'vibe-mart'),
+			array('status' => 500)
+		);
+	}
 
 	return new WP_REST_Response(
 		array(
@@ -360,11 +387,99 @@ function auth_register(WP_REST_Request $request): WP_REST_Response|WP_Error {
 			'message' => __('Check your email to confirm your account.', 'vibe-mart'),
 			'login' => $username,
 			'email' => $email,
-			'confirm_url' => $confirm_url,
-			'dev_notice' => __('If email delivery fails locally, use this confirmation link.', 'vibe-mart'),
 		),
 		201
 	);
+}
+
+/**
+ * Issue a fresh confirmation token and email the link.
+ *
+ * The token leaves the server by email and nowhere else — that is the whole
+ * proof that the address belongs to whoever signed up, so it must never be
+ * returned in an API response.
+ */
+function send_confirmation_email(int $user_id): bool {
+	$user = get_user_by('id', $user_id);
+	if (! $user instanceof \WP_User) {
+		return false;
+	}
+
+	$key = wp_generate_password(32, false);
+	update_user_meta($user_id, 'vm_email_confirm_key', $key);
+	update_user_meta($user_id, 'vm_email_confirm_expires', (string) ( time() + DAY_IN_SECONDS ));
+	update_user_meta($user_id, 'vm_email_confirmed', '0');
+
+	$confirm_url = add_query_arg(
+		array(
+			'token' => $key,
+			'login' => $user->user_login,
+		),
+		home_url('/confirm-email')
+	);
+
+	$subject = sprintf(
+		/* translators: %s: site name */
+		__('[%s] Confirm your email', 'vibe-mart'),
+		wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES)
+	);
+	$body = implode(
+		"\n",
+		array(
+			sprintf(__('Hi %s,', 'vibe-mart'), $user->display_name ?: $user->user_login),
+			'',
+			__('Please confirm your email to finish joining Vibe Mart:', 'vibe-mart'),
+			'',
+			$confirm_url,
+			'',
+			__('This link expires in 24 hours.', 'vibe-mart'),
+			__('If you did not create this account, you can ignore this email.', 'vibe-mart'),
+		)
+	);
+
+	return (bool) wp_mail($user->user_email, $subject, $body);
+}
+
+/**
+ * Send a replacement confirmation link.
+ *
+ * Answers identically whether or not the account exists, so the endpoint cannot
+ * be used to discover which emails are registered.
+ */
+function auth_resend_confirmation(WP_REST_Request $request): WP_REST_Response {
+	$identifier = sanitize_text_field(
+		(string) ( $request->get_param('login') ?: $request->get_param('username') ?: $request->get_param('email') )
+	);
+
+	$generic = new WP_REST_Response(
+		array(
+			'ok' => true,
+			'message' => __('If that account still needs confirming, a new link is on its way.', 'vibe-mart'),
+		),
+		200
+	);
+
+	if ('' === $identifier) {
+		return $generic;
+	}
+
+	$user = is_email($identifier) ? get_user_by('email', $identifier) : get_user_by('login', $identifier);
+	if (! $user instanceof \WP_User) {
+		return $generic;
+	}
+	if ('0' !== (string) get_user_meta($user->ID, 'vm_email_confirmed', true)) {
+		return $generic;
+	}
+
+	$throttle = 'vibe_mart_confirm_resend_' . $user->ID;
+	if (get_transient($throttle)) {
+		return $generic;
+	}
+	set_transient($throttle, 1, MINUTE_IN_SECONDS);
+
+	send_confirmation_email((int) $user->ID);
+
+	return $generic;
 }
 
 function auth_login(WP_REST_Request $request): WP_REST_Response|WP_Error {

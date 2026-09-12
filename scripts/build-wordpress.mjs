@@ -56,19 +56,51 @@ async function copyThemeAssets() {
   console.log(`[build:wp] entry CSS: ${entry.css.join(', ') || '(none)'}`);
 }
 
+/**
+ * Zip a folder so WordPress can install it.
+ *
+ * Always uses bsdtar, never PowerShell Compress-Archive: on Windows PowerShell
+ * that writes entry names with backslashes, which the ZIP format does not allow.
+ * PHP then sees one long filename instead of a folder tree, installs the plugin
+ * to the wrong path, and activation fails with "Plugin file does not exist."
+ */
 function zipFolder(sourceDir, zipPath) {
-  // Prefer PowerShell Compress-Archive on Windows; fall back to tar.
-  if (process.platform === 'win32') {
-    const ps = `Compress-Archive -Path '${sourceDir.replace(/'/g, "''")}' -DestinationPath '${zipPath.replace(/'/g, "''")}' -Force`;
-    const result = spawnSync('powershell', ['-NoProfile', '-Command', ps], { stdio: 'inherit' });
-    if (result.status !== 0) fail(`Failed to zip ${path.basename(sourceDir)}`);
-    return;
+  const folder = path.basename(sourceDir);
+  const parent = path.dirname(sourceDir);
+
+  const zipped = spawnSync('tar', ['-a', '-cf', zipPath, '-C', parent, folder], { stdio: 'inherit' });
+  if (zipped.error) {
+    fail(
+      `Could not run "tar", which is needed to build ${folder}.zip. ` +
+        'It ships with Windows 10 and later, macOS and Linux.'
+    );
+  }
+  if (zipped.status !== 0) fail(`Failed to zip ${folder}`);
+
+  verifyZipPaths(zipPath, folder);
+}
+
+/**
+ * Guard against a zip whose entries are not laid out as WordPress expects:
+ * a single top-level folder, using forward slashes.
+ */
+function verifyZipPaths(zipPath, folder) {
+  const listed = spawnSync('tar', ['-tf', zipPath], { encoding: 'utf8' });
+  if (listed.status !== 0) return;
+
+  const entries = String(listed.stdout || '')
+    .split(/\r?\n/)
+    .filter(Boolean);
+
+  const backslashed = entries.find((entry) => entry.includes('\\'));
+  if (backslashed) {
+    fail(`${path.basename(zipPath)} contains a backslash path (${backslashed}). WordPress cannot install it.`);
   }
 
-  const result = spawnSync('tar', ['-a', '-cf', zipPath, '-C', path.dirname(sourceDir), path.basename(sourceDir)], {
-    stdio: 'inherit',
-  });
-  if (result.status !== 0) fail(`Failed to zip ${path.basename(sourceDir)}`);
+  const stray = entries.find((entry) => !entry.startsWith(`${folder}/`) && entry !== `${folder}/`);
+  if (stray) {
+    fail(`${path.basename(zipPath)} should contain only ${folder}/ at the top level, found "${stray}".`);
+  }
 }
 
 async function packageZips() {

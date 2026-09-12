@@ -196,23 +196,38 @@ export default function MyAccountPage() {
     setBusy(true)
     setMessage('')
     setError('')
-    try {
-      for (const stall of drafts) {
+
+    // Each draft is published on its own so one incomplete stall cannot block
+    // the rest, and the trader is told which stall still needs work.
+    const published = []
+    const blocked = []
+    for (const stall of drafts) {
+      const name = stall.brand_name || 'Untitled stall'
+      try {
         await updateStall(config, stall.id, { status: 'published' })
+        published.push(name)
+      } catch (err) {
+        blocked.push(`“${name}” — ${err.message || 'could not be published.'}`)
       }
-      await refreshStalls()
-      setMessage(
-        drafts.length === 1
-          ? `Published “${drafts[0].brand_name || 'stall'}” to the Market.`
-          : `Published ${drafts.length} stalls to the Market.`
-      )
-      navigate('/market')
-    } catch (err) {
-      setError(err.message || 'Could not publish draft stalls.')
-      await refreshStalls()
-    } finally {
-      setBusy(false)
     }
+
+    await refreshStalls()
+    setBusy(false)
+
+    if (published.length) {
+      setMessage(
+        published.length === 1
+          ? `Published “${published[0]}” to the Market.`
+          : `Published ${published.length} stalls to the Market.`
+      )
+    }
+
+    if (blocked.length) {
+      setError(blocked.join(' '))
+      return
+    }
+
+    navigate('/market')
   }
 
   const isDashboard = tab === 'create'

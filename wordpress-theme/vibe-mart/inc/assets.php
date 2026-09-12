@@ -83,6 +83,7 @@ add_action(
 			'maxUploadBytes' => function_exists('VibeMart\\Plugin\\get_max_upload_bytes')
 				? (int) \VibeMart\Plugin\get_max_upload_bytes()
 				: 10 * MB_IN_BYTES,
+			'isWordPress'    => true,
 			'version'        => VIBE_MART_THEME_VERSION,
 		);
 
@@ -93,18 +94,120 @@ add_action(
 		 */
 		$config = apply_filters('vibe_mart_runtime_config', $config);
 
-		wp_localize_script(VIBE_MART_APP_HANDLE, 'vibeMartConfig', $config);
+		/*
+		 * wp_localize_script() flattens every value to a string, which would turn
+		 * isWordPress into "1" and maxUploadBytes into text. A JSON blob keeps the
+		 * booleans and numbers intact for the React runtime config.
+		 */
+		wp_add_inline_script(
+			VIBE_MART_APP_HANDLE,
+			'window.vibeMartConfig = ' . wp_json_encode($config) . ';',
+			'before'
+		);
 	}
 );
 
+/**
+ * True for the theme's own script/style handles, including extra CSS chunks.
+ */
+function vibe_mart_theme_owns_handle(string $handle): bool {
+	return VIBE_MART_APP_HANDLE === $handle
+		|| VIBE_MART_FONTS_HANDLE === $handle
+		|| str_starts_with($handle, VIBE_MART_APP_HANDLE . '-');
+}
+
+/**
+ * Keep other plugins' frontend assets out of the SPA shell.
+ *
+ * index.php renders nothing but the React root, so no other plugin has any
+ * markup on the page for its CSS and JS to act on. They still enqueue their
+ * frontend bundles though — hundreds of kilobytes of Elementor, WooCommerce and
+ * jQuery on every view. Elementor additionally throws "elementorFrontendConfig
+ * is not defined", because it only prints that config for pages it built.
+ *
+ * Dependencies are safe to drop: WordPress re-resolves them for anything still
+ * queued. The admin bar is kept so logged-in editors keep their toolbar, and the
+ * customizer preview is left untouched so it still works.
+ *
+ * Re-add anything genuinely needed via the two filters.
+ */
+add_action(
+	'wp_enqueue_scripts',
+	static function (): void {
+		if (is_customize_preview()) {
+			return;
+		}
+
+		/**
+		 * Filters script handles kept on the SPA shell.
+		 *
+		 * @param string[] $handles Handles to keep alongside the theme's own.
+		 */
+		$keep_scripts = (array) apply_filters('vibe_mart_keep_scripts', array('admin-bar'));
+
+		/**
+		 * Filters style handles kept on the SPA shell.
+		 *
+		 * @param string[] $handles Handles to keep alongside the theme's own.
+		 */
+		$keep_styles = (array) apply_filters('vibe_mart_keep_styles', array('admin-bar', 'dashicons'));
+
+		/* Snapshot both queues: dequeuing mutates them as we go. */
+		$script_queue = (array) wp_scripts()->queue;
+		$style_queue  = (array) wp_styles()->queue;
+
+		foreach ($script_queue as $handle) {
+			if (! vibe_mart_theme_owns_handle((string) $handle) && ! in_array($handle, $keep_scripts, true)) {
+				wp_dequeue_script((string) $handle);
+			}
+		}
+
+		foreach ($style_queue as $handle) {
+			if (! vibe_mart_theme_owns_handle((string) $handle) && ! in_array($handle, $keep_styles, true)) {
+				wp_dequeue_style((string) $handle);
+			}
+		}
+	},
+	PHP_INT_MAX
+);
+
+/**
+ * Mark the bundle as an ES module.
+ *
+ * Vite emits ESM, so without type="module" the browser refuses the file with
+ * "Cannot use 'import.meta' outside a module" and the SPA never boots.
+ *
+ * WordPress hands this filter the inline "before" config script and the bundle's
+ * own <script src> tag as one combined string, so the src-bearing tag has to be
+ * targeted explicitly. Marking the leading config blob instead leaves the bundle
+ * running as a classic script, which is the failure this guards against.
+ */
 add_filter(
 	'script_loader_tag',
 	static function (string $tag, string $handle, string $src = ''): string {
 		unset($src);
-		if (VIBE_MART_APP_HANDLE !== $handle || false !== strpos($tag, 'type="module"')) {
+		if (VIBE_MART_APP_HANDLE !== $handle) {
 			return $tag;
 		}
-		return preg_replace('/<script\b/', '<script type="module"', $tag, 1) ?: $tag;
+
+		$patched = preg_replace_callback(
+			'#<script[^>]*\bsrc=[^>]*>#i',
+			static function (array $matches): string {
+				$open = $matches[0];
+				if (preg_match('/\btype=([\'"])module\1/i', $open)) {
+					return $open;
+				}
+
+				/* Drop any classic type attribute so we never emit two. */
+				$open = (string) preg_replace('/\stype=([\'"])[^\'"]*\1/i', '', $open);
+
+				return (string) preg_replace('/<script\b/i', '<script type="module"', $open, 1);
+			},
+			$tag,
+			1
+		);
+
+		return is_string($patched) ? $patched : $tag;
 	},
 	10,
 	3
