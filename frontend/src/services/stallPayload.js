@@ -58,6 +58,7 @@ export async function buildStallCreatePayload({
       ).filter(Boolean)
       return {
         name: slot?.name || `Product ${index + 1}`,
+        category: slot?.category || '',
         condition: slot?.condition || '',
         label: slot?.variation || '',
         variation: slot?.variation || '',

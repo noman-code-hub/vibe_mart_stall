@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { peekAuthReturnTo, takeAuthReturnTo } from '../services/buyerAuth.js'
 import loginArt from '../assets/LOG IN CLEAN.webp'
 import './LoginPage.css'
 
@@ -18,22 +19,32 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
+  const buyGate = location.state?.reason === 'buy'
   const redirectTo =
     location.state?.from ||
     (searchParams.get('redirect_to') ? decodeURIComponent(searchParams.get('redirect_to')) : null) ||
+    peekAuthReturnTo() ||
     '/my-account'
 
-  useEffect(() => {
-    if (!loading && isAuthenticated) {
+  const goAfterAuth = useCallback(
+    (nextUser) => {
+      takeAuthReturnTo()
       const next =
-        user && !user.profile_complete
+        nextUser && !nextUser.profile_complete
           ? '/my-account?tab=profile'
           : redirectTo === '/my-account' || redirectTo === '/my-account/'
             ? '/my-account?tab=create'
             : redirectTo
       navigate(next, { replace: true })
+    },
+    [navigate, redirectTo]
+  )
+
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      goAfterAuth(user)
     }
-  }, [isAuthenticated, loading, navigate, redirectTo, user])
+  }, [isAuthenticated, loading, user, goAfterAuth])
 
   const onChange = (event) => {
     const { name, value, type, checked } = event.target
@@ -45,14 +56,8 @@ export default function LoginPage() {
     setBusy(true)
     setError('')
     try {
-      const user = await login(form.username.trim(), form.password, form.remember)
-      const next =
-        user && !user.profile_complete
-          ? '/my-account?tab=profile'
-          : redirectTo === '/my-account' || redirectTo === '/my-account/'
-            ? '/my-account?tab=create'
-            : redirectTo
-      navigate(next, { replace: true })
+      const nextUser = await login(form.username.trim(), form.password, form.remember)
+      goAfterAuth(nextUser)
     } catch (err) {
       setError(err.message || 'Login failed.')
     } finally {
@@ -70,6 +75,11 @@ export default function LoginPage() {
 
   return (
     <section className="vm-login" aria-label="Log in">
+      {buyGate ? (
+        <p className="vm-login__gate" role="status">
+          Sign in or register to buy products.
+        </p>
+      ) : null}
       <form className="vm-login__stage" onSubmit={onSubmit} noValidate>
         <img className="vm-login__art" src={loginArt} alt="" draggable={false} />
 
@@ -155,7 +165,12 @@ export default function LoginPage() {
             aria-label={busy ? 'Signing in' : 'Log in'}
           />
 
-          <Link className="vm-login__signup" to="/register" aria-label="Sign up">
+          <Link
+            className="vm-login__signup"
+            to="/register"
+            state={{ from: redirectTo, reason: buyGate ? 'buy' : location.state?.reason }}
+            aria-label="Sign up"
+          >
             <span className="vm-login__sr">Sign up</span>
           </Link>
         </div>

@@ -6,6 +6,12 @@ import ProductImageSlots, {
   normalizeProductFiles,
 } from './ProductImageSlots'
 import { FIELD_LIMITS, countWords, countChars } from '../data/fieldLimits'
+import { findIllegalProductMatch } from '../services/illegalProducts.js'
+import {
+  CATEGORY_REQUIRED_MESSAGE,
+  PRODUCT_CATEGORIES,
+  isAllowedProductCategory,
+} from '../data/productCategories.js'
 import selfieTipsArt from '../assets/SELFIE PAGE.webp'
 import selfieTipsBtn from '../assets/SELFIE TIPS.webp'
 import marketStallTipsBtn from '../assets/market-stall-tips-transparent.webp'
@@ -17,6 +23,7 @@ const MAX_PRODUCTS = 4
 
 const emptyProduct = () => ({
   name: '',
+  category: '',
   description: '',
   variation: '',
   condition: '',
@@ -58,8 +65,10 @@ export default function StallEditorForm({
     setErrors((prev) => {
       const next = { ...prev, [key]: '' }
       const first = Object.entries(next).find(([, value]) => value)
-      if (first) publishBanner(first[0], first[1])
-      else publishBanner(key, '')
+      const field = first ? first[0] : key
+      const message = first ? first[1] : ''
+      // Parent setState must not run inside this updater (it runs during render).
+      queueMicrotask(() => publishBanner(field, message))
       return next
     })
   }
@@ -138,6 +147,7 @@ export default function StallEditorForm({
     if (!product) return
     setDraft({
       name: (product.name || '').toUpperCase(),
+      category: product.category || '',
       description: product.description || '',
       variation: product.variation || '',
       condition: product.condition || '',
@@ -173,6 +183,25 @@ export default function StallEditorForm({
     if (countChars(draft.price) > FIELD_LIMITS.productPrice.maxChars) {
       nextErrors.price = `Maximum ${FIELD_LIMITS.productPrice.maxChars} characters.`
     }
+
+    if (!isAllowedProductCategory(draft.category)) {
+      nextErrors.category = CATEGORY_REQUIRED_MESSAGE
+    }
+
+    const illegal = findIllegalProductMatch({
+      name: draft.name,
+      description: draft.description,
+      variation: draft.variation,
+      condition: draft.condition,
+    })
+    if (illegal.illegal) {
+      nextErrors.name =
+        illegal.message || 'This product is illegal and cannot be sold on Vibe Mart.'
+      publishBanner('product', nextErrors.name)
+    } else if (nextErrors.category) {
+      publishBanner('product', nextErrors.category)
+    }
+
     if (Object.keys(nextErrors).length) {
       setDraftErrors(nextErrors)
       return
@@ -180,6 +209,7 @@ export default function StallEditorForm({
 
     const nextProduct = {
       name: draft.name.trim().toUpperCase(),
+      category: String(draft.category || '').trim(),
       description: draft.description.trim(),
       variation: draft.variation.trim(),
       condition: draft.condition.trim(),
@@ -197,6 +227,8 @@ export default function StallEditorForm({
         prev.map((product, i) => (i === editIndex ? nextProduct : product))
       )
     }
+    setDraftErrors({})
+    publishBanner('', '')
     closeProductModal()
   }
 
@@ -538,6 +570,9 @@ export default function StallEditorForm({
               <strong className="stall-form__product-chip-name">
                 {product.name || `Product ${index + 1}`}
               </strong>
+              {product.category ? (
+                <span className="stall-form__product-chip-category">{product.category}</span>
+              ) : null}
               <button
                 type="button"
                 className="stall-form__product-chip-edit"
@@ -631,6 +666,30 @@ export default function StallEditorForm({
                     autoFocus
                   />
 
+                  <label className="stall-product-modal__sr" htmlFor="stall-product-category">
+                    Category
+                  </label>
+                  <span className="stall-product-modal__category-divider" aria-hidden="true" />
+                  <select
+                    id="stall-product-category"
+                    className={`stall-product-modal__input stall-product-modal__input--category${draftErrors.category ? ' is-error' : ''}${!draft.category ? ' is-placeholder' : ''}`}
+                    value={draft.category}
+                    onChange={(event) => {
+                      setDraftField('category', event.target.value)
+                      setDraftErrors((prev) => ({ ...prev, category: '' }))
+                      if (event.target.value) publishBanner('product', '')
+                    }}
+                    aria-invalid={Boolean(draftErrors.category)}
+                    required
+                  >
+                    <option value="">Category</option>
+                    {PRODUCT_CATEGORIES.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+
                   <label className="stall-product-modal__sr" htmlFor="stall-product-price">
                     Price
                   </label>
@@ -723,14 +782,18 @@ export default function StallEditorForm({
                     variant="overlay"
                   />
 
-                  {(draftErrors.name ||
+                  {(draftErrors.category ||
+                    draftErrors.name ||
                     draftErrors.price ||
                     draftErrors.variation ||
+                    draftErrors.condition ||
                     draftErrors.description) && (
                     <p className="stall-product-modal__error" role="alert">
-                      {draftErrors.name ||
+                      {draftErrors.category ||
+                        draftErrors.name ||
                         draftErrors.price ||
                         draftErrors.variation ||
+                        draftErrors.condition ||
                         draftErrors.description}
                     </p>
                   )}

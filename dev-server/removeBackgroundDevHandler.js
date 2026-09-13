@@ -14,8 +14,12 @@ import formidable from 'formidable'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(__dirname, '..')
 
-dotenv.config({ path: path.join(projectRoot, '.env') })
-dotenv.config({ path: path.join(projectRoot, 'frontend', '.env') })
+function loadEnv() {
+  dotenv.config({ path: path.join(projectRoot, '.env') })
+  dotenv.config({ path: path.join(projectRoot, 'frontend', '.env') })
+}
+
+loadEnv()
 
 const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/jpg'])
 const MAX_UPLOAD_BYTES = Number(process.env.MAX_UPLOAD_BYTES) || 10 * 1024 * 1024
@@ -33,83 +37,129 @@ function getUploadedImage(files) {
   return Array.isArray(entry) ? entry[0] : entry
 }
 
+function providersForKey(apiKey) {
+  // Poof.bg (proof.bg) issues `pk_…` keys. remove.bg keys do not.
+  if (/^pk_/i.test(apiKey)) {
+    return [
+      {
+        name: 'poof.bg',
+        url: 'https://api.poof.bg/v1/remove',
+        headers: { 'x-api-key': apiKey },
+        fields: { format: 'png', channels: 'rgba' },
+        fileField: 'image_file',
+      },
+    ]
+  }
+
+  return [
+    {
+      name: 'remove.bg',
+      url: 'https://api.remove.bg/v1.0/removebg',
+      headers: { 'X-Api-Key': apiKey },
+      fields: { size: 'auto', format: 'png' },
+      fileField: 'image_file',
+    },
+  ]
+}
+
+function parseProviderError(name, parsed, fallback) {
+  if (name === 'poof.bg') {
+    return parsed?.message || parsed?.error || fallback
+  }
+
+  return parsed?.errors?.[0]?.title || parsed?.errors?.[0]?.detail || fallback
+}
+
 async function callRemoveBg(buffer, filename) {
+  loadEnv()
   const apiKey = (process.env.REMOVE_BG_API_KEY || '').trim()
   if (!apiKey) {
-    const err = new Error('Local dev is missing REMOVE_BG_API_KEY. Add it to your .env file.')
-    err.status = 500
+    const err = new Error('Local dev is missing REMOVE_BG_API_KEY. Add it to a .env file in the project root (not .env.example), then restart npm run dev.')
+    err.status = 503
     err.code = 'MISSING_API_KEY'
     throw err
   }
 
-  const form = new FormData()
-  form.append('size', 'auto')
-  form.append('format', 'png')
-  form.append(
-    'image_file',
-    new Blob([buffer], { type: 'application/octet-stream' }),
-    filename || 'upload.png'
-  )
+  const providers = providersForKey(apiKey)
+  let lastError = null
 
-  const started = Date.now()
-  console.info(
-    `[remove-bg] starting request (${Math.round(buffer.length / 1024)} KB, timeout ${REMOVE_BG_TIMEOUT_MS}ms)`
-  )
-
-  let response
-  try {
-    response = await fetch('https://api.remove.bg/v1.0/removebg', {
-      method: 'POST',
-      headers: { 'X-Api-Key': apiKey },
-      body: form,
-      signal: AbortSignal.timeout(REMOVE_BG_TIMEOUT_MS),
-    })
-  } catch (error) {
-    console.error('[remove-bg] network/timeout after', Date.now() - started, 'ms', error?.name, error?.message)
-    if (error?.name === 'TimeoutError' || error?.name === 'AbortError') {
-      const err = new Error(
-        'Background removal timed out. Try a smaller photo (under ~2 MB / 1600px wide), then upload again.'
-      )
-      err.status = 504
-      err.code = 'TIMEOUT'
-      throw err
+  for (const provider of providers) {
+    const form = new FormData()
+    for (const [key, value] of Object.entries(provider.fields)) {
+      form.append(key, value)
     }
-    const err = new Error(
-      'Could not reach remove.bg. Check your internet connection or firewall, then try again.'
+    form.append(
+      provider.fileField,
+      new Blob([buffer], { type: 'application/octet-stream' }),
+      filename || 'upload.png'
     )
-    err.status = 503
-    err.code = 'NETWORK_ERROR'
-    throw err
+
+    const started = Date.now()
+    console.info(
+      `[remove-bg] ${provider.name} ${provider.url} (${Math.round(buffer.length / 1024)} KB)`
+    )
+
+    let response
+    try {
+      response = await fetch(provider.url, {
+        method: 'POST',
+        headers: provider.headers,
+        body: form,
+        signal: AbortSignal.timeout(REMOVE_BG_TIMEOUT_MS),
+      })
+    } catch (error) {
+      console.error('[remove-bg] network/timeout after', Date.now() - started, 'ms', error?.name, error?.message)
+      if (error?.name === 'TimeoutError' || error?.name === 'AbortError') {
+        const err = new Error(
+          'Background removal timed out. Try a smaller photo (under ~2 MB / 1600px wide), then upload again.'
+        )
+        err.status = 504
+        err.code = 'TIMEOUT'
+        throw err
+      }
+      lastError = Object.assign(
+        new Error(`Could not reach ${provider.name}. Check your internet connection or firewall, then try again.`),
+        { status: 503, code: 'NETWORK_ERROR' }
+      )
+      continue
+    }
+
+    console.info(`[remove-bg] ${provider.name} response ${response.status} in ${Date.now() - started}ms`)
+
+    if (response.ok) {
+      return Buffer.from(await response.arrayBuffer())
+    }
+
+    let message = 'Background removal failed.'
+    let code = 'REMOVE_BG_ERROR'
+    try {
+      const parsed = await response.json()
+      message = parseProviderError(provider.name, parsed, message)
+      code = parsed?.errors?.[0]?.code || parsed?.error?.code || parsed?.code || code
+    } catch {
+      // non-JSON error body
+    }
+
+    if (code === 'insufficient_credits' || code === 'payment_required' || response.status === 402) {
+      message = `${provider.name} has no credits left on this API key. Add credits, then try again.`
+      code = 'INSUFFICIENT_CREDITS'
+    } else if (response.status === 401 || response.status === 403) {
+      message = `Invalid or unauthorized ${provider.name} API key. Check REMOVE_BG_API_KEY.`
+      code = 'INVALID_API_KEY'
+    }
+
+    lastError = Object.assign(new Error(typeof message === 'string' ? message : 'Background removal failed.'), {
+      status: response.status >= 400 && response.status < 600 ? response.status : 502,
+      code,
+    })
+
+    if (response.status === 401 || response.status === 403) {
+      continue
+    }
+    throw lastError
   }
 
-  console.info(`[remove-bg] response ${response.status} in ${Date.now() - started}ms`)
-
-  if (response.ok) {
-    return Buffer.from(await response.arrayBuffer())
-  }
-
-  let message = 'Background removal failed.'
-  let code = 'REMOVE_BG_ERROR'
-  try {
-    const parsed = await response.json()
-    message = parsed?.errors?.[0]?.title || parsed?.errors?.[0]?.detail || message
-    code = parsed?.errors?.[0]?.code || code
-  } catch {
-    // non-JSON error body from remove.bg
-  }
-
-  if (code === 'insufficient_credits') {
-    message =
-      'remove.bg has no credits left on this API key. Add credits at remove.bg, then try again.'
-  } else if (response.status === 401 || response.status === 403) {
-    message = 'Invalid or unauthorized remove.bg API key. Check REMOVE_BG_API_KEY.'
-    code = 'INVALID_API_KEY'
-  }
-
-  const err = new Error(message)
-  err.status = response.status >= 400 && response.status < 600 ? response.status : 502
-  err.code = code
-  throw err
+  throw lastError
 }
 
 export default async function handler(req, res) {

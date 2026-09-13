@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
+import { RoleModeProvider } from './context/RoleModeContext.jsx'
 import { RuntimeConfigProvider } from './context/RuntimeConfigContext.jsx'
 import { TrolleyProvider } from './context/TrolleyContext.jsx'
 
@@ -21,7 +22,9 @@ if (container) {
         <AuthProvider>
           <TrolleyProvider>
             <BrowserRouter basename={basename}>
-              <App />
+              <RoleModeProvider>
+                <App />
+              </RoleModeProvider>
             </BrowserRouter>
           </TrolleyProvider>
         </AuthProvider>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { peekAuthReturnTo, rememberAuthReturnTo } from '../services/buyerAuth.js'
 import signUpArt from '../assets/NEW SIGN UP A.webp'
 import './RegisterPage.css'
 
@@ -43,6 +44,9 @@ function classifyRegisterError(message) {
 export default function RegisterPage() {
   const { register, isAuthenticated, loading } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const buyGate = location.state?.reason === 'buy'
+  const afterAuth = location.state?.from || peekAuthReturnTo() || ''
   const [form, setForm] = useState(INITIAL)
   const [fieldErrors, setFieldErrors] = useState({})
   const [errorAnchor, setErrorAnchor] = useState('')
@@ -144,6 +148,7 @@ export default function RegisterPage() {
         if (result.confirm_url) {
           sessionStorage.setItem('vm_pending_confirm_url', result.confirm_url)
         }
+        if (afterAuth) rememberAuthReturnTo(afterAuth)
         navigate('/confirm-email', { replace: true })
         return
       }
@@ -165,6 +170,11 @@ export default function RegisterPage() {
 
   return (
     <section className="vm-register" aria-label="Sign up">
+      {buyGate ? (
+        <p className="vm-register__gate" role="status">
+          Create an account to buy products.
+        </p>
+      ) : null}
       <form className="vm-register__stage" onSubmit={onSubmit} noValidate>
         <img className="vm-register__art" src={signUpArt} alt="" draggable={false} />
 
@@ -322,7 +332,12 @@ export default function RegisterPage() {
             aria-label={busy ? 'Creating account' : 'Sign up'}
           />
 
-          <Link className="vm-register__login" to="/login" aria-label="Log in">
+          <Link
+            className="vm-register__login"
+            to="/login"
+            state={{ from: afterAuth, reason: buyGate ? 'buy' : location.state?.reason }}
+            aria-label="Log in"
+          >
             <span className="vm-register__sr">Log in</span>
           </Link>
         </div>

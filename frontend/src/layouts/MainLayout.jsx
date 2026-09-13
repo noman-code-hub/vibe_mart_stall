@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useRoleMode } from '../context/RoleModeContext.jsx'
 import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import footerBg from '../assets/d8770035-4dca-4c22-aef3-f2d92299155f.webp'
 import headerBg from '../assets/399f487b-9e42-4393-8c24-72bf2418072d.webp'
@@ -19,11 +20,11 @@ import './MainLayout.css'
 const NAV = [
   { to: '/', label: 'Home', end: true, icon: iconHome },
   { to: '/our-vibes', label: 'Our Vibes', icon: iconVibes },
-  { to: '/sell-smart', label: 'Sell Smart', icon: iconSell },
+  { to: '/sell-smart', label: 'Sell Smart', icon: iconSell, role: 'seller' },
   { to: '/my-account', label: 'My Account', icon: iconAccount, auth: 'in' },
   { to: '/market', label: 'Market', icon: iconMarket },
   { to: '/login', label: 'Log In', icon: iconLogin, auth: 'out' },
-  { to: '/my-trolley', label: 'My Trolley', icon: iconCart },
+  { to: '/my-trolley', label: 'My Trolley', icon: iconCart, role: 'buyer' },
   { to: '/contact', label: 'Contact', icon: iconContact },
 ]
 
@@ -43,6 +44,7 @@ const FOOTER_TRADE = [
 export default function MainLayout() {
   const { siteName } = useRuntimeConfig()
   const { isAuthenticated, loading, logout } = useAuth()
+  const { mode, setMode } = useRoleMode()
   const location = useLocation()
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
@@ -99,8 +101,20 @@ export default function MainLayout() {
     if (loading) return !item.auth
     if (item.auth === 'in') return isAuthenticated
     if (item.auth === 'out') return !isAuthenticated
+    if (item.role && item.role !== mode) return false
     return true
   })
+
+  const switchRole = (next) => {
+    if (next !== 'buyer' && next !== 'seller') return
+    setMode(next)
+    setMenuOpen(false)
+    if (next === 'seller') {
+      navigate(isAuthenticated ? '/my-account?tab=create' : '/sell-smart')
+      return
+    }
+    navigate('/market')
+  }
 
   useEffect(() => {
     setMenuOpen(false)
@@ -141,7 +155,7 @@ export default function MainLayout() {
   }
 
   return (
-    <div className={`vm-shell${menuOpen ? ' is-open' : ''}${isLandscape ? ' is-landscape' : ' is-portrait'}${dashboardOnly ? ' vm-shell--dashboard' : ''}${folderOnly ? ' vm-shell--folder' : ''}${profileOnly ? ' vm-shell--profile' : ''}${marketOnly ? ' vm-shell--market' : ''}${trolleyOnly ? ' vm-shell--trolley' : ''}${homeOnly ? ' vm-shell--home' : ''}${loginOnly ? ' vm-shell--login' : ''}${registerOnly ? ' vm-shell--register' : ''}${resetOnly ? ' vm-shell--reset' : ''}${contactOnly ? ' vm-shell--contact' : ''}${vibesOnly ? ' vm-shell--vibes' : ''}`}>
+    <div className={`vm-shell${menuOpen ? ' is-open' : ''}${isLandscape ? ' is-landscape' : ' is-portrait'}${dashboardOnly ? ' vm-shell--dashboard' : ''}${folderOnly ? ' vm-shell--folder' : ''}${profileOnly ? ' vm-shell--profile' : ''}${marketOnly ? ' vm-shell--market' : ''}${trolleyOnly ? ' vm-shell--trolley' : ''}${homeOnly ? ' vm-shell--home' : ''}${loginOnly ? ' vm-shell--login' : ''}${registerOnly ? ' vm-shell--register' : ''}${resetOnly ? ' vm-shell--reset' : ''}${contactOnly ? ' vm-shell--contact' : ''}${vibesOnly ? ' vm-shell--vibes' : ''} vm-shell--${mode}`}>
       <header
         className={`vm-header${menuOpen ? ' is-open' : ''}`}
         style={{ '--vm-header-bg': `url(${headerBg})` }}
@@ -163,6 +177,26 @@ export default function MainLayout() {
               draggable={false}
             />
           </NavLink>
+          <div className="vm-role-switch" role="group" aria-label="Shop as buyer or seller">
+            <button
+              type="button"
+              className={`vm-role-switch__btn${mode === 'buyer' ? ' is-active' : ''}`}
+              aria-pressed={mode === 'buyer'}
+              aria-label="Become a buyer"
+              onClick={() => switchRole('buyer')}
+            >
+              Buyer
+            </button>
+            <button
+              type="button"
+              className={`vm-role-switch__btn${mode === 'seller' ? ' is-active' : ''}`}
+              aria-pressed={mode === 'seller'}
+              aria-label="Become a seller"
+              onClick={() => switchRole('seller')}
+            >
+              Seller
+            </button>
+          </div>
           <button
             type="button"
             className={`vm-menu-toggle${menuOpen ? ' is-open' : ''}`}

@@ -133,7 +133,18 @@ function authDevApi() {
         req.url = `/wp-json/vibe-mart/v1/${relative}${qs}`
 
         try {
-          await bufferRequestBody(req)
+          const isUpload = relative === 'uploads' || relative.startsWith('uploads/')
+          // Multipart photo uploads must keep the raw stream for formidable.
+          if (!isUpload) {
+            await bufferRequestBody(req)
+          }
+
+          if (isUpload) {
+            const { default: handler } = await importDevModule('dev-server/uploadsDevHandler.js')
+            const handled = await handler(req, res)
+            if (!handled) next()
+            return
+          }
 
           if (relative.startsWith('auth')) {
             const { default: handler } = await importDevModule('dev-server/authDevHandler.js')

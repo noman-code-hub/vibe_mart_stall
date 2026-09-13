@@ -11,6 +11,7 @@ import path from 'node:path'
 import { getLocalDataDir } from './localDataDir.js'
 import { readJsonBody } from './readJsonBody.js'
 import { assignTraderPitchNumber } from './pitchNumbers.js'
+import { validateProductsNotIllegal } from './illegalProducts.js'
 
 const DATA_DIR = getLocalDataDir()
 const STALLS_FILE = path.join(DATA_DIR, 'stalls.json')
@@ -160,6 +161,7 @@ function normalizeStall(input, ownerId, existing = null) {
           return {
             id: p.id || index + 1,
             name: String(p.name || ''),
+            category: String(p.category || ''),
             condition: String(p.condition || ''),
             label: String(p.label || p.variation || ''),
             variation: String(p.variation || p.size || p.label || ''),
@@ -288,6 +290,15 @@ export default async function stallsDevHandler(req, res) {
         return true
       }
       const body = await readBody(req)
+      const illegalProducts = validateProductsNotIllegal(body.products)
+      if (!illegalProducts.ok) {
+        sendJson(res, 400, {
+          code: 'vibe_mart_illegal_product',
+          message: illegalProducts.errors[0] || 'This product is illegal and cannot be sold on Vibe Mart.',
+          data: { errors: illegalProducts.errors },
+        })
+        return true
+      }
       if ((body.status || 'draft') === 'published') {
         const seller = body.seller && typeof body.seller === 'object' ? body.seller : {}
         const missing = []
@@ -356,6 +367,15 @@ export default async function stallsDevHandler(req, res) {
           return true
         }
         const body = await readBody(req)
+        const illegalProducts = validateProductsNotIllegal(body.products)
+        if (!illegalProducts.ok) {
+          sendJson(res, 400, {
+            code: 'vibe_mart_illegal_product',
+            message: illegalProducts.errors[0] || 'This product is illegal and cannot be sold on Vibe Mart.',
+            data: { errors: illegalProducts.errors },
+          })
+          return true
+        }
         const updated = normalizeStall(body, userId, stall)
         await applyOwnerPitch(updated, stalls, userId)
         updated.id = stall.id

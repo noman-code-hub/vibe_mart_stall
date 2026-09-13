@@ -40,7 +40,14 @@ export default function App() {
           <Route path="forgot-password" element={<ForgotPasswordPage />} />
           <Route path="reset-password" element={<ResetPasswordPage />} />
           <Route path="confirm-email" element={<ConfirmEmailPage />} />
-          <Route path="my-trolley" element={<MyTrolleyPage />} />
+          <Route
+            path="my-trolley"
+            element={
+              <ProtectedRoute>
+                <MyTrolleyPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="contact" element={<ContactPage />} />
           <Route
             path="my-account"

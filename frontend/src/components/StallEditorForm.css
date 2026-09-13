@@ -184,6 +184,15 @@
   text-overflow: ellipsis;
 }
 
+#vibe-mart-root .stall-form__product-chip-category,
+#stall-root .stall-form__product-chip-category {
+  font-size: 11px;
+  color: var(--stall-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 #vibe-mart-root .stall-form__product-chip-edit,
 #stall-root .stall-form__product-chip-edit {
   align-self: flex-start;
@@ -270,9 +279,56 @@
 .stall-product-modal__input--name {
   --x: 10.6%;
   --y: 19.4%;
-  --w: 79.6%;
+  --w: 55%;
   --h: 4.3%;
   text-transform: uppercase;
+}
+
+.stall-product-modal__input--category {
+  --x: 66.8%;
+  --y: 19.3%;
+  --w: 23.4%;
+  --h: 4.5%;
+  padding: 0 4% 0 1.5%;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  color: #1a1008;
+  font: 600 clamp(0.4rem, 1cqi, 0.68rem) / 1.15 'Segoe UI', system-ui, sans-serif;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #1a1008 50%),
+    linear-gradient(135deg, #1a1008 50%, transparent 50%) !important;
+  background-position:
+    calc(100% - 7px) calc(50% - 1px),
+    calc(100% - 3px) calc(50% - 1px) !important;
+  background-size:
+    4px 4px,
+    4px 4px !important;
+  background-repeat: no-repeat !important;
+}
+
+.stall-product-modal__category-divider {
+  position: absolute;
+  left: 65.8%;
+  top: 19.3%;
+  width: 2px;
+  height: 4.5%;
+  margin: 0;
+  background: #1a1008;
+  border-radius: 1px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.stall-product-modal__input--category.is-placeholder {
+  color: rgba(26, 16, 8, 0.4);
+}
+
+.stall-product-modal__input--category.is-error {
+  color: #8a1f1f;
 }
 
 .stall-product-modal__input--price {

@@ -51,6 +51,7 @@ export function stallToMarketStallProps(stall) {
           id: product.id ?? index,
           title: product.name || `Product ${index + 1}`,
           name: product.name || '',
+          category: product.category || '',
           label: size,
           variation: size,
           condition,
@@ -109,6 +110,7 @@ export function stallToEditorState(stall) {
       const { size, condition } = productSizeAndCondition(product)
       return {
         name: product.name || '',
+        category: product.category || '',
         description: product.description || '',
         variation: size,
         condition,

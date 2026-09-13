@@ -8,11 +8,12 @@
 import authDevHandler from '../dev-server/authDevHandler.js'
 import stallsDevHandler from '../dev-server/stallsDevHandler.js'
 import contactDevHandler from '../dev-server/contactDevHandler.js'
+import uploadsDevHandler from '../dev-server/uploadsDevHandler.js'
 import { readJsonBody } from '../dev-server/readJsonBody.js'
 
 export const config = {
   api: {
-    bodyParser: true,
+    bodyParser: false,
   },
 }
 
@@ -46,6 +47,16 @@ export default async function handler(req, res) {
   req.url = `/wp-json/vibe-mart/v1/${relative}${qs}`
 
   try {
+    if (relative === 'uploads' || relative.startsWith('uploads/')) {
+      const handled = await uploadsDevHandler(req, res)
+      if (!handled && !res.writableEnded) {
+        res.statusCode = 404
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({ code: 'vibe_mart_not_found', message: 'Upload route not found.' }))
+      }
+      return
+    }
+
     // Ensure JSON body is available for auth/contact POST handlers.
     if (!Object.prototype.hasOwnProperty.call(req, 'body') || req.body === undefined) {
       req.body = await readJsonBody(req)

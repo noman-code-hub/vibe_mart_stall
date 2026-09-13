@@ -1,6 +1,8 @@
 import { useEffect, useId, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { formatStallPrice, productSizeAndCondition } from '../../services/stallDisplay.js'
+import { currentAppPath, rememberAuthReturnTo } from '../../services/buyerAuth.js'
+import { useAuth } from '../../context/AuthContext.jsx'
 import { useTrolley } from '../../context/TrolleyContext.jsx'
 import buyerArt from '../../assets/BUYER edit.webp'
 import './ProductDetailModal.css'
@@ -89,6 +91,8 @@ export default function ProductDetailModal({ product, stall = null, onClose }) {
   const touchStartX = useRef(null)
   const panRef = useRef({ active: false, startX: 0, startY: 0, originX: 0, originY: 0 })
   const navigate = useNavigate()
+  const location = useLocation()
+  const { isAuthenticated } = useAuth()
   const { addItem } = useTrolley()
   const [activeIndex, setActiveIndex] = useState(0)
   const [entered, setEntered] = useState(false)
@@ -244,19 +248,31 @@ export default function ProductDetailModal({ product, stall = null, onClose }) {
     panRef.current.active = false
   }
 
+  const requireBuyerAccount = () => {
+    if (isAuthenticated) return false
+    const from = currentAppPath(location)
+    rememberAuthReturnTo(from)
+    onClose?.()
+    navigate('/login', { state: { from, reason: 'buy' } })
+    return true
+  }
+
   const handleBuy = () => {
+    if (requireBuyerAccount()) return
     addItem(product, stall)
     onClose?.()
     navigate('/my-trolley')
   }
 
   const handleAddToTrolley = () => {
+    if (requireBuyerAccount()) return
     addItem(product, stall)
     setTrolleyNote('Added to trolley')
     window.setTimeout(() => setTrolleyNote(''), 1800)
   }
 
   const handleOffer = () => {
+    if (requireBuyerAccount()) return
     onClose?.()
     navigate('/contact', {
       state: {
@@ -457,19 +473,19 @@ export default function ProductDetailModal({ product, stall = null, onClose }) {
               type="button"
               className="vm-buyer-modal__buy"
               onClick={handleBuy}
-              aria-label="Buy now"
+              aria-label={isAuthenticated ? 'Buy now' : 'Sign in or register to buy'}
             />
             <button
               type="button"
               className="vm-buyer-modal__trolley"
               onClick={handleAddToTrolley}
-              aria-label="Add to trolley"
+              aria-label={isAuthenticated ? 'Add to trolley' : 'Sign in or register to add to trolley'}
             />
             <button
               type="button"
               className="vm-buyer-modal__offer"
               onClick={handleOffer}
-              aria-label="Make an offer"
+              aria-label={isAuthenticated ? 'Make an offer' : 'Sign in or register to make an offer'}
             />
           </div>
         </div>

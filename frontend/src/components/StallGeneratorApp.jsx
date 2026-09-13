@@ -20,6 +20,8 @@ import {
 } from '../services/stallApi.js'
 import { buildStallCreatePayload } from '../services/stallPayload.js'
 import { stallToEditorState } from '../services/stallDisplay.js'
+import { validateStallForPublish } from '../services/stallValidation.js'
+import { CATEGORY_REQUIRED_MESSAGE } from '../data/productCategories.js'
 import '../App.css'
 import './DashboardForm.css'
 
@@ -238,7 +240,11 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
     setErrorField(field || '')
     if (message) {
       setSaveError('')
+      return
     }
+    // Cleared after a successful product save / field fix.
+    setSaveError('')
+    setValidationErrors([])
   }
 
   const topErrorMessage = saveError || fieldBannerError
@@ -281,6 +287,7 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
             image: null,
             images: [],
             description: '',
+            category: '',
             variation: '',
             condition: '',
             label: '',
@@ -296,6 +303,7 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
           id: i,
           title: `Product ${i + 1}`,
           name: slot.name ?? '',
+          category: slot.category ?? '',
           label: slot.variation ?? '',
           variation: slot.variation ?? '',
           condition: slot.condition ?? '',
@@ -313,6 +321,18 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
     setSaveError('')
     setValidationErrors([])
 
+    const illegalCheck = validateStallForPublish({ products: productSlots })
+    if (!illegalCheck.ok) {
+      setValidationErrors(illegalCheck.errors)
+      setSaveError(
+        illegalCheck.errors.some((msg) => String(msg).includes(CATEGORY_REQUIRED_MESSAGE))
+          ? CATEGORY_REQUIRED_MESSAGE
+          : 'One or more products are illegal and cannot be sold on Vibe Mart.'
+      )
+      setErrorField('product')
+      return
+    }
+
     setStep('loading')
 
     // Stall cart is large — wait until it (and any uploaded photos) are ready
@@ -327,6 +347,18 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
     setSaveMessage('')
     setSaveError('')
     setValidationErrors([])
+
+    const illegalCheck = validateStallForPublish({ products: productSlots })
+    if (!illegalCheck.ok) {
+      setValidationErrors(illegalCheck.errors)
+      setSaveError(
+        illegalCheck.errors.some((msg) => String(msg).includes(CATEGORY_REQUIRED_MESSAGE))
+          ? CATEGORY_REQUIRED_MESSAGE
+          : 'One or more products are illegal and cannot be sold on Vibe Mart.'
+      )
+      setErrorField('product')
+      return
+    }
 
     if (!isAuthenticated) {
       setSaveError('Please log in to save your stall to the Folder.')
@@ -522,6 +554,7 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
                 images,
                 blobUrls,
                 price: product.price || '',
+                category: product.category || '',
                 condition: product.condition || '',
                 label: product.variation || product.label || '',
                 variation: product.variation || product.label || '',

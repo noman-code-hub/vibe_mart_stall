@@ -15,6 +15,18 @@
   color: #1a1008;
 }
 
+.vm-register__gate {
+  width: min(720px, 100%);
+  margin: 0 auto 12px;
+  padding: 10px 14px;
+  border: 2px solid #1a1008;
+  border-radius: 10px;
+  background: #ffe600;
+  box-shadow: 2px 2px 0 #1a1008;
+  font-weight: 800;
+  text-align: center;
+}
+
 .vm-register--status {
   display: grid;
   place-items: center;

@@ -1,8 +1,9 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { currentAppPath, rememberAuthReturnTo } from '../services/buyerAuth.js'
 
 /**
- * Guards My Account and Sell Smart — unauthenticated users go to Login.
+ * Guards account and trolley — unauthenticated users go to Login.
  */
 export default function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
@@ -17,7 +18,16 @@ export default function ProtectedRoute({ children }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />
+    const from = currentAppPath(location)
+    const buying = from.startsWith('/my-trolley')
+    rememberAuthReturnTo(from)
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from, reason: buying ? 'buy' : undefined }}
+      />
+    )
   }
 
   return children
