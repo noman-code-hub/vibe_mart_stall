@@ -38,7 +38,7 @@ export const OVERLAY = {
   infoPanel: { left: 80.2, top: 26.5, width: 15, height: 19.5 },
 
   /* Above MY AMBITION graphic */
-  ambition: { left: 80.2, top: 52.5, width: 15, height: 13 },
+  ambition: { left: 80.2, top: 52.5, width: 15, height: 11 },
 
   /* Separate pitch fields (PITCH NO: title + icons are in artwork) */
   pitchNumber: { left: 83, top: 74.2, width: 10, height: 3.5 },
