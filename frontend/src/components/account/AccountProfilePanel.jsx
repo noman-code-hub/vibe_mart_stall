@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
+import { useRoleMode } from '../../context/RoleModeContext.jsx'
 import DashboardTraderMenu from './DashboardTraderMenu.jsx'
 import accountArt from '../../assets/ACCOUNT PAGE .webp'
 import { formatDisplayDate, isValidDisplayDate, normalizeDisplayDate } from '../../utils/dateFormat.js'
+import { takeAuthReturnTo } from '../../services/buyerAuth.js'
 import './AccountProfilePanel.css'
 
 const INITIAL = {
@@ -27,11 +29,13 @@ const INITIAL = {
 
 export default function AccountProfilePanel() {
   const { user, updateProfile } = useAuth()
+  const { mode } = useRoleMode()
   const navigate = useNavigate()
   const [form, setForm] = useState(INITIAL)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const wasIncomplete = !user?.profile_complete
 
   useEffect(() => {
     if (!user) return
@@ -135,6 +139,26 @@ export default function AccountProfilePanel() {
       }
       if (form.password) payload.password = form.password
       await updateProfile(payload)
+
+      // First-time save: buyers → Market, sellers → Dashboard.
+      if (wasIncomplete) {
+        const returnTo = takeAuthReturnTo()
+        if (mode === 'seller') {
+          navigate('/my-account?tab=create', { replace: true })
+          return
+        }
+        const next =
+          returnTo &&
+          returnTo !== '/my-account' &&
+          !String(returnTo).startsWith('/my-account') &&
+          !String(returnTo).startsWith('/login') &&
+          !String(returnTo).startsWith('/register')
+            ? returnTo
+            : '/market'
+        navigate(next, { replace: true })
+        return
+      }
+
       navigate('/my-account?tab=profile', { replace: true })
     } catch (err) {
       setError(err.message || 'Could not save profile.')

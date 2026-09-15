@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useRoleMode } from '../context/RoleModeContext.jsx'
-import { peekAuthReturnTo, rememberAuthReturnTo, takeAuthReturnTo } from '../services/buyerAuth.js'
+import { peekAuthReturnTo, rememberAuthReturnTo } from '../services/buyerAuth.js'
 import signUpArt from '../assets/NEW SIGN UP A.webp'
 import './RegisterPage.css'
 
@@ -43,8 +43,8 @@ function classifyRegisterError(message) {
 }
 
 export default function RegisterPage() {
-  const { register, isAuthenticated, loading } = useAuth()
-  const { setMode } = useRoleMode()
+  const { register, isAuthenticated, loading, user } = useAuth()
+  const { mode, setMode } = useRoleMode()
   const navigate = useNavigate()
   const location = useLocation()
   const buyGate = location.state?.reason === 'buy'
@@ -57,20 +57,20 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
 
-  const goBuyerHome = () => {
+  const goAfterRegister = () => {
     setMode('buyer')
-    takeAuthReturnTo()
-    const next =
-      afterAuth && !String(afterAuth).startsWith('/my-account') ? afterAuth : '/market'
-    navigate(next, { replace: true })
+    if (afterAuth) rememberAuthReturnTo(afterAuth)
+    navigate('/my-account?tab=profile', { replace: true })
   }
 
   useEffect(() => {
-    if (!loading && isAuthenticated) {
-      goBuyerHome()
+    if (loading || !isAuthenticated) return
+    if (!user?.profile_complete) {
+      navigate('/my-account?tab=profile', { replace: true })
+      return
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-run when auth settles
-  }, [isAuthenticated, loading])
+    navigate(mode === 'seller' ? '/my-account?tab=create' : '/market', { replace: true })
+  }, [isAuthenticated, loading, mode, navigate, user?.profile_complete])
 
   const clearErrors = () => {
     setFieldErrors({})
@@ -163,7 +163,7 @@ export default function RegisterPage() {
         navigate('/confirm-email', { replace: true })
         return
       }
-      goBuyerHome()
+      goAfterRegister()
     } catch (err) {
       applyError(classifyRegisterError(err.message || 'Registration failed.'))
     } finally {

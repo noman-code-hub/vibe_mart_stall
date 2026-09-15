@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useRoleMode } from '../context/RoleModeContext.jsx'
-import { peekAuthReturnTo, takeAuthReturnTo } from '../services/buyerAuth.js'
+import { peekAuthReturnTo, rememberAuthReturnTo, takeAuthReturnTo } from '../services/buyerAuth.js'
 import loginArt from '../assets/LOG IN CLEAN.webp'
 import './LoginPage.css'
 
@@ -30,7 +30,6 @@ export default function LoginPage() {
 
   const goAfterAuth = useCallback(
     (nextUser) => {
-      takeAuthReturnTo()
       const hasReturn =
         redirectTo &&
         redirectTo !== '/my-account' &&
@@ -38,18 +37,21 @@ export default function LoginPage() {
         !String(redirectTo).startsWith('/login') &&
         !String(redirectTo).startsWith('/register')
 
+      // Same account details form for buyers and sellers until profile is complete.
+      if (nextUser && !nextUser.profile_complete) {
+        if (hasReturn) rememberAuthReturnTo(redirectTo)
+        navigate('/my-account?tab=profile', { replace: true })
+        return
+      }
+
+      takeAuthReturnTo()
+
       if (mode === 'buyer') {
         navigate(hasReturn ? redirectTo : '/market', { replace: true })
         return
       }
 
-      const next =
-        nextUser && !nextUser.profile_complete
-          ? '/my-account?tab=profile'
-          : hasReturn
-            ? redirectTo
-            : '/my-account?tab=create'
-      navigate(next, { replace: true })
+      navigate(hasReturn ? redirectTo : '/my-account?tab=create', { replace: true })
     },
     [mode, navigate, redirectTo]
   )

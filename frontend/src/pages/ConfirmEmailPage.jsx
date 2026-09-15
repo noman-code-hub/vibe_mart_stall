@@ -39,15 +39,14 @@ export default function ConfirmEmailPage() {
     ? sessionStorage.getItem('vm_pending_confirm_url') || ''
     : ''
 
-  // Signups start as buyers on Market; sellers open Dashboard via the Seller switch.
-  const nextAfterAuth =
-    mode === 'seller'
-      ? user?.profile_complete
-        ? DASHBOARD_PATH
-        : PROFILE_PATH
+  // Same details form for buyers and sellers until the profile is filled in.
+  const nextAfterAuth = !user?.profile_complete
+    ? PROFILE_PATH
+    : mode === 'seller'
+      ? DASHBOARD_PATH
       : MARKET_PATH
 
-  // After email confirm (logged in), send buyers to Market.
+  // After email confirm, incomplete profiles open the shared account form.
   useEffect(() => {
     if (!loading && isAuthenticated) {
       if (mode !== 'seller') setMode('buyer')
