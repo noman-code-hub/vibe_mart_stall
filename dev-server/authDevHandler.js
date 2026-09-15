@@ -259,7 +259,8 @@ export default async function authDevHandler(req, res) {
       }
 
       const salt = randomBytes(8).toString('hex')
-      const confirmToken = randomBytes(24).toString('hex')
+      // TEMP (Vercel testing): skip email confirmation — restore when WordPress mail is wired.
+      // const confirmToken = randomBytes(24).toString('hex')
       const user = {
         id: users.reduce((max, u) => Math.max(max, u.id), 0) + 1,
         username,
@@ -281,25 +282,33 @@ export default async function authDevHandler(req, res) {
         terms_accepted: false,
         selling_rules_accepted: false,
         privacy_accepted: false,
-        email_confirmed: false,
+        // email_confirmed: false,
+        email_confirmed: true,
         profile_complete: false,
         pitch_number: '',
-        confirm_token_hash: hashToken(confirmToken),
-        confirm_expires: Date.now() + RESET_TTL_MS * 24,
+        // confirm_token_hash: hashToken(confirmToken),
+        // confirm_expires: Date.now() + RESET_TTL_MS * 24,
+        confirm_token_hash: '',
+        confirm_expires: 0,
       }
       users.push(user)
       await ensurePitchNumber(user, users)
       await saveUsers(users)
 
-      const confirmUrl = `${requestOrigin(req)}/confirm-email?token=${encodeURIComponent(confirmToken)}&login=${encodeURIComponent(username)}`
-      sendJson(res, 201, {
-        ok: true,
-        pending_confirmation: true,
-        message: 'Check your email to confirm your account.',
-        login: username,
-        email,
-        confirm_url: confirmUrl,
-        dev_notice: 'Test host has no email. Use this confirmation link now.',
+      // TEMP (Vercel testing): auto-login after register — restore confirmation flow for WordPress.
+      // const confirmUrl = `${requestOrigin(req)}/confirm-email?token=${encodeURIComponent(confirmToken)}&login=${encodeURIComponent(username)}`
+      // sendJson(res, 201, {
+      //   ok: true,
+      //   pending_confirmation: true,
+      //   message: 'Check your email to confirm your account.',
+      //   login: username,
+      //   email,
+      //   confirm_url: confirmUrl,
+      //   dev_notice: 'Test host has no email. Use this confirmation link now.',
+      // })
+      // return true
+      sendJson(res, 201, publicUser(user), {
+        'Set-Cookie': sessionCookie(user.id, true),
       })
       return true
     }
@@ -329,14 +338,15 @@ export default async function authDevHandler(req, res) {
         return true
       }
 
-      if (user.email_confirmed === false) {
-        sendJson(res, 403, {
-          code: 'vibe_mart_email_unconfirmed',
-          message: 'Please confirm your email before logging in.',
-          login: user.username,
-        })
-        return true
-      }
+      // TEMP (Vercel testing): allow login without email confirmation — restore for WordPress.
+      // if (user.email_confirmed === false) {
+      //   sendJson(res, 403, {
+      //     code: 'vibe_mart_email_unconfirmed',
+      //     message: 'Please confirm your email before logging in.',
+      //     login: user.username,
+      //   })
+      //   return true
+      // }
 
       sendJson(res, 200, publicUser(await ensurePitchNumber(user, users)), { 'Set-Cookie': sessionCookie(user.id, remember) })
       return true

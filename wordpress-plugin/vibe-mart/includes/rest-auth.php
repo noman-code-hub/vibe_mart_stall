@@ -367,29 +367,37 @@ function auth_register(WP_REST_Request $request): WP_REST_Response|WP_Error {
 	update_user_meta((int) $user_id, 'vm_profile_complete', '0');
 	assign_trader_pitch_number((int) $user_id);
 
-	// No delivered email means the address was never proven, so the signup does
-	// not stand — the account is removed and the address stays free to retry.
-	if (! send_confirmation_email((int) $user_id)) {
-		require_once ABSPATH . 'wp-admin/includes/user.php';
-		wp_delete_user((int) $user_id);
+	// TEMP (Vercel / pre-WordPress mail): skip confirmation email — uncomment when WP mail is wired.
+	// // No delivered email means the address was never proven, so the signup does
+	// // not stand — the account is removed and the address stays free to retry.
+	// if (! send_confirmation_email((int) $user_id)) {
+	// 	require_once ABSPATH . 'wp-admin/includes/user.php';
+	// 	wp_delete_user((int) $user_id);
+	//
+	// 	return new WP_Error(
+	// 		'vibe_mart_mail_failed',
+	// 		__('We could not send your confirmation email, so your account was not created. Check the address and try again.', 'vibe-mart'),
+	// 		array('status' => 500)
+	// 	);
+	// }
+	//
+	// return new WP_REST_Response(
+	// 	array(
+	// 		'ok' => true,
+	// 		'pending_confirmation' => true,
+	// 		'message' => __('Check your email to confirm your account.', 'vibe-mart'),
+	// 		'login' => $username,
+	// 		'email' => $email,
+	// 	),
+	// 	201
+	// );
 
-		return new WP_Error(
-			'vibe_mart_mail_failed',
-			__('We could not send your confirmation email, so your account was not created. Check the address and try again.', 'vibe-mart'),
-			array('status' => 500)
-		);
-	}
+	update_user_meta((int) $user_id, 'vm_email_confirmed', '1');
+	wp_set_current_user((int) $user_id);
+	wp_set_auth_cookie((int) $user_id, true, is_ssl());
 
-	return new WP_REST_Response(
-		array(
-			'ok' => true,
-			'pending_confirmation' => true,
-			'message' => __('Check your email to confirm your account.', 'vibe-mart'),
-			'login' => $username,
-			'email' => $email,
-		),
-		201
-	);
+	$user = get_user_by('id', (int) $user_id);
+	return new WP_REST_Response(user_payload($user), 201);
 }
 
 /**
@@ -521,17 +529,18 @@ function auth_login(WP_REST_Request $request): WP_REST_Response|WP_Error {
 		);
 	}
 
-	if ((string) get_user_meta($user->ID, 'vm_email_confirmed', true) === '0') {
-		wp_logout();
-		return new WP_Error(
-			'vibe_mart_email_unconfirmed',
-			__('Please confirm your email before logging in.', 'vibe-mart'),
-			array(
-				'status' => 403,
-				'login' => $user->user_login,
-			)
-		);
-	}
+	// TEMP (Vercel / pre-WordPress mail): allow login without email confirmation — uncomment when WP mail is wired.
+	// if ((string) get_user_meta($user->ID, 'vm_email_confirmed', true) === '0') {
+	// 	wp_logout();
+	// 	return new WP_Error(
+	// 		'vibe_mart_email_unconfirmed',
+	// 		__('Please confirm your email before logging in.', 'vibe-mart'),
+	// 		array(
+	// 			'status' => 403,
+	// 			'login' => $user->user_login,
+	// 		)
+	// 	);
+	// }
 
 	wp_set_current_user($user->ID);
 	return new WP_REST_Response(user_payload($user), 200);
