@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useRoleMode } from '../context/RoleModeContext.jsx'
 import { peekAuthReturnTo, takeAuthReturnTo } from '../services/buyerAuth.js'
 import loginArt from '../assets/LOG IN CLEAN.webp'
 import './LoginPage.css'
 
 export default function LoginPage() {
   const { login, isAuthenticated, loading, user } = useAuth()
+  const { mode } = useRoleMode()
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
@@ -24,20 +26,32 @@ export default function LoginPage() {
     location.state?.from ||
     (searchParams.get('redirect_to') ? decodeURIComponent(searchParams.get('redirect_to')) : null) ||
     peekAuthReturnTo() ||
-    '/my-account'
+    ''
 
   const goAfterAuth = useCallback(
     (nextUser) => {
       takeAuthReturnTo()
+      const hasReturn =
+        redirectTo &&
+        redirectTo !== '/my-account' &&
+        redirectTo !== '/my-account/' &&
+        !String(redirectTo).startsWith('/login') &&
+        !String(redirectTo).startsWith('/register')
+
+      if (mode === 'buyer') {
+        navigate(hasReturn ? redirectTo : '/market', { replace: true })
+        return
+      }
+
       const next =
         nextUser && !nextUser.profile_complete
           ? '/my-account?tab=profile'
-          : redirectTo === '/my-account' || redirectTo === '/my-account/'
-            ? '/my-account?tab=create'
-            : redirectTo
+          : hasReturn
+            ? redirectTo
+            : '/my-account?tab=create'
       navigate(next, { replace: true })
     },
-    [navigate, redirectTo]
+    [mode, navigate, redirectTo]
   )
 
   useEffect(() => {

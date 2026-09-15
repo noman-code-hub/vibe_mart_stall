@@ -110,6 +110,7 @@ export default function MainLayout() {
     setMode(next)
     setMenuOpen(false)
     if (next === 'seller') {
+      // Dashboard for signed-in sellers; Sell Smart pitch for guests.
       navigate(isAuthenticated ? '/my-account?tab=create' : '/sell-smart')
       return
     }

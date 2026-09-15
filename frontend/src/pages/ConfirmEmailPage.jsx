@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
+import { useRoleMode } from '../context/RoleModeContext.jsx'
 import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import { resendConfirmation } from '../services/authApi.js'
 import './ForgotPasswordPage.css'
 
 const PROFILE_PATH = '/my-account?tab=profile'
 const DASHBOARD_PATH = '/my-account?tab=create'
+const MARKET_PATH = '/market'
 /** Prevents Strict Mode double-mount from confirming the same link twice. */
 const confirmingKeys = new Set()
 
 export default function ConfirmEmailPage() {
   const { confirmEmail, isAuthenticated, loading, user } = useAuth()
+  const { mode, setMode } = useRoleMode()
   const config = useRuntimeConfig()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -36,14 +39,21 @@ export default function ConfirmEmailPage() {
     ? sessionStorage.getItem('vm_pending_confirm_url') || ''
     : ''
 
-  const nextAfterAuth = user?.profile_complete ? DASHBOARD_PATH : PROFILE_PATH
+  // Signups start as buyers on Market; sellers open Dashboard via the Seller switch.
+  const nextAfterAuth =
+    mode === 'seller'
+      ? user?.profile_complete
+        ? DASHBOARD_PATH
+        : PROFILE_PATH
+      : MARKET_PATH
 
-  // After email confirm (logged in), open My Account profile until it is filled.
+  // After email confirm (logged in), send buyers to Market.
   useEffect(() => {
     if (!loading && isAuthenticated) {
+      if (mode !== 'seller') setMode('buyer')
       navigate(nextAfterAuth, { replace: true })
     }
-  }, [isAuthenticated, loading, navigate, nextAfterAuth])
+  }, [isAuthenticated, loading, mode, navigate, nextAfterAuth, setMode])
 
   // Auto-confirm when the email link lands with token + login.
   useEffect(() => {

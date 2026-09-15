@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
-import { peekAuthReturnTo, rememberAuthReturnTo } from '../services/buyerAuth.js'
+import { useRoleMode } from '../context/RoleModeContext.jsx'
+import { peekAuthReturnTo, rememberAuthReturnTo, takeAuthReturnTo } from '../services/buyerAuth.js'
 import signUpArt from '../assets/NEW SIGN UP A.webp'
 import './RegisterPage.css'
 
@@ -43,6 +44,7 @@ function classifyRegisterError(message) {
 
 export default function RegisterPage() {
   const { register, isAuthenticated, loading } = useAuth()
+  const { setMode } = useRoleMode()
   const navigate = useNavigate()
   const location = useLocation()
   const buyGate = location.state?.reason === 'buy'
@@ -55,11 +57,20 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false)
 
+  const goBuyerHome = () => {
+    setMode('buyer')
+    takeAuthReturnTo()
+    const next =
+      afterAuth && !String(afterAuth).startsWith('/my-account') ? afterAuth : '/market'
+    navigate(next, { replace: true })
+  }
+
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      navigate('/my-account?tab=profile', { replace: true })
+      goBuyerHome()
     }
-  }, [isAuthenticated, loading, navigate])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-run when auth settles
+  }, [isAuthenticated, loading])
 
   const clearErrors = () => {
     setFieldErrors({})
@@ -152,7 +163,7 @@ export default function RegisterPage() {
         navigate('/confirm-email', { replace: true })
         return
       }
-      navigate('/my-account?tab=profile', { replace: true })
+      goBuyerHome()
     } catch (err) {
       applyError(classifyRegisterError(err.message || 'Registration failed.'))
     } finally {
