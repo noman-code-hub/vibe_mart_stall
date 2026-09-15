@@ -1063,6 +1063,37 @@
   outline-offset: 2px;
 }
 
+/* UPLOAD NEXT PRODUCT IMAGES — decorative graphic only */
+#vibe-mart-root .app--dashboard .stall-form__upload-next-product,
+#stall-root .app--dashboard .stall-form__upload-next-product {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 39%;
+  --y: 159.5%;
+  --w: 20%;
+  --h: 31%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+  z-index: 6;
+  line-height: 0;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__upload-next-product img,
+#stall-root .app--dashboard .stall-form__upload-next-product img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
 @media (max-width: 1024px) {
   #vibe-mart-root .app--dashboard .app__quota-note,
   #stall-root .app--dashboard .app__quota-note {

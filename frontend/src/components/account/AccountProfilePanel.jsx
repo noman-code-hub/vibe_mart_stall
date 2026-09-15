@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { useRoleMode } from '../../context/RoleModeContext.jsx'
@@ -27,6 +27,17 @@ const INITIAL = {
   privacy_accepted: false,
 }
 
+/** Convert D-M-YYYY (or ISO) to YYYY-MM-DD for native date inputs. */
+function toDateInputValue(value) {
+  const text = formatDisplayDate(value)
+  if (!isValidDisplayDate(text)) return ''
+  const match = String(text).match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/)
+  if (!match) return ''
+  const day = String(Number(match[1])).padStart(2, '0')
+  const month = String(Number(match[2])).padStart(2, '0')
+  return `${match[3]}-${month}-${day}`
+}
+
 export default function AccountProfilePanel() {
   const { user, updateProfile } = useAuth()
   const { mode } = useRoleMode()
@@ -35,6 +46,7 @@ export default function AccountProfilePanel() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const dobPickerRef = useRef(null)
   const wasIncomplete = !user?.profile_complete
 
   useEffect(() => {
@@ -66,6 +78,31 @@ export default function AccountProfilePanel() {
       [name]: type === 'checkbox' ? checked : value,
     }))
     if (error) setError('')
+  }
+
+  const onDobPickerChange = (event) => {
+    const iso = event.target.value
+    if (!iso) return
+    setForm((prev) => ({
+      ...prev,
+      date_of_birth: formatDisplayDate(iso),
+    }))
+    if (error) setError('')
+  }
+
+  const openDobCalendar = () => {
+    const input = dobPickerRef.current
+    if (!input) return
+    if (typeof input.showPicker === 'function') {
+      try {
+        input.showPicker()
+        return
+      } catch {
+        // Fall through to click/focus for older browsers.
+      }
+    }
+    input.click()
+    input.focus()
   }
 
   const onSubmit = async (event) => {
@@ -282,6 +319,22 @@ export default function AccountProfilePanel() {
             autoComplete="bday"
             placeholder="21-5-1980"
             aria-label="Date of birth day-month-year"
+          />
+          <button
+            type="button"
+            className="vm-account-profile__dob-calendar"
+            onClick={openDobCalendar}
+            aria-label="Open calendar to pick date of birth"
+          />
+          <input
+            ref={dobPickerRef}
+            className="vm-account-profile__dob-picker"
+            type="date"
+            value={toDateInputValue(form.date_of_birth)}
+            onChange={onDobPickerChange}
+            max={toDateInputValue(new Date())}
+            tabIndex={-1}
+            aria-hidden="true"
           />
           <label className="vm-account-profile__check vm-account-profile__check--over17">
             <input

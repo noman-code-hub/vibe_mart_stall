@@ -56,7 +56,8 @@
 .vm-account-profile__pass-wrap,
 .vm-account-profile__check,
 .vm-account-profile__stall,
-.vm-account-profile__error {
+.vm-account-profile__error,
+.vm-account-profile__dob-calendar {
   position: absolute;
   left: var(--x);
   top: var(--y);
@@ -125,8 +126,37 @@
 .vm-account-profile__input--dob {
   --x: 54.5%;
   --y: 29.5%;
-  --w: 30%;
+  --w: 28%;
   --h: 3.3%;
+}
+
+.vm-account-profile__dob-calendar {
+  --x: 85.2%;
+  --y: 28.6%;
+  --w: 5.2%;
+  --h: 5%;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.vm-account-profile__dob-calendar:focus-visible {
+  outline: 2px solid #0e5ccb;
+  outline-offset: 2px;
+}
+
+.vm-account-profile__dob-picker {
+  position: absolute;
+  left: 85.2%;
+  top: 28.6%;
+  width: 5.2%;
+  height: 5%;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .vm-account-profile__check--over17 {

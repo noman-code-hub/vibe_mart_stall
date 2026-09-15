@@ -16,6 +16,7 @@ import selfieTipsArt from '../assets/SELFIE PAGE.webp'
 import selfieTipsBtn from '../assets/SELFIE TIPS.webp'
 import marketStallTipsBtn from '../assets/market-stall-tips-transparent.webp'
 import marketStallTipsArt from '../assets/MARKET STALL FLOW.webp'
+import uploadNextProductImagesBtn from '../assets/88275ecb-8641-4db3-81e9-d9987fa8ea8d.png'
 import addProductArt from '../assets/ADD PRODUCT EDIT.webp'
 import './StallEditorForm.css'
 
@@ -403,6 +404,10 @@ export default function StallEditorForm({
           />
         </button>
 
+        <div className="stall-form__upload-next-product" aria-hidden="true">
+          <img src={uploadNextProductImagesBtn} alt="" draggable={false} />
+        </div>
+
         <label
           className={`stall-form__field stall-form__field--about stall-form__field--compact${errors.about ? ' stall-form__field--error' : ''}`}
         >
@@ -570,9 +575,6 @@ export default function StallEditorForm({
               <strong className="stall-form__product-chip-name">
                 {product.name || `Product ${index + 1}`}
               </strong>
-              {product.category ? (
-                <span className="stall-form__product-chip-category">{product.category}</span>
-              ) : null}
               <button
                 type="button"
                 className="stall-form__product-chip-edit"
