@@ -14,12 +14,13 @@ import {
   createStall,
   getStall,
   getOwnedStallQuota,
+  listMyStalls,
   MAX_FREE_STALLS,
   STALL_LIMIT_MESSAGE,
   updateStall,
 } from '../services/stallApi.js'
 import { buildStallCreatePayload } from '../services/stallPayload.js'
-import { stallToEditorState } from '../services/stallDisplay.js'
+import { sharedTraderFieldsFromStall, stallToEditorState } from '../services/stallDisplay.js'
 import { validateStallForPublish } from '../services/stallValidation.js'
 import { CATEGORY_REQUIRED_MESSAGE } from '../data/productCategories.js'
 import '../App.css'
@@ -130,6 +131,7 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
   const [stallStatus, setStallStatus] = useState('draft')
   const [quota, setQuota] = useState(null)
   const [hydrateBusy, setHydrateBusy] = useState(Boolean(stallId))
+  const sharedSeededRef = useRef(false)
 
   // New stall: auto-fill trading name + your name from profile.
   // Pitch number is always the trader's assigned code (VM2026A, VM2026B, …).
@@ -162,6 +164,49 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
       }
     })
   }, [user, stallId])
+
+  // New stall: copy Trading Name / About You / Stall Info from the trader's latest stall.
+  useEffect(() => {
+    if (stallId || !isAuthenticated || sharedSeededRef.current) return undefined
+
+    let cancelled = false
+    listMyStalls(config)
+      .then((result) => {
+        if (cancelled) return
+        const items = Array.isArray(result?.items) ? result.items : []
+        if (!items.length) return
+        const shared = sharedTraderFieldsFromStall(items[0])
+        if (!shared) return
+        sharedSeededRef.current = true
+        setData((prev) => ({
+          ...prev,
+          business_name: shared.business_name || prev.business_name,
+          seller: {
+            ...prev.seller,
+            name: shared.seller.name || prev.seller.name,
+            about: shared.seller.about || prev.seller.about,
+            ambition: shared.seller.ambition || prev.seller.ambition,
+          },
+          pitch: {
+            ...prev.pitch,
+            location: shared.pitch.location || prev.pitch.location,
+            member_since: shared.pitch.member_since || prev.pitch.member_since,
+            rating: shared.pitch.rating || prev.pitch.rating || 0,
+            review_count: shared.pitch.review_count || prev.pitch.review_count || 0,
+          },
+        }))
+        if (shared.selfieFile) {
+          setSelfieFile((prev) => prev || shared.selfieFile)
+        }
+      })
+      .catch(() => {
+        // Profile defaults still apply if the folder list fails.
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [stallId, isAuthenticated, config])
 
   useEffect(() => {
     if (!stallId) {
@@ -219,7 +264,8 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
   }, [isAuthenticated, config, savedStallId])
 
   const handleClearAll = () => {
-    setData(formDataFromProfile(user))
+    const base = formDataFromProfile(user)
+    setData(base)
     setSelfieFile(null)
     setProductSlots([])
     setSelectedProductIndex(null)
@@ -230,9 +276,39 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
     setValidationErrors([])
     setSavedStallId(null)
     setStallStatus('draft')
+    sharedSeededRef.current = false
     if (stallId) {
       navigate('/my-account?tab=create', { replace: true })
+      return
     }
+    // Restore shared trader fields from the latest existing stall.
+    listMyStalls(config)
+      .then((result) => {
+        const items = Array.isArray(result?.items) ? result.items : []
+        if (!items.length) return
+        const shared = sharedTraderFieldsFromStall(items[0])
+        if (!shared) return
+        sharedSeededRef.current = true
+        setData((prev) => ({
+          ...prev,
+          business_name: shared.business_name || prev.business_name,
+          seller: {
+            ...prev.seller,
+            name: shared.seller.name || prev.seller.name,
+            about: shared.seller.about || prev.seller.about,
+            ambition: shared.seller.ambition || prev.seller.ambition,
+          },
+          pitch: {
+            ...prev.pitch,
+            location: shared.pitch.location || prev.pitch.location,
+            member_since: shared.pitch.member_since || prev.pitch.member_since,
+            rating: shared.pitch.rating || prev.pitch.rating || 0,
+            review_count: shared.pitch.review_count || prev.pitch.review_count || 0,
+          },
+        }))
+        if (shared.selfieFile) setSelfieFile(shared.selfieFile)
+      })
+      .catch(() => {})
   }
 
   const handleBannerError = ({ message, field }) => {
@@ -383,7 +459,7 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
         setSavedStallId(updated?.id || savedStallId)
         setStallStatus(updated?.status === 'published' ? 'published' : stallStatus)
         setSaveMessage(
-          `Updated “${updated?.brand_name || data.business_name || 'Untitled stall'}” in your Folder.`
+          `Updated “${updated?.brand_name || data.business_name || 'Untitled stall'}”. Trading details stay the same on all your stalls.`
         )
         window.dispatchEvent(
           new CustomEvent('vm:stalls-changed', {

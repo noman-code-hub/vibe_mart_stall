@@ -250,6 +250,114 @@ function stall_normalize_status(mixed $status, string $fallback = 'draft'): stri
 }
 
 /**
+ * Keep Trading Name / About You / Stall Info the same on every stall a trader owns.
+ * Products stay per-stall.
+ *
+ * @param array<string, mixed> $shared
+ */
+function sync_trader_shared_fields_across_stalls(int $owner_id, int $source_stall_id, array $shared): void {
+	global $wpdb;
+
+	if ($owner_id <= 0) {
+		return;
+	}
+
+	$stalls_table = table('stalls');
+	$pitches_table = table('pitches');
+	$badges_table = table('badges');
+
+	$others = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT id FROM {$stalls_table} WHERE owner_id = %d AND id <> %d",
+			$owner_id,
+			$source_stall_id
+		)
+	);
+
+	if (! is_array($others) || ! $others) {
+		return;
+	}
+
+	$brand = sanitize_text_field((string) ($shared['brand_name'] ?? ''));
+	$seller_name = sanitize_text_field((string) ($shared['seller_name'] ?? ''));
+	$seller_photo = (string) ($shared['seller_photo'] ?? '');
+	$seller_bio = sanitize_textarea_field((string) ($shared['seller_bio'] ?? ''));
+	$ambition = sanitize_textarea_field((string) ($shared['ambition'] ?? ''));
+	$location = sanitize_text_field((string) ($shared['pitch_location'] ?? ''));
+	$member_since = sanitize_text_field((string) ($shared['member_since'] ?? ''));
+	$badges = is_array($shared['badges'] ?? null) ? $shared['badges'] : array();
+	$now = current_time('mysql');
+
+	foreach ($others as $other) {
+		$other_id = (int) $other->id;
+		if ($other_id <= 0) {
+			continue;
+		}
+
+		$wpdb->update(
+			$stalls_table,
+			array(
+				'brand_name' => $brand,
+				'seller_name' => $seller_name,
+				'seller_photo' => $seller_photo,
+				'seller_bio' => $seller_bio,
+				'ambition' => $ambition,
+				'updated_at' => $now,
+			),
+			array('id' => $other_id),
+			array('%s', '%s', '%s', '%s', '%s', '%s'),
+			array('%d')
+		);
+
+		$pitch_id = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT id FROM {$pitches_table} WHERE stall_id = %d LIMIT 1",
+				$other_id
+			)
+		);
+		if ($pitch_id > 0) {
+			$wpdb->update(
+				$pitches_table,
+				array(
+					'location' => $location,
+					'member_since' => $member_since,
+				),
+				array('id' => $pitch_id),
+				array('%s', '%s'),
+				array('%d')
+			);
+		} else {
+			$wpdb->insert(
+				$pitches_table,
+				array(
+					'stall_id' => $other_id,
+					'pitch_number' => assign_trader_pitch_number($owner_id),
+					'location' => $location,
+					'member_since' => $member_since,
+				),
+				array('%d', '%s', '%s', '%s')
+			);
+		}
+
+		$wpdb->delete($badges_table, array('stall_id' => $other_id), array('%d'));
+		foreach ($badges as $badge) {
+			$label = sanitize_text_field(is_array($badge) ? (string) ($badge['label'] ?? '') : (string) $badge);
+			if ('' === $label) {
+				continue;
+			}
+			$wpdb->insert(
+				$badges_table,
+				array(
+					'stall_id' => $other_id,
+					'label' => $label,
+				),
+				array('%d', '%s')
+			);
+		}
+	}
+}
+
+/**
  * Sync pitch / products / badges when those keys are present in the payload.
  * Omitting a key leaves existing children untouched (avoids wiping on partial updates).
  *
@@ -590,6 +698,20 @@ function stall_create(WP_REST_Request $request): WP_REST_Response|WP_Error {
 	$id = (int) $wpdb->insert_id;
 	// On create, always write child tables (empty placeholders for pitch are fine).
 	sync_stall_children($id, $payload, true, $owner_id);
+	sync_trader_shared_fields_across_stalls(
+		$owner_id,
+		$id,
+		array(
+			'brand_name' => $brand,
+			'seller_name' => sanitize_text_field((string) ($payload['seller_name'] ?? $seller['name'] ?? '')),
+			'seller_photo' => $seller_photo,
+			'seller_bio' => sanitize_textarea_field((string) ($payload['seller_bio'] ?? $seller['about'] ?? '')),
+			'ambition' => sanitize_textarea_field((string) ($payload['ambition'] ?? $seller['ambition'] ?? '')),
+			'pitch_location' => (string) ($payload['pitch_location'] ?? ''),
+			'member_since' => (string) ($payload['member_since'] ?? ''),
+			'badges' => is_array($payload['badges'] ?? null) ? $payload['badges'] : array(),
+		)
+	);
 
 	$row = get_stall_row($id);
 	if (! $row) {
@@ -667,6 +789,22 @@ function stall_update(WP_REST_Request $request): WP_REST_Response|WP_Error {
 	if (! $fresh) {
 		return new WP_Error('vibe_mart_not_found', __('Stall not found.', 'vibe-mart'), array('status' => 404));
 	}
+
+	$shared = stall_row_to_array($fresh, true);
+	sync_trader_shared_fields_across_stalls(
+		(int) $fresh->owner_id,
+		$id,
+		array(
+			'brand_name' => (string) ($shared['brand_name'] ?? ''),
+			'seller_name' => (string) ($shared['seller_name'] ?? ''),
+			'seller_photo' => (string) ($shared['seller_photo'] ?? ''),
+			'seller_bio' => (string) ($shared['seller_bio'] ?? ''),
+			'ambition' => (string) ($shared['ambition'] ?? ''),
+			'pitch_location' => (string) ($shared['pitch_location'] ?? ''),
+			'member_since' => (string) ($shared['member_since'] ?? ''),
+			'badges' => is_array($shared['badges'] ?? null) ? $shared['badges'] : array(),
+		)
+	);
 
 	return new WP_REST_Response(stall_row_to_array($fresh, true), 200);
 }

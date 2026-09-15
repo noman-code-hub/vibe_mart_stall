@@ -31,6 +31,46 @@ export function productSizeAndCondition(product) {
   return { size, condition }
 }
 
+/**
+ * Pull rating / review count back out of trust badge labels.
+ * @param {unknown[]} badges
+ */
+export function pitchStatsFromBadges(badges = []) {
+  let rating = 0
+  let review_count = 0
+  for (const badge of Array.isArray(badges) ? badges : []) {
+    const label = String(badge?.label || badge || '')
+    const star = label.match(/^(\d+(?:\.\d+)?)\s*★/)
+    if (star) rating = Number(star[1]) || rating
+    const reviews = label.match(/^(\d+)\s+reviews?/i)
+    if (reviews) review_count = Number(reviews[1]) || review_count
+  }
+  return { rating, review_count }
+}
+
+/**
+ * Shared trader identity + stall-info fields copied across every stall they own.
+ */
+export function sharedTraderFieldsFromStall(stall) {
+  if (!stall) return null
+  const { rating, review_count } = pitchStatsFromBadges(stall.badges)
+  return {
+    business_name: stall.brand_name || stall.business_name || '',
+    seller: {
+      name: stall.seller?.name || stall.seller_name || '',
+      about: stall.seller_bio || stall.seller?.about || '',
+      ambition: stall.ambition || stall.seller?.ambition || '',
+    },
+    pitch: {
+      location: stall.pitch_location || '',
+      member_since: stall.member_since || '',
+      rating: Number(stall.rating) || rating || 0,
+      review_count: Number(stall.review_count) || review_count || 0,
+    },
+    selfieFile: stall.seller_photo || null,
+  }
+}
+
 export function stallToMarketStallProps(stall) {
   if (!stall) return null
 
@@ -119,6 +159,8 @@ export function stallToEditorState(stall) {
       }
     })
 
+  const pitchStats = pitchStatsFromBadges(stall.badges)
+
   return {
     savedStallId: stall.id ?? null,
     status: stall.status === 'published' ? 'published' : 'draft',
@@ -133,8 +175,8 @@ export function stallToEditorState(stall) {
         number: stall.pitch_number || '',
         location: stall.pitch_location || '',
         member_since: stall.member_since || '',
-        rating: Number(stall.rating) || 0,
-        review_count: Number(stall.review_count) || 0,
+        rating: Number(stall.rating) || pitchStats.rating || 0,
+        review_count: Number(stall.review_count) || pitchStats.review_count || 0,
       },
     },
     selfieFile: stall.seller_photo || null,

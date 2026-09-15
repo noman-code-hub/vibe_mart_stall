@@ -116,6 +116,60 @@ function nowIso() {
   return new Date().toISOString()
 }
 
+/**
+ * Trader identity + stall-info fields shared across every stall the trader owns.
+ * Products stay per-stall.
+ */
+function extractSharedTraderFields(stall) {
+  const sellerName = String(stall?.seller_name || stall?.seller?.name || '').trim()
+  return {
+    brand_name: String(stall?.brand_name || '').trim(),
+    seller_name: sellerName,
+    seller: {
+      name: sellerName,
+      about: String(stall?.seller_bio || stall?.seller?.about || ''),
+      ambition: String(stall?.ambition || stall?.seller?.ambition || ''),
+    },
+    seller_photo: String(stall?.seller_photo || ''),
+    seller_bio: String(stall?.seller_bio || stall?.seller?.about || ''),
+    ambition: String(stall?.ambition || stall?.seller?.ambition || ''),
+    pitch_location: String(stall?.pitch_location || ''),
+    member_since: String(stall?.member_since || ''),
+    badges: Array.isArray(stall?.badges)
+      ? stall.badges.map((b) => String(b || '').trim()).filter(Boolean)
+      : [],
+  }
+}
+
+function applySharedTraderFields(stall, shared) {
+  stall.brand_name = shared.brand_name
+  stall.seller_name = shared.seller_name
+  stall.seller = {
+    name: shared.seller_name,
+    about: shared.seller_bio,
+    ambition: shared.ambition,
+  }
+  stall.seller_photo = shared.seller_photo
+  stall.seller_bio = shared.seller_bio
+  stall.ambition = shared.ambition
+  stall.pitch_location = shared.pitch_location
+  stall.member_since = shared.member_since
+  stall.badges = Array.isArray(shared.badges) ? [...shared.badges] : []
+  stall.updated_at = nowIso()
+  return stall
+}
+
+/** Keep Trading Name / About You / Stall Info identical on all of a trader's stalls. */
+function syncSharedFieldsToOwnerStalls(stalls, ownerId, sourceStall) {
+  if (!sourceStall || !ownerId) return
+  const shared = extractSharedTraderFields(sourceStall)
+  for (const stall of stalls) {
+    if (Number(stall.owner_id) !== Number(ownerId)) continue
+    if (Number(stall.id) === Number(sourceStall.id)) continue
+    applySharedTraderFields(stall, shared)
+  }
+}
+
 function normalizeStall(input, ownerId, existing = null) {
   const brand = String(input.brand_name || input.business_name || existing?.brand_name || '').trim()
   const statusRaw = String(input.status || existing?.status || 'draft')
@@ -325,6 +379,7 @@ export default async function stallsDevHandler(req, res) {
       stall.id = stalls.reduce((max, s) => Math.max(max, s.id), 0) + 1
       stall.product_count = stall.products.length
       stalls.push(stall)
+      syncSharedFieldsToOwnerStalls(stalls, userId, stall)
       await saveStalls(stalls)
       const response = publicStall(stall, true)
       response.published = stall.status === 'published'
@@ -381,6 +436,7 @@ export default async function stallsDevHandler(req, res) {
         updated.id = stall.id
         updated.product_count = updated.products.length
         stalls[index] = updated
+        syncSharedFieldsToOwnerStalls(stalls, userId, updated)
         await saveStalls(stalls)
         sendJson(res, 200, publicStall(updated, true))
         return true
