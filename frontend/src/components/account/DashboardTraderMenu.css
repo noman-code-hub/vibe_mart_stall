@@ -167,6 +167,16 @@
     top: 10px;
   }
 
+  /* Dashboard mobile/tablet — tweak --x / --y to place the profile button */
+  #vibe-mart-root .app--dashboard .vm-dash-trader:not(.vm-dash-trader--folder):not(.vm-dash-trader--profile),
+  #stall-root .app--dashboard .vm-dash-trader:not(.vm-dash-trader--folder):not(.vm-dash-trader--profile) {
+    --x: 88%;
+    --y: 5.2%;
+    left: var(--x);
+    top: var(--y);
+    right: auto;
+  }
+
   #vibe-mart-root .vm-dash-trader__trigger,
   #stall-root .vm-dash-trader__trigger {
     padding: 3px 8px 3px 3px;
@@ -189,17 +199,76 @@
     top: 8px;
   }
 
+  /* Mobile dashboard profile button — same --x / --y on every phone size */
+  #vibe-mart-root .app--dashboard .vm-dash-trader:not(.vm-dash-trader--folder):not(.vm-dash-trader--profile),
+  #stall-root .app--dashboard .vm-dash-trader:not(.vm-dash-trader--folder):not(.vm-dash-trader--profile) {
+    --x: 88%;
+    --y: 5.2%;
+    left: var(--x);
+    top: var(--y);
+    right: auto;
+  }
+
   #vibe-mart-root .vm-dash-trader__trigger,
   #stall-root .vm-dash-trader__trigger {
     padding: 2px 6px 2px 2px;
-    max-width: min(130px, 42vw);
-    font-size: 0.62rem;
+    max-width: min(118px, 38vw);
+    font-size: 0.58rem;
     gap: 4px;
+    box-shadow: 1px 1px 0 #1a1008;
+  }
+
+  #vibe-mart-root .app--dashboard .vm-dash-trader__trigger,
+  #stall-root .app--dashboard .vm-dash-trader__trigger {
+    padding: 2px;
+    max-width: none;
+    gap: 0;
+  }
+
+  #vibe-mart-root .app--dashboard .vm-dash-trader__name,
+  #stall-root .app--dashboard .vm-dash-trader__name,
+  #vibe-mart-root .app--dashboard .vm-dash-trader__caret,
+  #stall-root .app--dashboard .vm-dash-trader__caret {
+    display: none;
   }
 
   #vibe-mart-root .vm-dash-trader__avatar,
   #stall-root .vm-dash-trader__avatar {
-    width: 22px;
-    height: 22px;
+    width: 28px;
+    height: 28px;
+  }
+
+  #vibe-mart-root .app--dashboard .vm-dash-trader__avatar,
+  #stall-root .app--dashboard .vm-dash-trader__avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  #vibe-mart-root .vm-dash-trader__caret,
+  #stall-root .vm-dash-trader__caret {
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 4px;
+  }
+
+  #vibe-mart-root .vm-dash-trader__menu,
+  #stall-root .vm-dash-trader__menu {
+    min-width: 140px;
+    padding: 4px;
+    font-size: 0.82rem;
+  }
+
+  #vibe-mart-root .vm-dash-trader__item,
+  #stall-root .vm-dash-trader__item {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  #vibe-mart-root .app--dashboard .vm-dash-trader__avatar,
+  #stall-root .app--dashboard .vm-dash-trader__avatar {
+    width: 32px;
+    height: 32px;
   }
 }

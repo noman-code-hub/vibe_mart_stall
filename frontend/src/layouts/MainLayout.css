@@ -667,39 +667,66 @@
     top: calc(56px + env(safe-area-inset-top, 0px) + 8px);
     transform: none;
     width: auto;
-    max-width: none;
-    flex-direction: column;
+    max-width: calc(100vw - 20px);
+    flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
-    justify-content: flex-start;
-    gap: 6px;
-    padding: 10px;
+    justify-content: flex-end;
+    gap: 0;
+    padding: 6px 8px;
     background: #fffdf8;
     border: 3px solid #1a1008;
     border-radius: 14px;
     box-shadow: 4px 4px 0 #1a1008;
     z-index: 3;
     max-height: none;
-    overflow: visible;
+    overflow: hidden;
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
 
-.vm-nav::-webkit-scrollbar {
+  .vm-nav::-webkit-scrollbar {
     display: none;
     width: 0;
     height: 0;
   }
 
-.vm-nav.is-open {
+  .vm-nav.is-open {
     display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     z-index: 100;
   }
 
-.vm-nav__icon-link {
+  .vm-nav.is-open .vm-nav__scroll {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    width: auto;
+    max-width: 100%;
+    min-height: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .vm-nav.is-open .vm-nav__scroll::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .vm-nav__icon-link {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex: 0 0 auto;
     width: auto;
     padding: 0;
     background: transparent;
@@ -710,21 +737,22 @@
     color: #1a1008;
   }
 
-.vm-nav__icon-link.active {
+  .vm-nav__icon-link.active {
     background: transparent;
     outline: 2px solid #1a1008;
     outline-offset: 1px;
     transform: none;
   }
 
-.vm-nav__logout {
+  .vm-nav__logout {
     text-align: center;
     font: inherit;
   }
 
-.vm-nav__icon {
-    height: 46px;
-    max-width: 64px;
+  .vm-nav__icon {
+    height: 40px;
+    max-width: 52px;
+    width: auto;
     flex: 0 0 auto;
   }
 
@@ -742,8 +770,16 @@
     min-height: 50px;
   }
 
-.vm-nav {
+  .vm-nav {
     top: calc(50px + env(safe-area-inset-top, 0px) + 8px);
+    right: 8px;
+    width: auto;
+    max-width: calc(100vw - 16px);
+  }
+
+  .vm-nav__icon {
+    height: 36px;
+    max-width: 46px;
   }
 
   .vm-header__inner {
@@ -752,19 +788,19 @@
     padding: 0 8px;
   }
 
-.vm-logo {
+  .vm-logo {
     width: auto;
     height: auto;
     max-height: 40px;
   }
 
-.vm-logo__img {
+  .vm-logo__img {
     height: 40px;
     max-width: min(120px, 44vw);
     max-height: 40px;
   }
 
-.vm-role-switch {
+  .vm-role-switch {
     left: 8px;
     right: auto;
   }
@@ -774,18 +810,13 @@
     font-size: 0.6rem;
   }
 
-.vm-menu-toggle {
+  .vm-menu-toggle {
     right: 8px;
     width: 30px;
     height: 30px;
   }
 
-.vm-nav {
-    right: 8px;
-    width: auto;
-  }
-
-.vm-nav__icon {
+  .vm-nav__icon {
     height: 42px;
     max-width: 58px;
   }
@@ -862,23 +893,23 @@
 
   .vm-shell.is-landscape .vm-nav.is-open {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: nowrap;
-    align-items: stretch;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: flex-end;
     position: fixed;
     left: auto;
     right: calc(10px + env(safe-area-inset-right, 0px));
     top: calc(56px + env(safe-area-inset-top, 0px) + 8px);
-    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    bottom: auto;
     transform: none;
     width: auto;
-    max-width: min(46vw, 220px);
+    max-width: calc(100vw - 20px - env(safe-area-inset-right, 0px));
     height: auto;
     max-height: none;
     min-height: 0;
     gap: 0;
-    padding: 8px 4px 8px 8px;
+    padding: 6px 8px;
     overflow: hidden;
     background: #fffdf8;
     border: 3px solid #1a1008;
@@ -889,20 +920,21 @@
 
   .vm-shell.is-landscape .vm-nav.is-open .vm-nav__scroll {
     display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
+    flex: 0 1 auto;
+    flex-direction: row;
     flex-wrap: nowrap;
     align-items: center;
-    justify-content: flex-start;
-    gap: 6px;
+    justify-content: flex-end;
+    gap: 4px;
     min-height: 0;
-    height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
+    height: auto;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    touch-action: pan-y;
-    padding: 0 0 20px 0;
+    touch-action: pan-x;
+    padding: 0;
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
@@ -915,6 +947,7 @@
 
   .vm-shell.is-landscape .vm-nav.is-open .vm-nav__icon-link {
     flex: 0 0 auto;
+    width: auto;
   }
 }
 
