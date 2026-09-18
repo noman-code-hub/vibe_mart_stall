@@ -8,6 +8,7 @@ import { createEmptyStallData } from '../data/stallData'
 import { FIELD_LIMITS } from '../data/fieldLimits'
 import stallCart from '../assets/stall-cart.webp'
 import dashArt from '../assets/MY DASH.webp'
+import createNewStallBtn from '../assets/CREATE NEW STALL.png'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import {
@@ -21,7 +22,7 @@ import {
 } from '../services/stallApi.js'
 import { buildStallCreatePayload } from '../services/stallPayload.js'
 import { sharedTraderFieldsFromStall, stallToEditorState } from '../services/stallDisplay.js'
-import { validateStallForPublish } from '../services/stallValidation.js'
+import { validateStallForPublish, PRODUCT_IMAGE_REQUIRED_MESSAGE } from '../services/stallValidation.js'
 import { CATEGORY_REQUIRED_MESSAGE } from '../data/productCategories.js'
 import '../App.css'
 import './DashboardForm.css'
@@ -400,10 +401,13 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
     const illegalCheck = validateStallForPublish({ products: productSlots })
     if (!illegalCheck.ok) {
       setValidationErrors(illegalCheck.errors)
+      const first = String(illegalCheck.errors[0] || '')
       setSaveError(
-        illegalCheck.errors.some((msg) => String(msg).includes(CATEGORY_REQUIRED_MESSAGE))
+        first.includes(CATEGORY_REQUIRED_MESSAGE)
           ? CATEGORY_REQUIRED_MESSAGE
-          : 'One or more products are illegal and cannot be sold on Vibe Mart.'
+          : first.includes(PRODUCT_IMAGE_REQUIRED_MESSAGE)
+            ? PRODUCT_IMAGE_REQUIRED_MESSAGE
+            : 'One or more products are illegal and cannot be sold on Vibe Mart.'
       )
       setErrorField('product')
       return
@@ -419,26 +423,35 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
     setStep('finished')
   }
 
-  const handleSaveToFolder = async () => {
+  const persistStallToFolder = async ({ navigateToFolder = true } = {}) => {
     setSaveMessage('')
     setSaveError('')
     setValidationErrors([])
 
+    if (!productSlots.length) {
+      setSaveError('Add at least one product before saving this stall.')
+      setErrorField('product')
+      return null
+    }
+
     const illegalCheck = validateStallForPublish({ products: productSlots })
     if (!illegalCheck.ok) {
       setValidationErrors(illegalCheck.errors)
+      const first = String(illegalCheck.errors[0] || '')
       setSaveError(
-        illegalCheck.errors.some((msg) => String(msg).includes(CATEGORY_REQUIRED_MESSAGE))
+        first.includes(CATEGORY_REQUIRED_MESSAGE)
           ? CATEGORY_REQUIRED_MESSAGE
-          : 'One or more products are illegal and cannot be sold on Vibe Mart.'
+          : first.includes(PRODUCT_IMAGE_REQUIRED_MESSAGE)
+            ? PRODUCT_IMAGE_REQUIRED_MESSAGE
+            : 'One or more products are illegal and cannot be sold on Vibe Mart.'
       )
       setErrorField('product')
-      return
+      return null
     }
 
     if (!isAuthenticated) {
       setSaveError('Please log in to save your stall to the Folder.')
-      return
+      return null
     }
 
     setSaveBusy(true)
@@ -466,13 +479,15 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
             detail: { seller_photo: updated?.seller_photo || payload.seller_photo || '' },
           })
         )
-        navigate('/my-account?tab=stalls', { replace: true })
-        return
+        if (navigateToFolder) {
+          navigate('/my-account?tab=stalls', { replace: true })
+        }
+        return updated || { id: savedStallId }
       }
 
       if (currentQuota.atLimit) {
         setSaveError(STALL_LIMIT_MESSAGE)
-        return
+        return null
       }
 
       const created = await createStall(config, payload)
@@ -491,13 +506,42 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
           detail: { seller_photo: created?.seller_photo || payload.seller_photo || '' },
         })
       )
-      navigate('/my-account?tab=stalls', { replace: true })
+      if (navigateToFolder) {
+        navigate('/my-account?tab=stalls', { replace: true })
+      }
+      return created
     } catch (err) {
       const message = err?.message || 'Could not save stall to Folder.'
       setSaveError(message.includes('Maximum 5') ? STALL_LIMIT_MESSAGE : message)
+      return null
     } finally {
       setSaveBusy(false)
     }
+  }
+
+  const handleSaveToFolder = async () => {
+    await persistStallToFolder({ navigateToFolder: true })
+  }
+
+  /** Save current stall, then open a fresh dashboard with the same trader details and no products. */
+  const handleNeedAnotherStall = async () => {
+    const quotaCheck = quota || (await getOwnedStallQuota(config).catch(() => null))
+    if (quotaCheck) setQuota(quotaCheck)
+    // Need a free slot for the next stall after this one is stored.
+    if (!savedStallId && quotaCheck && quotaCheck.remaining < 2) {
+      setSaveError(STALL_LIMIT_MESSAGE)
+      return
+    }
+    if (savedStallId && quotaCheck && quotaCheck.remaining < 1) {
+      setSaveError(STALL_LIMIT_MESSAGE)
+      return
+    }
+
+    const saved = await persistStallToFolder({ navigateToFolder: false })
+    if (!saved) return
+
+    // Fresh dashboard: remount seeds trading/about/stall-info/selfie from latest stall; products start empty.
+    navigate(`/my-account?tab=create&new=${Date.now()}`, { replace: true })
   }
 
   if (hydrateBusy) {
@@ -530,7 +574,7 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
               setValidationErrors([])
             }}
           >
-            ← Edit
+            ← Edit / add more products
           </button>
           <div className="app__finished-actions">
             {quota && (
@@ -749,6 +793,8 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
             onProductSlotsChange={setProductSlots}
             onClearAll={handleClearAll}
             onBannerError={handleBannerError}
+            onNeedAnotherStall={isDashboard ? handleNeedAnotherStall : undefined}
+            needAnotherStallBusy={saveBusy}
             showInlineFieldErrors={!isDashboard}
           />
           <div className="app__generate-row">
@@ -756,9 +802,17 @@ export default function StallGeneratorApp({ variant = 'default', stallId = null 
               type="button"
               className="app__generate-btn"
               onClick={handleGenerateStall}
-              aria-label={isDashboard ? "Let's go — generate stall" : undefined}
+              aria-label={
+                isDashboard
+                  ? 'Finished? Create your market stall'
+                  : undefined
+              }
             >
-              {isDashboard ? null : 'Generate Stall →'}
+              {isDashboard ? (
+                <img src={createNewStallBtn} alt="" draggable={false} />
+              ) : (
+                'Generate Stall →'
+              )}
             </button>
           </div>
         </div>

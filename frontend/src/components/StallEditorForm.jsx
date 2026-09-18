@@ -16,11 +16,13 @@ import selfieTipsArt from '../assets/SELFIE PAGE.webp'
 import selfieTipsBtn from '../assets/SELFIE TIPS.webp'
 import marketStallTipsBtn from '../assets/market-stall-tips-transparent.webp'
 import marketStallTipsArt from '../assets/MARKET STALL FLOW.webp'
-import uploadNextProductImagesBtn from '../assets/88275ecb-8641-4db3-81e9-d9987fa8ea8d.png'
+import moreItemsBtn from '../assets/MEED ANOTHER STALL.png'
+import nextProductBtn from '../assets/NEXT PRODUCT.png'
 import addProductArt from '../assets/ADD PRODUCT EDIT.webp'
 import './StallEditorForm.css'
 
 const MAX_PRODUCTS = 4
+const PRODUCTS_VISIBLE = 3
 
 const emptyProduct = () => ({
   name: '',
@@ -36,6 +38,10 @@ function stripPound(value) {
   return String(value || '').replace(/£/g, '').trim()
 }
 
+function maxProductSlide(count) {
+  return Math.max(0, count - PRODUCTS_VISIBLE)
+}
+
 export default function StallEditorForm({
   data,
   onDataChange,
@@ -46,6 +52,8 @@ export default function StallEditorForm({
   onProductSlotsChange,
   onClearAll,
   onBannerError,
+  onNeedAnotherStall,
+  needAnotherStallBusy = false,
   showInlineFieldErrors = true,
 }) {
   const [errors, setErrors] = useState({})
@@ -55,8 +63,13 @@ export default function StallEditorForm({
   const [selfieTipsOpen, setSelfieTipsOpen] = useState(false)
   const [marketStallTipsOpen, setMarketStallTipsOpen] = useState(false)
   const [showTipsScrollHint, setShowTipsScrollHint] = useState(true)
+  const [productSlide, setProductSlide] = useState(0)
   const tipsDialogRef = useRef(null)
   const tipsModalOpen = selfieTipsOpen || marketStallTipsOpen
+
+  useEffect(() => {
+    setProductSlide((prev) => Math.min(prev, maxProductSlide(productSlots.length)))
+  }, [productSlots.length])
 
   const publishBanner = (field, message) => {
     onBannerError?.(message ? { message, field } : { message: '', field: field || '' })
@@ -189,6 +202,12 @@ export default function StallEditorForm({
       nextErrors.category = CATEGORY_REQUIRED_MESSAGE
     }
 
+    const hasImage =
+      (Array.isArray(draft.files) && draft.files.some(Boolean)) || Boolean(draft.file)
+    if (!hasImage) {
+      nextErrors.images = 'Add at least one product image.'
+    }
+
     const illegal = findIllegalProductMatch({
       name: draft.name,
       description: draft.description,
@@ -201,6 +220,8 @@ export default function StallEditorForm({
       publishBanner('product', nextErrors.name)
     } else if (nextErrors.category) {
       publishBanner('product', nextErrors.category)
+    } else if (nextErrors.images) {
+      publishBanner('product', nextErrors.images)
     }
 
     if (Object.keys(nextErrors).length) {
@@ -219,9 +240,17 @@ export default function StallEditorForm({
     }
 
     if (productModal?.index == null) {
+      if (productSlots.length >= MAX_PRODUCTS) {
+        setDraftErrors({})
+        publishBanner('', '')
+        closeProductModal()
+        return
+      }
+      const nextCount = productSlots.length + 1
       onProductSlotsChange((prev) =>
         prev.length >= MAX_PRODUCTS ? prev : [...prev, nextProduct]
       )
+      setProductSlide(maxProductSlide(nextCount))
     } else {
       const editIndex = productModal.index
       onProductSlotsChange((prev) =>
@@ -233,8 +262,11 @@ export default function StallEditorForm({
     closeProductModal()
   }
 
-  const removeProduct = (index) => onProductSlotsChange((prev) => prev.filter((_, i) => i !== index))
-
+  const removeProduct = (index) => {
+    const nextCount = Math.max(0, productSlots.length - 1)
+    onProductSlotsChange((prev) => prev.filter((_, i) => i !== index))
+    setProductSlide((slide) => Math.min(slide, maxProductSlide(nextCount)))
+  }
   const removeProductFromModal = () => {
     if (productModal?.index == null) return
     removeProduct(productModal.index)
@@ -375,6 +407,7 @@ export default function StallEditorForm({
         />
 
         <div className="stall-form__selfie-tips-cover" aria-hidden="true" />
+        <div className="stall-form__lets-go-cover" aria-hidden="true" />
 
         <button
           type="button"
@@ -404,9 +437,30 @@ export default function StallEditorForm({
           />
         </button>
 
-        <div className="stall-form__upload-next-product" aria-hidden="true">
-          <img src={uploadNextProductImagesBtn} alt="" draggable={false} />
-        </div>
+        <button
+          type="button"
+          className="stall-form__more-items"
+          onClick={() => onNeedAnotherStall?.()}
+          disabled={needAnotherStallBusy || !onNeedAnotherStall}
+          aria-label={
+            needAnotherStallBusy
+              ? 'Saving stall and opening a new stall dashboard'
+              : 'Need another stall — save this stall to Folder and start a new one'
+          }
+        >
+          <img src={moreItemsBtn} alt="" draggable={false} />
+        </button>
+
+        {productSlots.length < MAX_PRODUCTS ? (
+          <button
+            type="button"
+            className="stall-form__upload-next-product"
+            onClick={openAddProduct}
+            aria-label={`Upload next product images (${productSlots.length + 1} of ${MAX_PRODUCTS})`}
+          >
+            <img src={nextProductBtn} alt="" draggable={false} />
+          </button>
+        ) : null}
 
         <label
           className={`stall-form__field stall-form__field--about stall-form__field--compact${errors.about ? ' stall-form__field--error' : ''}`}
@@ -560,39 +614,82 @@ export default function StallEditorForm({
             />
           </label>
         </div>
+
+        <div className="stall-form__products-slider">
+          {productSlots.length > PRODUCTS_VISIBLE ? (
+            <button
+              type="button"
+              className="stall-form__products-nav stall-form__products-nav--prev"
+              onClick={() => setProductSlide((s) => Math.max(0, s - 1))}
+              disabled={productSlide <= 0}
+              aria-label="Show earlier products"
+            >
+              ‹
+            </button>
+          ) : null}
+          <div className="stall-form__products-list" role="list">
+            {productSlots
+              .slice(productSlide, productSlide + PRODUCTS_VISIBLE)
+              .map((product, offset) => {
+                const index = productSlide + offset
+                return (
+                  <div className="stall-form__product-chip" key={index} role="listitem">
+                    <strong className="stall-form__product-chip-name">
+                      {product.name || `Product ${index + 1}`}
+                    </strong>
+                    <button
+                      type="button"
+                      className="stall-form__product-chip-edit"
+                      onClick={() => openEditProduct(index)}
+                    >
+                      Edit
+                    </button>
+                  </div>
+                )
+              })}
+          </div>
+          {productSlots.length > PRODUCTS_VISIBLE ? (
+            <button
+              type="button"
+              className="stall-form__products-nav stall-form__products-nav--next"
+              onClick={() =>
+                setProductSlide((s) => Math.min(maxProductSlide(productSlots.length), s + 1))
+              }
+              disabled={productSlide >= maxProductSlide(productSlots.length)}
+              aria-label="Show later products"
+            >
+              ›
+            </button>
+          ) : null}
+        </div>
+        {productSlots.length > PRODUCTS_VISIBLE ? (
+          <p className="stall-form__products-page" aria-live="polite">
+            {productSlide + 1}–{Math.min(productSlide + PRODUCTS_VISIBLE, productSlots.length)} of{' '}
+            {productSlots.length}
+          </p>
+        ) : null}
       </fieldset>
 
       <fieldset className="stall-form__section" data-section="products">
         <legend>Products ({productSlots.length}/{MAX_PRODUCTS})</legend>
         {productSlots.length === 0 && (
           <p className="stall-form__empty-note stall-form__empty-note--products">
-            No products yet — add up to {MAX_PRODUCTS}.
+            No products yet — add Product 1, then Add Another Product up to {MAX_PRODUCTS}. Generate
+            Stall when you are ready.
           </p>
         )}
-        <div className="stall-form__products-list">
-          {productSlots.map((product, index) => (
-            <div className="stall-form__product-chip" key={index}>
-              <strong className="stall-form__product-chip-name">
-                {product.name || `Product ${index + 1}`}
-              </strong>
-              <button
-                type="button"
-                className="stall-form__product-chip-edit"
-                onClick={() => openEditProduct(index)}
-              >
-                Edit
-              </button>
-            </div>
-          ))}
-        </div>
         {productSlots.length < MAX_PRODUCTS && (
           <button
             type="button"
             className="stall-form__add-btn"
             onClick={openAddProduct}
-            aria-label="Add product"
+            aria-label={
+              productSlots.length === 0
+                ? 'Add product'
+                : `Add another product (${productSlots.length + 1} of ${MAX_PRODUCTS})`
+            }
           >
-            + Add product
+            {productSlots.length === 0 ? '+ Add product' : '+ Add Another Product'}
           </button>
         )}
       </fieldset>
@@ -615,7 +712,9 @@ export default function StallEditorForm({
               <h2 id="stall-product-modal-title" className="stall-product-modal__sr">
                 {isEditingProduct
                   ? `Edit product ${(productModal.index ?? 0) + 1}`
-                  : 'Add product'}
+                  : productSlots.length === 0
+                    ? 'Add product'
+                    : `Add another product (${productSlots.length + 1} of ${MAX_PRODUCTS})`}
               </h2>
 
               <button
@@ -779,7 +878,12 @@ export default function StallEditorForm({
 
                   <ProductImageSlots
                     files={draft.files}
-                    onChange={(files) => setDraftField('files', normalizeProductFiles({ files }))}
+                    onChange={(files) => {
+                      setDraftField('files', normalizeProductFiles({ files }))
+                      if (draftErrors.images) {
+                        setDraftErrors((prev) => ({ ...prev, images: '' }))
+                      }
+                    }}
                     removeBg
                     variant="overlay"
                   />
@@ -789,14 +893,16 @@ export default function StallEditorForm({
                     draftErrors.price ||
                     draftErrors.variation ||
                     draftErrors.condition ||
-                    draftErrors.description) && (
+                    draftErrors.description ||
+                    draftErrors.images) && (
                     <p className="stall-product-modal__error" role="alert">
                       {draftErrors.category ||
                         draftErrors.name ||
                         draftErrors.price ||
                         draftErrors.variation ||
                         draftErrors.condition ||
-                        draftErrors.description}
+                        draftErrors.description ||
+                        draftErrors.images}
                     </p>
                   )}
 

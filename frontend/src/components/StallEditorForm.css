@@ -143,6 +143,61 @@
   cursor: pointer;
 }
 
+#vibe-mart-root .stall-form__products-slider,
+#stall-root .stall-form__products-slider {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+#vibe-mart-root .stall-form__products-list,
+#stall-root .stall-form__products-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+#vibe-mart-root .stall-form__products-list .stall-form__product-chip,
+#stall-root .stall-form__products-list .stall-form__product-chip {
+  flex: 1 1 calc(33.333% - 6px);
+  max-width: calc(33.333% - 6px);
+  min-width: 0;
+}
+
+#vibe-mart-root .stall-form__products-nav,
+#stall-root .stall-form__products-nav {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--stall-border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--stall-ink);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#vibe-mart-root .stall-form__products-nav:disabled,
+#stall-root .stall-form__products-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+#vibe-mart-root .stall-form__products-page,
+#stall-root .stall-form__products-page {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--stall-ink-soft);
+}
+
 #vibe-mart-root .stall-form__add-btn,
 #stall-root .stall-form__add-btn {
   align-self: flex-start;
@@ -560,7 +615,8 @@
   user-select: none;
 }
 
-.stall-form__selfie-tips-cover {
+.stall-form__selfie-tips-cover,
+.stall-form__lets-go-cover {
   display: none;
 }
 

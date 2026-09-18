@@ -596,25 +596,48 @@
   justify-content: flex-start;
 }
 
-#vibe-mart-root .app--dashboard .stall-form__products-list,
-#stall-root .app--dashboard .stall-form__products-list {
+/* Product chips slider — shown inside Stall Info section */
+#vibe-mart-root .app--dashboard .stall-form__section[data-section='stall-info'] .stall-form__products-slider,
+#stall-root .app--dashboard .stall-form__section[data-section='stall-info'] .stall-form__products-slider {
   position: absolute;
   left: var(--x);
   top: var(--y);
   width: var(--w);
   height: var(--h);
-  --x: 22%;
-  --y: 6%;
-  --w: 35%;
-  --h: 88%;
+  --x: 24%;
+  --y: 48%;
+  --w: 42%;
+  --h: 48%;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 2px;
+  z-index: 4;
+  pointer-events: auto;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__products-list,
+#stall-root .app--dashboard .stall-form__products-list {
+  position: static;
+  left: auto;
+  top: auto;
+  width: auto;
+  height: 100%;
+  --x: unset;
+  --y: unset;
+  --w: unset;
+  --h: unset;
   margin: 0;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
   gap: 4px;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
   scrollbar-width: none;
   z-index: 3;
   pointer-events: auto;
@@ -623,6 +646,45 @@
 #vibe-mart-root .app--dashboard .stall-form__products-list::-webkit-scrollbar,
 #stall-root .app--dashboard .stall-form__products-list::-webkit-scrollbar {
   display: none;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__products-list .stall-form__product-chip,
+#stall-root .app--dashboard .stall-form__products-list .stall-form__product-chip {
+  flex: 1 1 calc(33.333% - 3px);
+  max-width: calc(33.333% - 3px);
+  min-width: 0;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__products-nav,
+#stall-root .app--dashboard .stall-form__products-nav {
+  flex: 0 0 auto;
+  width: clamp(12px, 2.6cqi, 18px);
+  height: clamp(12px, 2.6cqi, 18px);
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: rgba(14, 92, 203, 0.95);
+  color: #fff;
+  font-size: clamp(10px, 2.2cqi, 14px);
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 4;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__products-nav:disabled,
+#stall-root .app--dashboard .stall-form__products-nav:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__products-page,
+#stall-root .app--dashboard .stall-form__products-page {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
 }
 
 /* Add Product — left transparent hit */
@@ -834,18 +896,18 @@
 
 #vibe-mart-root .app--dashboard .stall-form__product-chip,
 #stall-root .app--dashboard .stall-form__product-chip {
-  flex: 0 0 auto;
-  max-width: min(11rem, 28cqi);
-  min-width: min(4.3rem, 14cqi);
+  flex: 1 1 calc(33.333% - 3px);
+  max-width: calc(33.333% - 3px);
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.4);
   background: #0E5CCB;
-  padding: clamp(3px, 0.55cqi, 6px) clamp(4px, 0.7cqi, 8px);
-  border-radius: 7px;
-  gap: clamp(2px, 0.4cqi, 4px);
+  padding: clamp(2px, 0.35cqi, 4px) clamp(3px, 0.5cqi, 5px);
+  border-radius: 5px;
+  gap: clamp(1px, 0.3cqi, 3px);
   min-height: 0;
   height: auto;
   max-height: 100%;
@@ -854,8 +916,8 @@
 #vibe-mart-root .app--dashboard .stall-form__product-chip-name,
 #stall-root .app--dashboard .stall-form__product-chip-name {
   color: #fff;
-  font-size: clamp(0.5rem, 1.3cqi, 12px);
-  line-height: 1.15;
+  font-size: clamp(0.4rem, 1cqi, 10px);
+  line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -864,12 +926,12 @@
 #vibe-mart-root .app--dashboard .stall-form__product-chip-edit,
 #stall-root .app--dashboard .stall-form__product-chip-edit {
   align-self: stretch;
-  font-size: clamp(0.5rem, 1.2cqi, 11px);
-  padding: clamp(2px, 0.45cqi, 4px) clamp(4px, 0.8cqi, 8px);
-  line-height: 1.2;
+  font-size: clamp(0.4rem, 0.95cqi, 9px);
+  padding: clamp(1px, 0.3cqi, 3px) clamp(3px, 0.55cqi, 6px);
+  line-height: 1.1;
   background: rgba(255, 255, 255, 0.94);
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   color: #1a1008;
   cursor: pointer;
   font-weight: 700;
@@ -881,7 +943,7 @@
   caret-color: #fff;
 }
 
-/* Generate Stall — right transparent hit (separate from Add Product) */
+/* Generate Stall — CREATE NEW STALL graphic */
 #vibe-mart-root .app--dashboard .app__generate-row,
 #stall-root .app--dashboard .app__generate-row {
   position: absolute;
@@ -889,14 +951,14 @@
   top: var(--y);
   width: var(--w);
   height: var(--h);
-  --x: 71%;
-  --y: 90%;
-  --w: 23%;
-  --h: 3.9%;
+  --x: 67%;
+  --y: 88%;
+  --w: 31%;
+  --h: 8%;
   margin: 0;
   justify-content: stretch;
   bottom: auto;
-  z-index: 4;
+  z-index: 6;
 }
 
 #vibe-mart-root .app--dashboard .app__generate-btn,
@@ -911,11 +973,24 @@
   box-shadow: none !important;
   color: transparent !important;
   font-size: 0 !important;
+  line-height: 0;
+  cursor: pointer;
+}
+
+#vibe-mart-root .app--dashboard .app__generate-btn img,
+#stall-root .app--dashboard .app__generate-btn img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
 }
 
 #vibe-mart-root .app--dashboard .app__generate-btn:hover,
 #stall-root .app--dashboard .app__generate-btn:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: transparent !important;
+  filter: brightness(1.05);
 }
 
 #vibe-mart-root .app--dashboard .app__generate-btn:focus-visible,
@@ -975,6 +1050,27 @@
   border-radius: 8px;
   background: #fcfdfd;
   z-index: 3;
+  pointer-events: none;
+}
+
+/* White cover over painted LET'S GO! stacker on MY DASH */
+#vibe-mart-root .app--dashboard .stall-form__lets-go-cover,
+#stall-root .app--dashboard .stall-form__lets-go-cover {
+  display: block;
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 55%;
+  --y: 161.2%;
+  --w: 18%;
+  --h: 28%;
+  margin: 0;
+  border: 0;
+  border-radius: 4px;
+  background: #ffffff;
+  z-index: 5;
   pointer-events: none;
 }
 
@@ -1063,7 +1159,56 @@
   outline-offset: 2px;
 }
 
-/* UPLOAD NEXT PRODUCT IMAGES — decorative graphic only */
+/* GOT MORE ITEMS TO SELL? — opens Add Product for the next item */
+#vibe-mart-root .app--dashboard .stall-form__more-items,
+#stall-root .app--dashboard .stall-form__more-items {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  --x: 25%;
+  --y: 152%;
+  --w: 24%;
+  --h: 47%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  z-index: 6;
+  line-height: 0;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__more-items img,
+#stall-root .app--dashboard .stall-form__more-items img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__more-items:hover:not(:disabled),
+#stall-root .app--dashboard .stall-form__more-items:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+#vibe-mart-root .app--dashboard .stall-form__more-items:disabled,
+#stall-root .app--dashboard .stall-form__more-items:disabled {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__more-items:focus-visible,
+#stall-root .app--dashboard .stall-form__more-items:focus-visible {
+  outline: 3px solid #ffe600;
+  outline-offset: 2px;
+}
+
+/* UPLOAD NEXT PRODUCT IMAGES — larger so it stands out; opens Add Product */
 #vibe-mart-root .app--dashboard .stall-form__upload-next-product,
 #stall-root .app--dashboard .stall-form__upload-next-product {
   position: absolute;
@@ -1071,16 +1216,17 @@
   top: var(--y);
   width: var(--w);
   height: var(--h);
-  --x: 39%;
-  --y: 159.5%;
-  --w: 20%;
-  --h: 31%;
+  --x: 47%;
+  --y: 155%;
+  --w: 26%;
+  --h: 43%;
   margin: 0;
   padding: 0;
   border: 0;
+  border-radius: 0;
   background: transparent;
-  pointer-events: none;
-  z-index: 6;
+  cursor: pointer;
+  z-index: 7;
   line-height: 0;
 }
 
@@ -1092,6 +1238,17 @@
   object-fit: contain;
   pointer-events: none;
   user-select: none;
+}
+
+#vibe-mart-root .app--dashboard .stall-form__upload-next-product:hover,
+#stall-root .app--dashboard .stall-form__upload-next-product:hover {
+  filter: brightness(1.05);
+}
+
+#vibe-mart-root .app--dashboard .stall-form__upload-next-product:focus-visible,
+#stall-root .app--dashboard .stall-form__upload-next-product:focus-visible {
+  outline: 3px solid #ffe600;
+  outline-offset: 2px;
 }
 
 @media (max-width: 1024px) {

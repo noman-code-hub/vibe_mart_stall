@@ -4,7 +4,7 @@ import DashboardTraderMenu from './DashboardTraderMenu.jsx'
 /**
  * Dashboard tab — stall generator laid over MY DASH artwork.
  */
-export default function CreateStallPanel({ limitMessage = '', stallId = null }) {
+export default function CreateStallPanel({ limitMessage = '', stallId = null, freshKey = '' }) {
   if (limitMessage) {
     return (
       <div className="vm-account-stack vm-account-stack--generator vm-account-stack--dash-limit">
@@ -30,7 +30,12 @@ export default function CreateStallPanel({ limitMessage = '', stallId = null }) 
 
   return (
     <div className="vm-account-stack vm-account-stack--generator">
-      <StallGeneratorApp variant="dashboard" stallId={stallId} />
+      {/* Remount when switching stalls / starting another so products never bleed across */}
+      <StallGeneratorApp
+        key={stallId ? `edit-${stallId}` : `new-stall-${freshKey || '0'}`}
+        variant="dashboard"
+        stallId={stallId}
+      />
     </div>
   )
 }

@@ -234,6 +234,7 @@ export default function MyAccountPage() {
   const isFolder = tab === 'folder'
   const isProfile = tab === 'profile'
   const dashboardStallId = Number(searchParams.get('stallId') || 0) || null
+  const dashboardFreshKey = searchParams.get('new') || ''
 
   return (
     <section
@@ -295,6 +296,7 @@ export default function MyAccountPage() {
               !dashboardStallId && stalls.length >= MAX_FREE_STALLS ? STALL_LIMIT_MESSAGE : ''
             }
             stallId={dashboardStallId}
+            freshKey={dashboardFreshKey}
           />
         )}
       </div>
