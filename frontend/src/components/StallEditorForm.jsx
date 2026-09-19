@@ -16,8 +16,9 @@ import selfieTipsArt from '../assets/SELFIE PAGE.webp'
 import selfieTipsBtn from '../assets/SELFIE TIPS.webp'
 import marketStallTipsBtn from '../assets/market-stall-tips-transparent.webp'
 import marketStallTipsArt from '../assets/MARKET STALL FLOW.webp'
-import moreItemsBtn from '../assets/MEED ANOTHER STALL.png'
+import moreItemsBtn from '../assets/MORE ITEMS copy.png'
 import nextProductBtn from '../assets/NEXT PRODUCT.png'
+import needAnotherStallBtn from '../assets/MEED ANOTHER STALL.png'
 import addProductArt from '../assets/ADD PRODUCT EDIT.webp'
 import './StallEditorForm.css'
 
@@ -408,6 +409,7 @@ export default function StallEditorForm({
 
         <div className="stall-form__selfie-tips-cover" aria-hidden="true" />
         <div className="stall-form__lets-go-cover" aria-hidden="true" />
+        <div className="stall-form__generate-stall-cover" aria-hidden="true" />
 
         <button
           type="button"
@@ -437,19 +439,20 @@ export default function StallEditorForm({
           />
         </button>
 
-        <button
-          type="button"
-          className="stall-form__more-items"
-          onClick={() => onNeedAnotherStall?.()}
-          disabled={needAnotherStallBusy || !onNeedAnotherStall}
-          aria-label={
-            needAnotherStallBusy
-              ? 'Saving stall and opening a new stall dashboard'
-              : 'Need another stall — save this stall to Folder and start a new one'
-          }
-        >
-          <img src={moreItemsBtn} alt="" draggable={false} />
-        </button>
+        {productSlots.length < MAX_PRODUCTS ? (
+          <button
+            type="button"
+            className="stall-form__more-items"
+            onClick={openAddProduct}
+            aria-label={
+              productSlots.length === 0
+                ? 'Got more items to sell? Add product'
+                : `Got more items to sell? Add product ${productSlots.length + 1} of ${MAX_PRODUCTS}`
+            }
+          >
+            <img src={moreItemsBtn} alt="" draggable={false} />
+          </button>
+        ) : null}
 
         {productSlots.length < MAX_PRODUCTS ? (
           <button
@@ -461,6 +464,20 @@ export default function StallEditorForm({
             <img src={nextProductBtn} alt="" draggable={false} />
           </button>
         ) : null}
+
+        <button
+          type="button"
+          className="stall-form__need-another-stall"
+          onClick={() => onNeedAnotherStall?.()}
+          disabled={needAnotherStallBusy || !onNeedAnotherStall}
+          aria-label={
+            needAnotherStallBusy
+              ? 'Saving stall and opening a new stall dashboard'
+              : 'Need another stall — save this stall to Folder and start a new one'
+          }
+        >
+          <img src={needAnotherStallBtn} alt="" draggable={false} />
+        </button>
 
         <label
           className={`stall-form__field stall-form__field--about stall-form__field--compact${errors.about ? ' stall-form__field--error' : ''}`}

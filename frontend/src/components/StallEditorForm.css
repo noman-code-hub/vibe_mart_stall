@@ -616,7 +616,8 @@
 }
 
 .stall-form__selfie-tips-cover,
-.stall-form__lets-go-cover {
+.stall-form__lets-go-cover,
+.stall-form__generate-stall-cover {
   display: none;
 }
 
