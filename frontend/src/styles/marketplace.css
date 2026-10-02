@@ -467,16 +467,18 @@
 }
 
 .vm-market-loading {
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
 }
 
-/* Compact Hang Loose splash while Market loads (same art as onboarding). */
+/* Exact same Hang Loose splash as #vm-splash onboarding. */
 .vm-market-onboarding {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
   display: grid;
   place-items: center;
-  min-height: min(58vh, 420px);
-  padding: 22px;
+  padding: 24px;
   box-sizing: border-box;
   background: transparent;
 }
@@ -484,18 +486,19 @@
 .vm-market-onboarding .vm-splash__card {
   display: grid;
   justify-items: center;
-  gap: 14px;
-  width: min(520px, 100%);
+  gap: 16px;
+  width: min(820px, 100%);
   text-align: center;
 }
 
 .vm-market-onboarding .vm-splash__logo {
   display: block;
-  width: min(440px, 72vw);
+  width: min(760px, 92vw);
   height: auto;
   object-fit: contain;
   margin: 0;
-  filter: drop-shadow(0 8px 20px rgba(255, 196, 0, 0.22));
+  line-height: 0;
+  filter: drop-shadow(0 10px 24px rgba(255, 196, 0, 0.22));
   user-select: none;
 }
 
@@ -504,13 +507,13 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-height: 12px;
+  min-height: 14px;
   margin: 0;
 }
 
 .vm-market-onboarding .vm-splash__dot {
-  width: 11px;
-  height: 11px;
+  width: 12px;
+  height: 12px;
   border: 2px solid #1a1008;
   border-radius: 50%;
   background: #ffe600;
@@ -530,7 +533,7 @@
 
 @media (max-width: 640px) {
   .vm-market-onboarding .vm-splash__logo {
-    width: min(320px, 82vw);
+    width: min(420px, 92vw);
   }
 }
 
