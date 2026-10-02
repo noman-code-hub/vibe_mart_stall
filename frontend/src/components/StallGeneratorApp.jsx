@@ -8,7 +8,7 @@ import { createEmptyStallData } from '../data/stallData'
 import { FIELD_LIMITS } from '../data/fieldLimits'
 import stallCart from '../assets/stall-cart.webp'
 import dashArt from '../assets/MY DASH.webp'
-import createNewStallBtn from '../assets/CREATE NEW STALL.png'
+import createNewStallBtn from '../assets/CREATE NEW STALL.webp'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useRuntimeConfig } from '../context/RuntimeConfigContext.jsx'
 import {

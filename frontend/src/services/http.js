@@ -63,6 +63,7 @@ export async function apiRequest(config, path, options = {}) {
       `Request failed (${response.status})`
     const error = new Error(message.replace(/<[^>]+>/g, ''))
     error.status = response.status
+    error.code = typeof data?.code === 'string' ? data.code : ''
     error.data = data
     throw error
   }

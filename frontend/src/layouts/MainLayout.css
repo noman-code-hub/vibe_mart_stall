@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   overflow-x: clip;
-  padding-top: calc(88px + env(safe-area-inset-top, 0px));
+  padding-top: calc(88px + env(safe-area-inset-top, 0px) + var(--vm-wp-admin-bar, 0px));
   background:
     radial-gradient(circle at top left, rgba(212, 160, 23, 0.12), transparent 40%),
     linear-gradient(180deg, #f7f1e6 0%, #efe4d2 45%, #f4efe6 100%);
@@ -45,7 +45,7 @@
 
 .vm-header {
   position: fixed;
-  top: 0;
+  top: var(--vm-wp-admin-bar, 0px);
   left: 0;
   right: 0;
   width: 100%;
@@ -94,10 +94,10 @@
 
 .vm-logo__img {
   display: block;
-  height: 72px;
-  width: auto;
-  max-width: min(200px, 28vw);
-  max-height: 72px;
+  height: 72px !important;
+  width: auto !important;
+  max-width: min(200px, 28vw) !important;
+  max-height: 72px !important;
   object-fit: contain;
   object-position: left center;
   user-select: none;
@@ -210,9 +210,10 @@
 
 .vm-nav__icon {
   display: block;
-  height: clamp(46px, 5.6vw, 66px);
-  width: auto;
-  max-width: min(88px, 12vw);
+  height: clamp(46px, 5.6vw, 66px) !important;
+  width: auto !important;
+  max-width: min(88px, 12vw) !important;
+  max-height: 66px !important;
   object-fit: contain;
   user-select: none;
 }
@@ -345,6 +346,42 @@
 .vm-shell--reset {
   min-height: 100dvh;
   background: #ffffff;
+}
+
+/* Auth pages: keep the site chrome compact so the form is the focus */
+.vm-shell--reset .vm-header,
+.vm-shell--login .vm-header,
+.vm-shell--register .vm-header {
+  min-height: 64px;
+}
+
+.vm-shell--reset .vm-header__inner,
+.vm-shell--login .vm-header__inner,
+.vm-shell--register .vm-header__inner {
+  height: 64px;
+  min-height: 64px;
+}
+
+.vm-shell--reset .vm-logo__img,
+.vm-shell--login .vm-logo__img,
+.vm-shell--register .vm-logo__img {
+  height: 48px !important;
+  max-height: 48px !important;
+  max-width: min(140px, 32vw) !important;
+}
+
+.vm-shell--reset .vm-nav__icon,
+.vm-shell--login .vm-nav__icon,
+.vm-shell--register .vm-nav__icon {
+  height: 42px !important;
+  max-height: 42px !important;
+  max-width: 56px !important;
+}
+
+.vm-shell--reset.vm-shell,
+.vm-shell--login.vm-shell,
+.vm-shell--register.vm-shell {
+  padding-top: calc(64px + env(safe-area-inset-top, 0px) + var(--vm-wp-admin-bar, 0px));
 }
 
 .vm-shell--contact {
@@ -492,7 +529,7 @@
 
 @media (max-width: 1024px) {
   .vm-shell {
-    padding-top: calc(56px + env(safe-area-inset-top, 0px));
+    padding-top: calc(56px + env(safe-area-inset-top, 0px) + var(--vm-wp-admin-bar, 0px));
   }
 
   .vm-footer {
@@ -664,7 +701,7 @@
     position: fixed;
     left: auto;
     right: 10px;
-    top: calc(56px + env(safe-area-inset-top, 0px) + 8px);
+    top: calc(56px + env(safe-area-inset-top, 0px) + var(--vm-wp-admin-bar, 0px) + 8px);
     transform: none;
     width: auto;
     max-width: calc(100vw - 20px);
@@ -763,7 +800,7 @@
 
 @media (max-width: 480px) {
   .vm-shell {
-    padding-top: calc(50px + env(safe-area-inset-top, 0px));
+    padding-top: calc(50px + env(safe-area-inset-top, 0px) + var(--vm-wp-admin-bar, 0px));
   }
 
   .vm-header {
@@ -771,7 +808,7 @@
   }
 
   .vm-nav {
-    top: calc(50px + env(safe-area-inset-top, 0px) + 8px);
+    top: calc(50px + env(safe-area-inset-top, 0px) + var(--vm-wp-admin-bar, 0px) + 8px);
     right: 8px;
     width: auto;
     max-width: calc(100vw - 16px);
@@ -881,7 +918,7 @@
   }
 
   .vm-shell.is-landscape .vm-nav.is-open {
-    top: calc(50px + env(safe-area-inset-top, 0px) + 8px);
+    top: calc(50px + env(safe-area-inset-top, 0px) + var(--vm-wp-admin-bar, 0px) + 8px);
   }
 }
 
@@ -900,7 +937,7 @@
     position: fixed;
     left: auto;
     right: calc(10px + env(safe-area-inset-right, 0px));
-    top: calc(56px + env(safe-area-inset-top, 0px) + 8px);
+    top: calc(56px + env(safe-area-inset-top, 0px) + var(--vm-wp-admin-bar, 0px) + 8px);
     bottom: auto;
     transform: none;
     width: auto;
@@ -963,5 +1000,30 @@
   .vm-main--folder {
     padding: 8px clamp(10px, 3vw, 16px) 8px;
   }
+}
+
+/*
+ * WordPress admin bar (logged-in editors only).
+ * Without this, the fixed header sits under the toolbar and the MY DASH
+ * absolute slots look “shifted” compared with local Vite.
+ */
+body.admin-bar {
+  --vm-wp-admin-bar: 32px;
+}
+
+@media screen and (max-width: 782px) {
+  body.admin-bar {
+    --vm-wp-admin-bar: 46px;
+  }
+}
+
+body.vibe-mart-theme {
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+}
+
+body.vibe-mart-theme #vibe-mart-root {
+  isolation: isolate;
 }
 

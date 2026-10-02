@@ -141,7 +141,7 @@ export default function StallFocusModal({ stall, onClose }) {
                 transform: `scale(${scale})`,
               }}
             >
-              <Suspense fallback={<StallLoadingScreen />}>
+              <Suspense fallback={<StallLoadingScreen variant="market" />}>
                 <MarketStall
                   {...props}
                   className="vm-market-stall vm-market-stall--interactive"

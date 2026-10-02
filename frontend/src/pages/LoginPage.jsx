@@ -75,6 +75,19 @@ export default function LoginPage() {
       const nextUser = await login(form.username.trim(), form.password, form.remember)
       goAfterAuth(nextUser)
     } catch (err) {
+      const code = err?.code || err?.data?.code || ''
+      const pendingLogin =
+        err?.data?.data?.login ||
+        err?.data?.login ||
+        form.username.trim()
+      if (code === 'vibe_mart_email_unconfirmed') {
+        sessionStorage.setItem('vm_pending_login', pendingLogin)
+        if (form.username.includes('@')) {
+          sessionStorage.setItem('vm_pending_email', form.username.trim())
+        }
+        navigate('/confirm-email', { replace: true })
+        return
+      }
       setError(err.message || 'Login failed.')
     } finally {
       setBusy(false)

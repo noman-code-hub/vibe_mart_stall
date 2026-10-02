@@ -167,8 +167,50 @@ add_action(
 				wp_dequeue_style((string) $handle);
 			}
 		}
+
+		/*
+		 * Block / global styles often re-register late and fight the comic
+		 * absolute layout (margins, typography, button chrome).
+		 */
+		wp_dequeue_style('wp-block-library');
+		wp_dequeue_style('wp-block-library-theme');
+		wp_dequeue_style('wc-blocks-style');
+		wp_dequeue_style('global-styles');
+		wp_dequeue_style('classic-theme-styles');
 	},
 	PHP_INT_MAX
+);
+
+/**
+ * Never full-page-cache the SPA shell.
+ *
+ * The HTML embeds a REST nonce. LiteSpeed caching that HTML for one visitor
+ * and serving it to another (or hours later) causes “session expired” on
+ * photo upload for the client while the developer’s fresh tab still works.
+ */
+add_action(
+	'send_headers',
+	static function (): void {
+		if (is_admin() || is_customize_preview()) {
+			return;
+		}
+		nocache_headers();
+		header('Cache-Control: private, no-store, no-cache, must-revalidate, max-age=0', true);
+		header('Pragma: no-cache', true);
+		header('X-LiteSpeed-Cache-Control: no-cache', true);
+	},
+	1
+);
+
+/**
+ * Drop Appearance → Customize → Additional CSS on the front end.
+ */
+add_action(
+	'after_setup_theme',
+	static function (): void {
+		remove_action('wp_head', 'wp_custom_css_cb', 101);
+	},
+	20
 );
 
 /**

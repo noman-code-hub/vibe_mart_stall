@@ -3,7 +3,7 @@
  * Plugin Name:       Vibe Mart Marketplace
  * Plugin URI:        https://github.com/noman-code-hub/vibe_mart_stall
  * Description:       Marketplace backend for Vibe Mart — auth, stalls, products, media uploads, and remove.bg proxy. Frontend is the custom Vibe Mart theme.
- * Version:           1.7.0
+ * Version:           1.8.2
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Vibe Mart
@@ -21,7 +21,7 @@ if (! defined('ABSPATH')) {
 	exit;
 }
 
-const VERSION = '1.7.0';
+const VERSION = '1.8.2';
 const REST_NAMESPACE = 'vibe-mart/v1';
 
 define('VIBE_MART_PLUGIN_FILE', __FILE__);
@@ -39,6 +39,52 @@ require_once VIBE_MART_PLUGIN_DIR . 'includes/rest-remove-bg.php';
 require_once VIBE_MART_PLUGIN_DIR . 'includes/rest-uploads.php';
 require_once VIBE_MART_PLUGIN_DIR . 'includes/rest-contact.php';
 
+/**
+ * Warn if the legacy stall-only plugin is still active, or the theme/assets are missing.
+ */
+add_action(
+	'admin_notices',
+	static function (): void {
+		if (! current_user_can('activate_plugins')) {
+			return;
+		}
+
+		$legacy_active = defined('VibeStall\\VERSION');
+		if (function_exists('is_plugin_active')) {
+			$legacy_active = $legacy_active || is_plugin_active('vibe-stall-generator/vibe-stall-generator.php');
+		}
+		if ($legacy_active) {
+			echo '<div class="notice notice-warning"><p>';
+			echo esc_html__(
+				'Vibe Mart: deactivate the legacy “Vibe Stall Generator” plugin. Use only “Vibe Mart Marketplace” with the Vibe Mart theme.',
+				'vibe-mart'
+			);
+			echo '</p></div>';
+		}
+
+		$theme = wp_get_theme();
+		$is_vibe_theme = ( 'vibe-mart' === $theme->get_stylesheet() || 'vibe-mart' === $theme->get_template() );
+		if (! $is_vibe_theme) {
+			echo '<div class="notice notice-warning"><p>';
+			echo esc_html__(
+				'Vibe Mart: activate the “Vibe Mart” theme so the React marketplace UI loads.',
+				'vibe-mart'
+			);
+			echo '</p></div>';
+			return;
+		}
+
+		$manifest = get_theme_file_path('assets/app/asset-manifest.json');
+		if (! is_readable($manifest)) {
+			echo '<div class="notice notice-error"><p>';
+			echo esc_html__(
+				'Vibe Mart: theme assets are missing (assets/app/). Run npm run build:wp and redeploy the theme folder.',
+				'vibe-mart'
+			);
+			echo '</p></div>';
+		}
+	}
+);
 /**
  * Activation: tables + trader role + cron.
  */

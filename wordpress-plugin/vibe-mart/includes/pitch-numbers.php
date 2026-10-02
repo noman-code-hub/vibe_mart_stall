@@ -50,11 +50,14 @@ function format_pitch_number(int $n): string {
 }
 
 /**
- * Highest pitch index already in use (user meta + pitch table).
+ * Highest pitch index already assigned (user meta + pitch rows only).
+ *
+ * The stored sequence option is not used here — a stale high counter was
+ * skipping ahead to codes like VM2026AG while real traders still needed A/B/C.
  */
-function max_used_pitch_index(): int {
+function max_assigned_pitch_index(): int {
 	global $wpdb;
-	$max = (int) get_option(OPTION_PITCH_SEQ, 0);
+	$max = 0;
 
 	$meta = $wpdb->get_col(
 		$wpdb->prepare(
@@ -74,8 +77,23 @@ function max_used_pitch_index(): int {
 	return $max;
 }
 
+/**
+ * @deprecated Use max_assigned_pitch_index(); kept for older call sites.
+ */
+function max_used_pitch_index(): int {
+	return max_assigned_pitch_index();
+}
+
 function next_pitch_number(): string {
-	$n = max_used_pitch_index() + 1;
+	$assigned = max_assigned_pitch_index();
+	$opt = (int) get_option(OPTION_PITCH_SEQ, 0);
+
+	// Snap a stale counter back so new traders get the next real letter.
+	if ($opt > $assigned) {
+		$opt = $assigned;
+	}
+
+	$n = max($assigned, $opt) + 1;
 	update_option(OPTION_PITCH_SEQ, $n, false);
 	return format_pitch_number($n);
 }
@@ -103,7 +121,7 @@ function assign_trader_pitch_number(int $user_id): string {
 			$user_id
 		)
 	);
-	$from_stall = trim($from_stall);
+	$from_stall = strtoupper(trim($from_stall));
 	if ('' !== $from_stall && parse_pitch_index($from_stall) > 0) {
 		update_user_meta($user_id, USER_META_PITCH, $from_stall);
 		return $from_stall;
@@ -112,4 +130,92 @@ function assign_trader_pitch_number(int $user_id): string {
 	$next = next_pitch_number();
 	update_user_meta($user_id, USER_META_PITCH, $next);
 	return $next;
+}
+
+/**
+ * Re-assign every trader VM2026A, VM2026B, VM2026C… in user-id order,
+ * and rewrite all of their stall pitch rows to match.
+ *
+ * @return array{traders:int,next:string}
+ */
+function resequence_all_pitch_numbers(): array {
+	global $wpdb;
+
+	$ids = function_exists(__NAMESPACE__ . '\\get_trader_user_ids')
+		? get_trader_user_ids()
+		: array();
+
+	if (array() === $ids) {
+		$users = get_users(
+			array(
+				'role' => 'vibe_trader',
+				'fields' => array('ID'),
+				'orderby' => 'ID',
+				'order' => 'ASC',
+				'number' => 5000,
+			)
+		);
+		foreach ($users as $user) {
+			$ids[] = (int) ( is_object($user) ? $user->ID : $user );
+		}
+		$ids = array_values(array_unique(array_filter($ids)));
+		sort($ids);
+	}
+
+	$index = 0;
+	foreach ($ids as $user_id) {
+		$user_id = (int) $user_id;
+		if ($user_id <= 0) {
+			continue;
+		}
+		$index++;
+		$code = format_pitch_number($index);
+		update_user_meta($user_id, USER_META_PITCH, $code);
+
+		$stall_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				'SELECT id FROM ' . table('stalls') . ' WHERE owner_id = %d',
+				$user_id
+			)
+		);
+		foreach ((array) $stall_ids as $stall_id) {
+			$stall_id = (int) $stall_id;
+			if ($stall_id <= 0) {
+				continue;
+			}
+			$existing_id = (int) $wpdb->get_var(
+				$wpdb->prepare(
+					'SELECT id FROM ' . table('pitches') . ' WHERE stall_id = %d LIMIT 1',
+					$stall_id
+				)
+			);
+			if ($existing_id > 0) {
+				$wpdb->update(
+					table('pitches'),
+					array('pitch_number' => $code),
+					array('id' => $existing_id),
+					array('%s'),
+					array('%d')
+				);
+			} else {
+				$wpdb->insert(
+					table('pitches'),
+					array(
+						'stall_id' => $stall_id,
+						'pitch_number' => $code,
+						'location' => '',
+						'member_since' => '',
+					),
+					array('%d', '%s', '%s', '%s')
+				);
+			}
+		}
+	}
+
+	update_option(OPTION_PITCH_SEQ, $index, false);
+
+	return array(
+		'traders' => $index,
+		'next' => format_pitch_number($index + 1),
+	);
 }

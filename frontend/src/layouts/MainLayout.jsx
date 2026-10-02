@@ -110,8 +110,13 @@ export default function MainLayout() {
     setMode(next)
     setMenuOpen(false)
     if (next === 'seller') {
-      // Dashboard for signed-in sellers; Sell Smart pitch for guests.
-      navigate(isAuthenticated ? '/my-account?tab=create' : '/sell-smart')
+      // Guests → login (then dashboard). Signed-in → dashboard.
+      // While auth is still resolving, hit my-account so ProtectedRoute decides.
+      if (loading || isAuthenticated) {
+        navigate('/my-account?tab=create')
+        return
+      }
+      navigate('/login', { state: { from: '/my-account?tab=create' } })
       return
     }
     navigate('/market')

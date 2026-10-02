@@ -59,23 +59,29 @@ async function copyThemeAssets() {
 /**
  * Zip a folder so WordPress can install it.
  *
- * Always uses bsdtar, never PowerShell Compress-Archive: on Windows PowerShell
- * that writes entry names with backslashes, which the ZIP format does not allow.
- * PHP then sees one long filename instead of a folder tree, installs the plugin
- * to the wrong path, and activation fails with "Plugin file does not exist."
+ * Prefer Info-ZIP (`zip -r -X`): WordPress's uploader handles those archives
+ * more reliably than macOS `tar -a` store-only zips. Never use PowerShell
+ * Compress-Archive — it writes backslash paths that break PHP unzip.
  */
 function zipFolder(sourceDir, zipPath) {
   const folder = path.basename(sourceDir);
   const parent = path.dirname(sourceDir);
 
-  const zipped = spawnSync('tar', ['-a', '-cf', zipPath, '-C', parent, folder], { stdio: 'inherit' });
-  if (zipped.error) {
-    fail(
-      `Could not run "tar", which is needed to build ${folder}.zip. ` +
-        'It ships with Windows 10 and later, macOS and Linux.'
-    );
+  const zipBin = spawnSync('zip', ['-r', '-X', '-q', zipPath, folder], {
+    cwd: parent,
+    stdio: 'inherit',
+  });
+
+  if (zipBin.error || zipBin.status !== 0) {
+    const zipped = spawnSync('tar', ['-a', '-cf', zipPath, '-C', parent, folder], { stdio: 'inherit' });
+    if (zipped.error) {
+      fail(
+        `Could not run "zip" or "tar" to build ${folder}.zip. ` +
+          'Install Info-ZIP, or use a system that ships with tar.'
+      );
+    }
+    if (zipped.status !== 0) fail(`Failed to zip ${folder}`);
   }
-  if (zipped.status !== 0) fail(`Failed to zip ${folder}`);
 
   verifyZipPaths(zipPath, folder);
 }

@@ -8,7 +8,7 @@ export default function ResetPasswordPage() {
   const config = useRuntimeConfig()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const token = searchParams.get('token') || ''
+  const token = searchParams.get('token') || searchParams.get('key') || ''
   const login = searchParams.get('login') || ''
 
   const [password, setPassword] = useState('')

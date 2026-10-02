@@ -16,17 +16,25 @@ function formatBytes(bytes) {
 }
 
 /** WordPress REST errors use `message`; our handler uses `error`. */
-async function readErrorMessage(response) {
+async function readErrorPayload(response) {
   try {
-    const data = await response.json()
-    return data?.error || data?.message || null
+    return await response.json()
   } catch {
     return null
   }
 }
 
-function messageForStatus(status) {
-  if (status === 401 || status === 403) {
+function messageFromPayload(data, status) {
+  const text = data?.error || data?.message || null
+  if (text) return text
+
+  const code = data?.code || data?.data?.code || ''
+  if (
+    status === 401 ||
+    status === 403 ||
+    code === 'vibe_mart_invalid_nonce' ||
+    code === 'rest_cookie_invalid_nonce'
+  ) {
     return 'Your session expired. Please refresh the page and try again.'
   }
   if (status === 413) {
@@ -38,7 +46,47 @@ function messageForStatus(status) {
   if (status === 504) {
     return 'Background removal timed out. Please try again with a smaller image.'
   }
+  if (code === 'INVALID_API_KEY' || code === 'MISSING_API_KEY') {
+    return 'Background removal is not configured correctly. Check Vibe Mart → Settings.'
+  }
   return 'Background removal failed. Please try again.'
+}
+
+function isNonceFailure(status, data) {
+  if (status !== 401 && status !== 403) return false
+  const code = data?.code || data?.data?.code || ''
+  const text = String(data?.error || data?.message || '').toLowerCase()
+  return (
+    code === 'vibe_mart_invalid_nonce' ||
+    code === 'rest_cookie_invalid_nonce' ||
+    text.includes('session expired') ||
+    text.includes('nonce')
+  )
+}
+
+/**
+ * Pull a fresh wp_rest nonce from auth/session (bypasses HTML page cache).
+ */
+async function refreshRestNonce() {
+  if (typeof window === 'undefined') return ''
+  const restBase = String(window.vibeMartConfig?.restBase || '').replace(/\/$/, '')
+  if (!restBase) return ''
+
+  try {
+    const response = await fetch(`${restBase}/auth/session?_vm=${Date.now()}`, {
+      credentials: 'same-origin',
+      cache: 'no-store',
+      headers: { Accept: 'application/json' },
+    })
+    if (!response.ok) return ''
+    const data = await response.json()
+    const nonce = String(data?.nonce || '').trim()
+    if (!nonce) return ''
+    window.vibeMartConfig = { ...window.vibeMartConfig, nonce }
+    return nonce
+  } catch {
+    return ''
+  }
 }
 
 /**
@@ -87,16 +135,17 @@ async function prepareImageForRemoveBg(file) {
     }
 
     bitmap.close?.()
-    const base = String(file.name || 'upload').replace(/\.[^.]+$/, '') || 'upload'
-    return new File([blob], `${base}.jpg`, { type: 'image/jpeg' })
+    return new File([blob], file.name?.replace(/\.[^.]+$/, '.jpg') || 'upload.jpg', {
+      type: 'image/jpeg',
+    })
   } catch {
     return file
   }
 }
 
 /**
- * Uploads an image to the background-removal endpoint, which calls remove.bg
- * server-side. Inside WordPress this is the plugin REST route; during local
+ * Uploads an image to the background-removal endpoint, which calls remove.bg /
+ * Poof.bg on the server. On WordPress that is the plugin REST route; in local
  * development it is the Vite middleware. The API key never reaches the
  * browser in either case.
  *
@@ -120,21 +169,28 @@ export async function removeBackground(file, options = {}) {
 
   const prepared = await prepareImageForRemoveBg(file)
 
-  const body = new FormData()
-  body.append('image', prepared, prepared.name || 'upload.jpg')
+  const postOnce = async (nonce) => {
+    const body = new FormData()
+    body.append('image', prepared, prepared.name || 'upload.jpg')
+    const headers = nonce ? { 'X-WP-Nonce': nonce } : undefined
 
-  const nonce = getRestNonce()
-  const headers = nonce ? { 'X-WP-Nonce': nonce } : undefined
-
-  let response
-  try {
-    response = await fetch(getRemoveBackgroundUrl(), {
+    return fetch(getRemoveBackgroundUrl(), {
       method: 'POST',
       body,
       headers,
       credentials: 'same-origin',
       signal: options.signal,
     })
+  }
+
+  // Always prefer a fresh nonce on WordPress so cached HTML cannot break uploads.
+  let nonce = getRestNonce()
+  const fresh = await refreshRestNonce()
+  if (fresh) nonce = fresh
+
+  let response
+  try {
+    response = await postOnce(nonce)
   } catch (error) {
     if (error?.name === 'AbortError') throw error
     throw new Error('Could not reach the background-removal service. Check your connection and try again.', {
@@ -142,10 +198,37 @@ export async function removeBackground(file, options = {}) {
     })
   }
 
+  // Stale HTML page cache often serves an expired REST nonce — refresh and retry once.
+  if (!response.ok && (response.status === 401 || response.status === 403)) {
+    const firstPayload = await readErrorPayload(response.clone())
+    if (isNonceFailure(response.status, firstPayload)) {
+      const fresh = await refreshRestNonce()
+      if (fresh && fresh !== nonce) {
+        try {
+          response = await postOnce(fresh)
+        } catch (error) {
+          if (error?.name === 'AbortError') throw error
+          throw new Error(
+            'Could not reach the background-removal service. Check your connection and try again.',
+            { cause: error }
+          )
+        }
+      } else if (firstPayload) {
+        const message = messageFromPayload(firstPayload, response.status)
+        const err = new Error(message)
+        err.status = response.status
+        err.code = firstPayload?.code || firstPayload?.data?.code || ''
+        throw err
+      }
+    }
+  }
+
   if (!response.ok) {
-    const message = (await readErrorMessage(response)) || messageForStatus(response.status)
+    const data = await readErrorPayload(response)
+    const message = messageFromPayload(data, response.status)
     const err = new Error(message)
     err.status = response.status
+    err.code = data?.code || data?.data?.code || ''
     throw err
   }
 

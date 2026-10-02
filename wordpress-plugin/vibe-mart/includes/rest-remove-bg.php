@@ -26,6 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 const REMOVE_BG_ENDPOINT = 'https://api.remove.bg/v1.0/removebg';
+const POOF_BG_ENDPOINT   = 'https://api.poof.bg/v1/remove';
 const REQUEST_TIMEOUT    = 60;
 const RAW_PNG_KEY = '__vibe_mart_png';
 
@@ -102,15 +103,24 @@ function check_request_permission( WP_REST_Request $request ) {
 
 	$nonce = (string) $request->get_header( 'X-WP-Nonce' );
 
-	if ( '' === $nonce || ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
-		return new WP_Error(
-			'vibe_mart_invalid_nonce',
-			__( 'Your session expired. Please refresh the page and try again.', 'vibe-mart' ),
-			array( 'status' => 403 )
-		);
+	if ( '' !== $nonce && wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+		return true;
 	}
 
-	return true;
+	/*
+	 * Logged-in traders often hit a stale nonce from LiteSpeed/full-page cache
+	 * while their auth cookie is still valid. Cookie session is enough here —
+	 * the SPA is same-origin and only uploads images.
+	 */
+	if ( is_user_logged_in() ) {
+		return true;
+	}
+
+	return new WP_Error(
+		'vibe_mart_invalid_nonce',
+		__( 'Your session expired. Please refresh the page and try again.', 'vibe-mart' ),
+		array( 'status' => 403 )
+	);
 }
 
 /**
@@ -365,36 +375,69 @@ function store_upload( array $file ) {
 }
 
 /**
- * Sends the image to remove.bg and returns the transparent PNG bytes.
+ * True when the saved key is a Poof.bg (proof.bg) `pk_…` key.
+ *
+ * @deprecated Use \VibeMart\Plugin\is_poof_bg_key() from settings.php.
+ */
+function is_poof_bg_api_key(string $key = ''): bool {
+	return is_poof_bg_key($key);
+}
+
+/**
+ * Sends the image to Poof.bg or remove.bg and returns the transparent PNG bytes.
  *
  * @param string $contents Raw image bytes.
- * @param string $filename Filename sent to remove.bg.
+ * @param string $filename Filename sent to the provider.
  *
  * @return string|WP_Error PNG bytes.
  */
 function call_remove_bg( string $contents, string $filename ) {
+	$key = get_api_key();
+	$poof = is_poof_bg_key($key);
 	$boundary = wp_generate_password( 24, false );
-	$body     = build_multipart_body(
-		$boundary,
-		array(
-			'size'   => 'auto',
-			'format' => 'png',
-		),
-		'image_file',
-		$filename,
-		$contents
-	);
+
+	if ($poof) {
+		$body = build_multipart_body(
+			$boundary,
+			array(
+				'format' => 'png',
+				'channels' => 'rgba',
+			),
+			'image_file',
+			$filename,
+			$contents
+		);
+		$endpoint = POOF_BG_ENDPOINT;
+		$headers = array(
+			'x-api-key' => $key,
+			'Content-Type' => 'multipart/form-data; boundary=' . $boundary,
+			'Accept' => 'image/png, application/json',
+		);
+	} else {
+		$body = build_multipart_body(
+			$boundary,
+			array(
+				'size'   => 'auto',
+				'format' => 'png',
+			),
+			'image_file',
+			$filename,
+			$contents
+		);
+		$endpoint = REMOVE_BG_ENDPOINT;
+		$headers = array(
+			'X-Api-Key'    => $key,
+			'Content-Type' => 'multipart/form-data; boundary=' . $boundary,
+			'Accept'       => 'image/png, application/json',
+		);
+	}
 
 	$response = wp_remote_post(
-		REMOVE_BG_ENDPOINT,
+		$endpoint,
 		array(
 			'timeout'     => REQUEST_TIMEOUT,
 			'redirection' => 0,
-			'headers'     => array(
-				'X-Api-Key'    => get_api_key(),
-				'Content-Type' => 'multipart/form-data; boundary=' . $boundary,
-				'Accept'       => 'image/png, application/json',
-			),
+			'headers'     => $headers,
 			'body'        => $body,
 		)
 	);
@@ -421,40 +464,57 @@ function call_remove_bg( string $contents, string $filename ) {
 		return $png;
 	}
 
-	return remove_bg_error( $status, $png );
+	return remove_bg_error( $status, $png, $poof );
 }
 
 /**
- * Translates a remove.bg failure into a user-facing WP_Error.
+ * Translates a provider failure into a user-facing WP_Error.
  *
  * @param int    $status Response status code.
  * @param string $body   Response body.
+ * @param bool   $poof   Whether the request went to Poof.bg.
  */
-function remove_bg_error( int $status, string $body ): WP_Error {
+function remove_bg_error( int $status, string $body, bool $poof = false ): WP_Error {
 	$message = __( 'Background removal failed. Please try a different photo.', 'vibe-mart' );
 	$code    = 'REMOVE_BG_ERROR';
 
 	$decoded = json_decode( $body, true );
-	$first   = is_array( $decoded ) && isset( $decoded['errors'][0] ) ? $decoded['errors'][0] : null;
-
-	if ( is_array( $first ) ) {
-		$code = isset( $first['code'] ) ? (string) $first['code'] : $code;
-
-		if ( ! empty( $first['title'] ) ) {
-			$message = (string) $first['title'];
-		} elseif ( ! empty( $first['detail'] ) ) {
-			$message = (string) $first['detail'];
+	if ( $poof ) {
+		if ( is_array( $decoded ) ) {
+			$detail = $decoded['message'] ?? $decoded['error'] ?? null;
+			if ( is_string( $detail ) && '' !== $detail ) {
+				$message = $detail;
+			}
 		}
-	}
+		if ( 401 === $status || 403 === $status ) {
+			$code    = 'INVALID_API_KEY';
+			$message = __( 'Poof.bg rejected this API key. Check Vibe Mart → Settings.', 'vibe-mart' );
+		} elseif ( 429 === $status ) {
+			$message = __( 'The background-removal service is busy. Please try again shortly.', 'vibe-mart' );
+			$code    = 'RATE_LIMITED';
+		}
+	} else {
+		$first = is_array( $decoded ) && isset( $decoded['errors'][0] ) ? $decoded['errors'][0] : null;
 
-	if ( 'insufficient_credits' === $code ) {
-		$message = __( 'Background removal is temporarily unavailable (no credits left). Please contact the site administrator.', 'vibe-mart' );
-	} elseif ( 401 === $status || 403 === $status ) {
-		$message = __( 'Background removal is misconfigured. Please contact the site administrator.', 'vibe-mart' );
-		$code    = 'INVALID_API_KEY';
-	} elseif ( 429 === $status ) {
-		$message = __( 'The background-removal service is busy. Please try again shortly.', 'vibe-mart' );
-		$code    = 'RATE_LIMITED';
+		if ( is_array( $first ) ) {
+			$code = isset( $first['code'] ) ? (string) $first['code'] : $code;
+
+			if ( ! empty( $first['title'] ) ) {
+				$message = (string) $first['title'];
+			} elseif ( ! empty( $first['detail'] ) ) {
+				$message = (string) $first['detail'];
+			}
+		}
+
+		if ( 'insufficient_credits' === $code ) {
+			$message = __( 'Background removal is temporarily unavailable (no credits left). Please contact the site administrator.', 'vibe-mart' );
+		} elseif ( 401 === $status || 403 === $status ) {
+			$message = __( 'Background removal is misconfigured. Please contact the site administrator.', 'vibe-mart' );
+			$code    = 'INVALID_API_KEY';
+		} elseif ( 429 === $status ) {
+			$message = __( 'The background-removal service is busy. Please try again shortly.', 'vibe-mart' );
+			$code    = 'RATE_LIMITED';
+		}
 	}
 
 	return new WP_Error(

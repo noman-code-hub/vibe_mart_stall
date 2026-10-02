@@ -11,6 +11,7 @@
 #stall-root .app--dashboard .vm-dash {
   position: relative;
   width: min(100%, 920px);
+  max-width: 100%;
   margin: 0 auto;
   overflow: visible;
   container-type: inline-size;
@@ -19,8 +20,12 @@
 #vibe-mart-root .app--dashboard .vm-dash__art,
 #stall-root .app--dashboard .vm-dash__art {
   display: block;
-  width: 100%;
-  height: auto;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: none;
+  object-fit: contain;
+  object-position: top center;
   user-select: none;
   pointer-events: none;
 }

@@ -259,8 +259,7 @@ export default async function authDevHandler(req, res) {
       }
 
       const salt = randomBytes(8).toString('hex')
-      // TEMP (Vercel testing): skip email confirmation — restore when WordPress mail is wired.
-      // const confirmToken = randomBytes(24).toString('hex')
+      const confirmToken = randomBytes(24).toString('hex')
       const user = {
         id: users.reduce((max, u) => Math.max(max, u.id), 0) + 1,
         username,
@@ -282,33 +281,25 @@ export default async function authDevHandler(req, res) {
         terms_accepted: false,
         selling_rules_accepted: false,
         privacy_accepted: false,
-        // email_confirmed: false,
-        email_confirmed: true,
+        email_confirmed: false,
         profile_complete: false,
         pitch_number: '',
-        // confirm_token_hash: hashToken(confirmToken),
-        // confirm_expires: Date.now() + RESET_TTL_MS * 24,
-        confirm_token_hash: '',
-        confirm_expires: 0,
+        confirm_token_hash: hashToken(confirmToken),
+        confirm_expires: Date.now() + RESET_TTL_MS * 24,
       }
       users.push(user)
       await ensurePitchNumber(user, users)
       await saveUsers(users)
 
-      // TEMP (Vercel testing): auto-login after register — restore confirmation flow for WordPress.
-      // const confirmUrl = `${requestOrigin(req)}/confirm-email?token=${encodeURIComponent(confirmToken)}&login=${encodeURIComponent(username)}`
-      // sendJson(res, 201, {
-      //   ok: true,
-      //   pending_confirmation: true,
-      //   message: 'Check your email to confirm your account.',
-      //   login: username,
-      //   email,
-      //   confirm_url: confirmUrl,
-      //   dev_notice: 'Test host has no email. Use this confirmation link now.',
-      // })
-      // return true
-      sendJson(res, 201, publicUser(user), {
-        'Set-Cookie': sessionCookie(user.id, true),
+      const confirmUrl = `${requestOrigin(req)}/confirm-email?token=${encodeURIComponent(confirmToken)}&login=${encodeURIComponent(username)}`
+      sendJson(res, 201, {
+        ok: true,
+        pending_confirmation: true,
+        message: 'Check your email to confirm your account.',
+        login: username,
+        email,
+        confirm_url: confirmUrl,
+        dev_notice: 'Local/test host has no email. Use this confirmation link now.',
       })
       return true
     }
@@ -338,15 +329,15 @@ export default async function authDevHandler(req, res) {
         return true
       }
 
-      // TEMP (Vercel testing): allow login without email confirmation — restore for WordPress.
-      // if (user.email_confirmed === false) {
-      //   sendJson(res, 403, {
-      //     code: 'vibe_mart_email_unconfirmed',
-      //     message: 'Please confirm your email before logging in.',
-      //     login: user.username,
-      //   })
-      //   return true
-      // }
+      if (user.email_confirmed === false) {
+        sendJson(res, 403, {
+          code: 'vibe_mart_email_unconfirmed',
+          message: 'Please confirm your email before logging in.',
+          data: { status: 403, login: user.username },
+          login: user.username,
+        })
+        return true
+      }
 
       sendJson(res, 200, publicUser(await ensurePitchNumber(user, users)), { 'Set-Cookie': sessionCookie(user.id, remember) })
       return true
@@ -388,6 +379,35 @@ export default async function authDevHandler(req, res) {
       await saveUsers(users)
 
       sendJson(res, 200, publicUser(await ensurePitchNumber(user, users)), { 'Set-Cookie': sessionCookie(user.id, true) })
+      return true
+    }
+
+    if (route === '/resend-confirmation' && method === 'POST') {
+      const body = await readBody(req)
+      const identifier = String(body.login || body.username || body.email || '').trim()
+      const generic = {
+        ok: true,
+        message: 'If that account still needs confirming, a new link is on its way.',
+      }
+      if (!identifier) {
+        sendJson(res, 200, generic)
+        return true
+      }
+      const user = findUserByLogin(users, identifier)
+      if (!user || user.email_confirmed !== false) {
+        sendJson(res, 200, generic)
+        return true
+      }
+      const confirmToken = randomBytes(24).toString('hex')
+      user.confirm_token_hash = hashToken(confirmToken)
+      user.confirm_expires = Date.now() + RESET_TTL_MS * 24
+      await saveUsers(users)
+      const confirmUrl = `${requestOrigin(req)}/confirm-email?token=${encodeURIComponent(confirmToken)}&login=${encodeURIComponent(user.username)}`
+      sendJson(res, 200, {
+        ...generic,
+        confirm_url: confirmUrl,
+        dev_notice: 'Local/test host has no email. Use this confirmation link now.',
+      })
       return true
     }
 

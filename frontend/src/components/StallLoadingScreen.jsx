@@ -1,6 +1,40 @@
-import styles from './StallLoadingScreen.module.css';
+import loadingLogo from '../assets/loading-logo.webp'
+import styles from './StallLoadingScreen.module.css'
 
-export default function StallLoadingScreen() {
+/**
+ * Loading placeholder while stall / market art boots.
+ * Market uses the same logo + bouncing dots as the site onboarding splash.
+ */
+export default function StallLoadingScreen({ variant = 'default' }) {
+  if (variant === 'market') {
+    return (
+      <div
+        className={`${styles.screen} ${styles.screenSplash}`}
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+        aria-label="Loading market"
+      >
+        <div className={styles.splashCard}>
+          <img
+            className={styles.splashLogo}
+            src={loadingLogo}
+            alt="Vibe Mart"
+            width={380}
+            height={253}
+            decoding="async"
+            draggable={false}
+          />
+          <div className={styles.splashDots} aria-hidden="true">
+            <span className={styles.splashDot} />
+            <span className={styles.splashDot} />
+            <span className={styles.splashDot} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className={styles.screen} role="status" aria-live="polite" aria-busy="true">
       <div className={styles.card}>
@@ -19,5 +53,5 @@ export default function StallLoadingScreen() {
         <p className={styles.hint}>Loading the market cart artwork</p>
       </div>
     </div>
-  );
+  )
 }

@@ -53,7 +53,7 @@ function StallCard({ stall, onOpen }) {
               transform: `scale(${scale})`,
             }}
           >
-            <Suspense fallback={<StallLoadingScreen />}>
+            <Suspense fallback={<StallLoadingScreen variant="market" />}>
               <MarketStall {...props} variant="market" className="vm-market-stall" />
             </Suspense>
           </div>
@@ -115,7 +115,7 @@ export default function MarketStallSlider({
   if (loading) {
     return (
       <div className="vm-market-loading">
-        <StallLoadingScreen />
+        <StallLoadingScreen variant="market" />
       </div>
     )
   }

@@ -35,9 +35,9 @@ export default function ConfirmEmailPage() {
   // Local dev has no mail server, so the throwaway API there hands the link back
   // directly. Compiled out of production builds — live, the emailed link is the
   // only way in, which is what proves the address belongs to the signup.
-  const devConfirmUrl = import.meta.env.DEV
-    ? sessionStorage.getItem('vm_pending_confirm_url') || ''
-    : ''
+  const [devConfirmUrl, setDevConfirmUrl] = useState(() =>
+    import.meta.env.DEV ? sessionStorage.getItem('vm_pending_confirm_url') || '' : ''
+  )
 
   // Same details form for buyers and sellers until the profile is filled in.
   const nextAfterAuth = !user?.profile_complete
@@ -94,6 +94,10 @@ export default function ConfirmEmailPage() {
     try {
       const result = await resendConfirmation(config, pendingLogin)
       setResendMessage(result?.message || 'A new confirmation link is on its way.')
+      if (import.meta.env.DEV && result?.confirm_url) {
+        sessionStorage.setItem('vm_pending_confirm_url', result.confirm_url)
+        setDevConfirmUrl(result.confirm_url)
+      }
     } catch (err) {
       setError(err.message || 'Could not send a new confirmation link.')
     } finally {

@@ -34,6 +34,28 @@ add_action(
 );
 
 /**
+ * Use the Vibe Mart logo as the site favicon when no Customizer site icon is set.
+ */
+add_action(
+	'wp_head',
+	static function (): void {
+		if (function_exists('has_site_icon') && has_site_icon()) {
+			return;
+		}
+
+		$base = trailingslashit(VIBE_MART_THEME_URI) . 'assets/app/';
+		$webp = $base . 'favicon.webp';
+		$png  = $base . 'favicon.png';
+		$apple = $base . 'apple-touch-icon.png';
+
+		echo '<link rel="icon" type="image/webp" href="' . esc_url($webp) . '" />' . "\n";
+		echo '<link rel="icon" type="image/png" href="' . esc_url($png) . '" />' . "\n";
+		echo '<link rel="apple-touch-icon" href="' . esc_url($apple) . '" />' . "\n";
+	},
+	1
+);
+
+/**
  * Soft 404 for unknown WP routes — React Router handles in-app paths.
  */
 add_filter(
