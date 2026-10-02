@@ -9,15 +9,15 @@ export default function StallLoadingScreen({ variant = 'default' }) {
   if (variant === 'market') {
     return (
       <div
-        className={`${styles.screen} ${styles.screenSplash}`}
+        className="vm-market-onboarding"
         role="status"
         aria-live="polite"
         aria-busy="true"
         aria-label="Loading market"
       >
-        <div className={styles.splashCard}>
+        <div className="vm-splash__card">
           <img
-            className={styles.splashLogo}
+            className="vm-splash__logo"
             src={loadingLogo}
             alt="Vibe Mart"
             width={380}
@@ -25,10 +25,10 @@ export default function StallLoadingScreen({ variant = 'default' }) {
             decoding="async"
             draggable={false}
           />
-          <div className={styles.splashDots} aria-hidden="true">
-            <span className={styles.splashDot} />
-            <span className={styles.splashDot} />
-            <span className={styles.splashDot} />
+          <div className="vm-splash__dots" aria-hidden="true">
+            <span className="vm-splash__dot" />
+            <span className="vm-splash__dot" />
+            <span className="vm-splash__dot" />
           </div>
         </div>
       </div>
