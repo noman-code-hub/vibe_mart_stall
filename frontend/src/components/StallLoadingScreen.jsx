@@ -3,7 +3,7 @@ import styles from './StallLoadingScreen.module.css'
 
 /**
  * Loading placeholder while stall / market art boots.
- * Market uses the same logo + bouncing dots as the site onboarding splash.
+ * Market: Hang Loose graphic centered over the market scene (no white card).
  */
 export default function StallLoadingScreen({ variant = 'default' }) {
   if (variant === 'market') {
@@ -13,24 +13,17 @@ export default function StallLoadingScreen({ variant = 'default' }) {
         role="status"
         aria-live="polite"
         aria-busy="true"
-        aria-label="Loading market"
+        aria-label="Hang Loose! We're opening up the market for you!"
       >
-        <div className="vm-splash__card">
-          <img
-            className="vm-splash__logo"
-            src={loadingLogo}
-            alt="Vibe Mart"
-            width={380}
-            height={253}
-            decoding="async"
-            draggable={false}
-          />
-          <div className="vm-splash__dots" aria-hidden="true">
-            <span className="vm-splash__dot" />
-            <span className="vm-splash__dot" />
-            <span className="vm-splash__dot" />
-          </div>
-        </div>
+        <img
+          className="vm-market-onboarding__logo"
+          src={loadingLogo}
+          alt="Hang Loose! We're opening up the market for you!"
+          width={380}
+          height={253}
+          decoding="async"
+          draggable={false}
+        />
       </div>
     )
   }

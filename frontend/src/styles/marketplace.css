@@ -467,94 +467,56 @@
 }
 
 .vm-market-loading {
-  max-width: none;
-  margin: 0;
-}
-
-/* Exact same Hang Loose splash as #vm-splash onboarding. */
-.vm-market-onboarding {
-  position: fixed;
-  inset: 0;
-  z-index: 99998;
   display: grid;
   place-items: center;
-  padding: 24px;
+  width: 100%;
+  min-height: min(58vh, 480px);
+  margin: 0 auto;
+  padding: clamp(16px, 3vw, 32px);
   box-sizing: border-box;
-  background: transparent;
 }
 
-.vm-market-onboarding .vm-splash__card {
+/*
+ * Market loader — matches mockup: Hang Loose sticker centered over
+ * the market background. No white card / sheet behind it.
+ */
+.vm-market-onboarding {
   display: grid;
-  justify-items: center;
-  gap: 16px;
-  width: min(820px, 100%);
-  text-align: center;
+  place-items: center;
+  width: 100%;
+  max-width: min(520px, 92vw);
+  margin: 0 auto;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border: 0;
 }
 
-.vm-market-onboarding .vm-splash__logo {
+.vm-market-onboarding__logo {
   display: block;
-  width: min(760px, 92vw);
+  width: 100%;
   height: auto;
   object-fit: contain;
   margin: 0;
   line-height: 0;
-  filter: drop-shadow(0 10px 24px rgba(255, 196, 0, 0.22));
   user-select: none;
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.35));
+  animation: vm-market-onboarding-pulse 1.4s ease-in-out infinite;
 }
 
-.vm-market-onboarding .vm-splash__dots {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-height: 14px;
-  margin: 0;
-}
-
-.vm-market-onboarding .vm-splash__dot {
-  width: 12px;
-  height: 12px;
-  border: 2px solid #1a1008;
-  border-radius: 50%;
-  background: #ffe600;
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.55);
-  animation: vm-splash-dot 1s ease-in-out infinite;
-}
-
-.vm-market-onboarding .vm-splash__dot:nth-child(2) {
-  animation-delay: 0.15s;
-  background: #ff3b2f;
-}
-
-.vm-market-onboarding .vm-splash__dot:nth-child(3) {
-  animation-delay: 0.3s;
-  background: #025fd7;
-}
-
-@media (max-width: 640px) {
-  .vm-market-onboarding .vm-splash__logo {
-    width: min(420px, 92vw);
+@keyframes vm-market-onboarding-pulse {
+  0%,
+  100% {
+    transform: scale(0.98);
+  }
+  50% {
+    transform: scale(1.02);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .vm-market-onboarding .vm-splash__dot {
+  .vm-market-onboarding__logo {
     animation: none;
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes vm-splash-dot {
-  0%,
-  80%,
-  100% {
-    transform: translateY(0) scale(0.85);
-    opacity: 0.45;
-  }
-  40% {
-    transform: translateY(-8px) scale(1.08);
-    opacity: 1;
   }
 }
 
